@@ -20,7 +20,7 @@ public class Sensores {
         return !tela.contains(objetoRect);
     }
 
-    public boolean tocandoObjeto(Rectangle objeto1, Rectangle objeto2) {
-        return objeto1.intersects(objeto2);
-    }
-}
+    // Novo metodo para verificar se dois objetos estão colidindo
+    public boolean tocandoObjeto(CriaObjeto obj1, CriaObjeto obj2) {
+        return obj1.getRect().intersects(obj2.getRect());
+    }}
