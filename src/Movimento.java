@@ -10,7 +10,7 @@ public class Movimento {
     private GameWindow janela;
     private double velocidadeVertical = 0; // Velocidade vertical do player
     private double gravidade = 0.5; // Força da gravidade
-    private double salto = -10; // Força do salto
+    private double salto = -15; // Força do salto
     private boolean noAr = true; // Indica se o player está no ar
     private boolean saltando = false; // Verifica se o salto está ativo
 
