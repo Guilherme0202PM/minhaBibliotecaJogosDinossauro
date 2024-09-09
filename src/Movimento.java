@@ -49,59 +49,6 @@ public class Movimento {
         objeto.y = yAleatorio;
     }
 
-    public void iniciar() {
-        if (!running) {
-            running = true;
-            new Thread(this::processarMovimentos).start();
-        }
-    }
-
-    private void processarMovimentos() {
-        while (running) {
-            try {
-                Runnable tarefa = queue.take();
-                new Thread(tarefa).start();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-    }
-
-    public void parar() {
-        running = false;
-    }
-
-    public void goDeslizarPosicao(CriaObjeto objeto, int newX, int newY, double tempoSegundos) {
-        queue.offer(() -> deslizar(objeto, newX, newY, tempoSegundos));
-    }
-
-    private void deslizar(CriaObjeto objeto, int newX, int newY, double tempoSegundos) {
-        int startX = objeto.getX();
-        int startY = objeto.getY();
-        long startTime = System.currentTimeMillis();
-        long duration = (long) (tempoSegundos * 1000);
-
-        while (System.currentTimeMillis() - startTime < duration) {
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            double progress = Math.min(1.0, (double) elapsedTime / duration);
-            int x = (int) (startX + (newX - startX) * progress);
-            int y = (int) (startY + (newY - startY) * progress);
-            objeto.setX(x);
-            objeto.setY(y);
-
-            try {
-                Thread.sleep(16);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-
-        objeto.setX(newX);
-        objeto.setY(newY);
-    }
-
     // Metodo para atualizar a posição do player com base na gravidade
     public void aplicarGravidade(CriaObjeto player, Plataforma chao) {
         // Se o player estiver no ar, aplica a gravidade
