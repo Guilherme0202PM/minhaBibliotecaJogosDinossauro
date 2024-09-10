@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.util.Random;
 
-
 public class Main {
     public static void main(String[] args) {
         GameWindow janela = new GameWindow();
@@ -19,20 +18,17 @@ public class Main {
         // Configura o listener para o Player
         player.adicionarListener();
 
-        // Cria um vetor que contenha objetos do tipo Inimigo e InimigoVoador
-        Inimigo[] inimigos = new Inimigo[10]; // 10 inimigos no total
-
+        // Define o tamanho máximo do vetor
+        int maxInimigos = 10;
+        Inimigo[] inimigos = new Inimigo[maxInimigos];
         Random random = new Random();
-
-        for (int i = 0; i < 10; i++) {
-            int tipoInimigo = random.nextInt(2); // 0 para Inimigo, 1 para InimigoVoador
-
+        for (int i = 0; i < maxInimigos; i++) {
+            int tipoInimigo = random.nextInt(2); // 0 ou 1
             if (tipoInimigo == 0) {
-                inimigos[i] = new Inimigo(1000 + (i * 50), 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new Inimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
             } else {
-                inimigos[i] = new InimigoVoador(1000 + (i * 50), 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+                inimigos[i] = new InimigoVoador(1000, 300, 20, 20, "teste2.png", -5, 0, movimento, sensores, janela);
             }
-
             janela.adicionarObjeto(inimigos[i]);
         }
 
@@ -42,20 +38,20 @@ public class Main {
         // Adiciona o chão à janela
         janela.adicionarObjeto(chao);
 
+        long startTime = System.currentTimeMillis();
+
         // Loop infinito para manter a janela aberta
         while (true) {
-            // Atualiza todos os inimigos
-            for (Inimigo inimigo : inimigos) {
+            // Atualiza todos os inimigos com intervalo
+            for (int i = 0; i < maxInimigos; i++) {
+                Inimigo inimigo = inimigos[i];
                 if (inimigo != null) {
-                    inimigo.atualizar();
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - startTime >= i * 2000) { // 3000 ms = 3 segundos por inimigo
+                        inimigo.atualizar();
+                    }
                 }
             }
-            /*
-            for (InimigoVoador inimigoVoador : inimigosVoador) {
-                if (inimigoVoador != null) {
-                    inimigoVoador.atualizar();
-                }
-            }*/
 
             // Atualiza a posição do player e aplica gravidade
             movimento.aplicarGravidade(player, chao);
