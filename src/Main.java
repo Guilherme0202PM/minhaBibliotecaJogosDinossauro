@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.util.Random;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -17,23 +19,21 @@ public class Main {
         // Configura o listener para o Player
         player.adicionarListener();
 
-        // Cria inimigos e os adiciona à janela
-        Inimigo inimigo1 = new Inimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
-        InimigoVoador inimigoVoador1 = new InimigoVoador(1000, 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+        // Cria um vetor que contenha objetos do tipo Inimigo e InimigoVoador
+        Inimigo[] inimigos = new Inimigo[10]; // 10 inimigos no total
 
-        janela.adicionarObjeto(inimigo1);
-        janela.adicionarObjeto(inimigoVoador1);
+        Random random = new Random();
 
-        // Cria 5 clones de cada tipo de inimigo e adiciona à janela
-        Inimigo[] inimigos = new Inimigo[5];
-        InimigoVoador[] inimigosVoador = new InimigoVoador[5];
+        for (int i = 0; i < 10; i++) {
+            int tipoInimigo = random.nextInt(2); // 0 para Inimigo, 1 para InimigoVoador
 
-        for (int i = 0; i < 5; i++) {
-            inimigos[i] = new Inimigo(1000 + (i * 50), 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
-            inimigosVoador[i] = new InimigoVoador(1000 + (i * 50), 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+            if (tipoInimigo == 0) {
+                inimigos[i] = new Inimigo(1000 + (i * 50), 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
+            } else {
+                inimigos[i] = new InimigoVoador(1000 + (i * 50), 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+            }
 
             janela.adicionarObjeto(inimigos[i]);
-            janela.adicionarObjeto(inimigosVoador[i]);
         }
 
         // Cria um chão (Plataforma do tipo Chao)
@@ -50,12 +50,12 @@ public class Main {
                     inimigo.atualizar();
                 }
             }
-
+            /*
             for (InimigoVoador inimigoVoador : inimigosVoador) {
                 if (inimigoVoador != null) {
                     inimigoVoador.atualizar();
                 }
-            }
+            }*/
 
             // Atualiza a posição do player e aplica gravidade
             movimento.aplicarGravidade(player, chao);
