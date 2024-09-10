@@ -16,6 +16,11 @@ public class GamePanel extends JPanel {
         repaint();
     }
 
+    public void removeObjeto(CriaObjeto objeto) {
+        objetos.remove(objeto);
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

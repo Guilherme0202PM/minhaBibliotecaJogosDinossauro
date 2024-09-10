@@ -24,6 +24,10 @@ public class GameWindow extends JFrame{
         gamePanel.adicionarObjeto(objeto);
     }
 
+    public void removeObjeto(CriaObjeto objeto) {
+        gamePanel.removeObjeto(objeto);
+    }
+
     public int getLarguraTela() {
         return getWidth();
     }

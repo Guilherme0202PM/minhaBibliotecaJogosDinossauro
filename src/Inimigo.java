@@ -1,13 +1,13 @@
 import java.awt.*;
 
 public class Inimigo extends CriaObjeto {
-    private int velocidadeX;
-    private int velocidadeY;
+    protected int velocidadeX;
+    protected int velocidadeY;
 
-    private Movimento movimento;
+    protected Movimento movimento;
 
-    private Sensores sensores;
-    private GameWindow janela;
+    protected Sensores sensores;
+    protected GameWindow janela;
 
     public Inimigo(int x, int y, int largura, int altura, String nomeImagem, int velocidadeX, int velocidadeY, Movimento movimento, Sensores sensores, GameWindow janela) {
         super(x, y, largura, altura, nomeImagem);
@@ -17,6 +17,8 @@ public class Inimigo extends CriaObjeto {
         this.sensores = sensores;
         this.janela = janela;
     }
+
+
 
     public void atualizar() {
         // Move o inimigo na direção atual
