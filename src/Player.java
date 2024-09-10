@@ -49,7 +49,7 @@ public class Player extends CriaObjeto {
 
                 // Adiciona salto com a tecla de espaço
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    movimento.iniciarSalto(Player.this);
+                    movimento.iniciarSalto(Player.this); // Especificamente para o Player
                 }
 
                 // Verifica se o Player está tocando na borda

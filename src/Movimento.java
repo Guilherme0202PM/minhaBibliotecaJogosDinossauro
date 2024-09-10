@@ -68,11 +68,14 @@ public class Movimento {
     }
 
     // Metodo para iniciar o salto
-    public void iniciarSalto(Player player) {
-        if (!noAr) { // Só permite saltar se estiver no chão
-            velocidadeVertical = salto; // Aplica a força do salto
-            noAr = true;
-            saltando = true; // Indica que o salto começou
+    public void iniciarSalto(CriaObjeto objeto) {
+        if (objeto instanceof Player) {
+            Player player = (Player) objeto;
+            if (!noAr) { // Só permite saltar se estiver no chão
+                velocidadeVertical = salto; // Aplica a força do salto
+                noAr = true;
+                saltando = true; // Indica que o salto começou
+            }
         }
     }
 

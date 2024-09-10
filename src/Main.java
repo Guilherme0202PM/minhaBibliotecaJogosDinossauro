@@ -19,7 +19,7 @@ public class Main {
 
         // Cria alguns inimigos e os adiciona à janela
         Inimigo inimigo1 = new Inimigo(500, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
-        InimigoTerrestre inimigo2 = new InimigoTerrestre(500, 100, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+        InimigoVoador inimigo2 = new InimigoVoador(500, 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
         //Inimigo inimigo4 = new Inimigo(50, 50, 20, "teste2.png", 5, 0, movimento, sensores);
         // Inimigo inimigo5 = new Inimigo(200, 200, 20, "teste2.png", -4, 4, movimento, sensores);
         // Inimigo inimigo6 = new Inimigo(200, 50, 20, "teste2.png", -2, 2, movimento, sensores);
@@ -47,11 +47,11 @@ public class Main {
             Inimigo[] inimigos = new Inimigo[] {inimigo1, inimigo2};
 
             // Aplica gravidade apenas em inimigos terrestres
-            for (Inimigo inimigo : inimigos) {
+            /*for (Inimigo inimigo : inimigos) {
                 if (inimigo instanceof InimigoTerrestre) {
                     movimento.aplicarGravidade(inimigo, chao);
                 }
-            }
+            }*/
 
             movimento.aplicarGravidade(player, chao); // Aplica gravidade no player
             movimento.controlarSalto(player); // Permite o controle da altura do salto
