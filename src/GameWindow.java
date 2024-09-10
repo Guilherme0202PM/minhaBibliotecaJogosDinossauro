@@ -24,7 +24,7 @@ public class GameWindow extends JFrame{
         gamePanel.adicionarObjeto(objeto);
     }
 
-    public void removeObjeto(CriaObjeto objeto) {
+    public void removerObjeto(CriaObjeto objeto) {
         gamePanel.removeObjeto(objeto);
     }
 

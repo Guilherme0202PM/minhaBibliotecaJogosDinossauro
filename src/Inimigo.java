@@ -5,7 +5,6 @@ public class Inimigo extends CriaObjeto {
     protected int velocidadeY;
 
     protected Movimento movimento;
-
     protected Sensores sensores;
     protected GameWindow janela;
 
@@ -19,16 +18,14 @@ public class Inimigo extends CriaObjeto {
     }
 
 
-
     public void atualizar() {
         // Move o inimigo na direção atual
         movimento.movimentoX(this, velocidadeX);
         movimento.movimentoY(this, velocidadeY);
 
-        // Verifica se o inimigo está tocando as bordas e ajusta a direção se necessário
-        if (sensores.tocandoBorda(this)) {
-            velocidadeX = -velocidadeX;
-            velocidadeY = -velocidadeY;
+        // Verifica se o inimigo está fora da tela e remove se necessário
+        if (getRect().x < -1000) {
+            janela.removerObjeto(this); // Supondo que você tenha um método para remover objetos
         }
     }
 }

@@ -9,7 +9,7 @@ public class Main {
         Sensores sensores = new Sensores(janela);
 
         // Cria uma instância de Player
-        Player player = new Player(50, 50, 50,50, "Personagem1.png", movimento, sensores, som, janela);
+        Player player = new Player(50, 50, 50, 50, "Personagem1.png", movimento, sensores, som, janela);
 
         // Adiciona o Player à janela
         janela.adicionarObjeto(player);
@@ -17,25 +17,24 @@ public class Main {
         // Configura o listener para o Player
         player.adicionarListener();
 
-        // Cria alguns inimigos e os adiciona à janela
-        //Inimigo inimigo1 = new Inimigo(500, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
-        //InimigoVoador inimigo2 = new InimigoVoador(500, 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
-        //Inimigo inimigo4 = new Inimigo(50, 50, 20, "teste2.png", 5, 0, movimento, sensores);
-        // Inimigo inimigo5 = new Inimigo(200, 200, 20, "teste2.png", -4, 4, movimento, sensores);
-        // Inimigo inimigo6 = new Inimigo(200, 50, 20, "teste2.png", -2, 2, movimento, sensores);
+        // Cria inimigos e os adiciona à janela
+        Inimigo inimigo1 = new Inimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
+        InimigoVoador inimigoVoador1 = new InimigoVoador(1000, 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
 
-        //janela.adicionarObjeto(inimigo1);
-        //janela.adicionarObjeto(inimigo2);
-        //janela.adicionarObjeto(inimigo3);
-        //janela.adicionarObjeto(inimigo4);
-        // janela.adicionarObjeto(inimigo5);
-        //  janela.adicionarObjeto(inimigo6);
+        janela.adicionarObjeto(inimigo1);
+        janela.adicionarObjeto(inimigoVoador1);
 
-        CloneInimigo cloneInimigo1 = new CloneInimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
-        CloneInimigo cloneInimigo2 = new CloneInimigo(1000, 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+        // Cria 5 clones de cada tipo de inimigo e adiciona à janela
+        Inimigo[] inimigos = new Inimigo[5];
+        InimigoVoador[] inimigosVoador = new InimigoVoador[5];
 
-        janela.adicionarObjeto(cloneInimigo1);
-        janela.adicionarObjeto(cloneInimigo2);
+        for (int i = 0; i < 5; i++) {
+            inimigos[i] = new Inimigo(1000 + (i * 50), 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
+            inimigosVoador[i] = new InimigoVoador(1000 + (i * 50), 300, 20, 20, "teste2.png", -2, 0, movimento, sensores, janela);
+
+            janela.adicionarObjeto(inimigos[i]);
+            janela.adicionarObjeto(inimigosVoador[i]);
+        }
 
         // Cria um chão (Plataforma do tipo Chao)
         Chao chao = new Chao(0, 400, 600, 50); // Chão que cobre a largura da janela
@@ -43,34 +42,24 @@ public class Main {
         // Adiciona o chão à janela
         janela.adicionarObjeto(chao);
 
-        // Exemplo de movimentação do jogador
-        //movimento.goDeslizarPosicao(player, 300, 300, 2);
-        //movimento.goDeslizarPosicao(inimigo2, 700, 50, 3);
-
-        // loop infinito para manter a janela aberta
+        // Loop infinito para manter a janela aberta
         while (true) {
-
-            CloneInimigo[] inimigos = new CloneInimigo[] {cloneInimigo1, cloneInimigo2};
-
-            for (CloneInimigo inimigo : inimigos) {
-                inimigo.atualizar();
-            }
-            // Atualiza a posição dos inimigos
-            //Inimigo[] inimigos = new Inimigo[] {inimigo1, inimigo2};
-
-            // Aplica gravidade apenas em inimigos terrestres
-            /*for (Inimigo inimigo : inimigos) {
-                if (inimigo instanceof InimigoTerrestre) {
-                    movimento.aplicarGravidade(inimigo, chao);
+            // Atualiza todos os inimigos
+            for (Inimigo inimigo : inimigos) {
+                if (inimigo != null) {
+                    inimigo.atualizar();
                 }
-            }*/
+            }
 
-            movimento.aplicarGravidade(player, chao); // Aplica gravidade no player
-            movimento.controlarSalto(player); // Permite o controle da altura do salto
+            for (InimigoVoador inimigoVoador : inimigosVoador) {
+                if (inimigoVoador != null) {
+                    inimigoVoador.atualizar();
+                }
+            }
 
-            /*for (Inimigo inimigo : inimigos) {
-                inimigo.atualizar();
-            }*/
+            // Atualiza a posição do player e aplica gravidade
+            movimento.aplicarGravidade(player, chao);
+            movimento.controlarSalto(player);
 
             janela.repaint();
             try {
@@ -79,6 +68,5 @@ public class Main {
                 Thread.currentThread().interrupt();
             }
         }
-
     }
 }
