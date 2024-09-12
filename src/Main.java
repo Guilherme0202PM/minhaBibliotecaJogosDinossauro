@@ -13,7 +13,7 @@ public class Main {
         Sensores sensores = new Sensores(janela);
 
         // Define o tamanho máximo do vetor e pontuação alvo
-        int pontuacaoAlvo = 10;
+        int pontuacaoAlvo = 100; //gera varias linhas vermelhas quando o valor é alto mas não prejudica o codigo a principio
         int pontuacao = 0; // Inicializa a pontuação
 
         // Cria uma instância de Player
