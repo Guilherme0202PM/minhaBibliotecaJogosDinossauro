@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.util.Random;
 
 public class Main {
@@ -8,6 +9,10 @@ public class Main {
 
         Movimento movimento = new Movimento();
         Sensores sensores = new Sensores(janela);
+
+        // Define o tamanho máximo do vetor e pontuação alvo
+        int pontuacaoAlvo = 10;
+        int pontuacao = 0; // Inicializa a pontuação
 
         // Cria uma instância de Player
         Player player = new Player(50, 50, 50, 50, "Personagem1.png", movimento, sensores, som, janela);
@@ -19,7 +24,7 @@ public class Main {
         player.adicionarListener();
 
         // Define o tamanho máximo do vetor
-        int maxInimigos = 10;
+        int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = new Inimigo[maxInimigos];
         Random random = new Random();
         for (int i = 0; i < maxInimigos; i++) {
@@ -38,6 +43,13 @@ public class Main {
         // Adiciona o chão à janela
         janela.adicionarObjeto(chao);
 
+        // Cria um JLabel para exibir a pontuação
+        JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
+        pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        pontuacaoLabel.setForeground(Color.BLACK);
+        pontuacaoLabel.setBounds(30, 30, 200, 30);
+        janela.addComponentToGamePanel(pontuacaoLabel);
+
         long startTime = System.currentTimeMillis();
 
         // Loop infinito para manter a janela aberta
@@ -47,7 +59,7 @@ public class Main {
                 Inimigo inimigo = inimigos[i];
                 if (inimigo != null) {
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime - startTime >= i * 2000) { // 3000 ms = 3 segundos por inimigo
+                    if (currentTime - startTime >= i * 2000) { // 2000 ms = 2 segundos por inimigo
                         inimigo.atualizar();
                     }
                 }
@@ -56,6 +68,9 @@ public class Main {
             // Atualiza a posição do player e aplica gravidade
             movimento.aplicarGravidade(player, chao);
             movimento.controlarSalto(player);
+
+            // Atualiza a pontuação
+            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
 
             janela.repaint();
             try {

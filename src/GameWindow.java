@@ -1,4 +1,4 @@
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 
@@ -26,6 +26,10 @@ public class GameWindow extends JFrame{
 
     public void removerObjeto(CriaObjeto objeto) {
         gamePanel.removeObjeto(objeto);
+    }
+
+    public void addComponentToGamePanel(JComponent component) {
+        gamePanel.add(component);
     }
 
     public int getLarguraTela() {
