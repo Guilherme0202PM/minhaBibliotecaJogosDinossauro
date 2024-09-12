@@ -26,7 +26,7 @@ public class Inimigo extends CriaObjeto {
 
         // Verifica se o inimigo está fora da tela e remove se necessário
         if (getRect().x < -1000) {
-            janela.removerObjeto(this); // Supondo que você tenha um método para remover objetos
+            janela.removerObjeto(this);
         }
     }
 }

@@ -65,8 +65,13 @@ public class Main {
                         inimigo.atualizar();
                     }
 
-                    // Verifica se o inimigo passou o player e se não houve colisão
-                    if (inimigo.getRect().x < player.getRect().x && !sensores.verificarColisao(player, inimigo)) {
+                    // Verifica se houve colisão entre o player e o inimigo
+                    if (sensores.verificarColisao(player, inimigo)) {
+                        // Remove o inimigo e não contabiliza pontos
+                        janela.removerObjeto(inimigo);
+                        inimigos[i] = null; // Marca o inimigo como nulo para não ser mais processado
+                        System.out.println("Colisão detectada! Inimigo removido.");
+                    } else if (inimigo.getRect().x < player.getRect().x) {
                         // Inimigo ultrapassou o player sem colisão, adiciona ponto
                         pontuacao++;
                         System.out.println("Pontuação: " + pontuacao);
