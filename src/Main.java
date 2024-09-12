@@ -5,6 +5,8 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) {
         GameWindow janela = new GameWindow();
+        //Pontuacao pontuacao = new Pontuacao();
+
         Som som = new Som("Meow.wav");
 
         Movimento movimento = new Movimento();
@@ -62,6 +64,20 @@ public class Main {
                     if (currentTime - startTime >= i * 2000) { // 2000 ms = 2 segundos por inimigo
                         inimigo.atualizar();
                     }
+
+                    // Verifica se o inimigo passou o player e se não houve colisão
+                    if (inimigo.getRect().x < player.getRect().x && !sensores.verificarColisao(player, inimigo)) {
+                        // Inimigo ultrapassou o player sem colisão, adiciona ponto
+                        pontuacao++;
+                        System.out.println("Pontuação: " + pontuacao);
+                        pontuacaoLabel.setText("Pontuacao: " + pontuacao);
+
+                        // Remove o inimigo da tela se ele já passou completamente
+                        if (inimigo.getRect().x < -inimigo.getRect().width) {
+                            janela.removerObjeto(inimigo);
+                            inimigos[i] = null; // Marca o inimigo como nulo para não ser mais processado
+                        }
+                    }
                 }
             }
 
@@ -69,7 +85,7 @@ public class Main {
             movimento.aplicarGravidade(player, chao);
             movimento.controlarSalto(player);
 
-            // Atualiza a pontuação
+            // Atualiza a pontuação no JLabel
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
 
             janela.repaint();
