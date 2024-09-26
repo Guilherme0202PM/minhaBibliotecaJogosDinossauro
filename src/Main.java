@@ -5,35 +5,26 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) {
         GameWindow janela = new GameWindow();
-        //Pontuacao pontuacao = new Pontuacao();
-
         Som som = new Som("Meow.wav");
 
         Movimento movimento = new Movimento();
         Sensores sensores = new Sensores(janela);
 
-        Fundo fundo = new Fundo(600, 600, "fundo3.png");
-        janela.setFundo(fundo); // Define o fundo no GamePanel
+        Fundo fundo = new Fundo(600, 600, "fundoArvore.gif");
+        janela.setFundo(fundo);
 
-        // Define o tamanho máximo do vetor e pontuação alvo
-        int pontuacaoAlvo = 100; //gera varias linhas vermelhas quando o valor é alto mas não prejudica o codigo a principio
-        int pontuacao = 0; // Inicializa a pontuação
+        int pontuacaoAlvo = 100;
+        int pontuacao = 0;
 
-        // Cria uma instância de Player
         Player player = new Player(50, 50, 50, 50, "Personagem1.png", movimento, sensores, som, janela);
-
-        // Adiciona o Player à janela
         janela.adicionarObjeto(player);
-
-        // Configura o listener para o Player
         player.adicionarListener();
 
-        // Define o tamanho máximo do vetor
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = new Inimigo[maxInimigos];
         Random random = new Random();
         for (int i = 0; i < maxInimigos; i++) {
-            int tipoInimigo = random.nextInt(2); // 0 ou 1
+            int tipoInimigo = random.nextInt(2);
             if (tipoInimigo == 0) {
                 inimigos[i] = new Inimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
             } else {
@@ -42,13 +33,17 @@ public class Main {
             janela.adicionarObjeto(inimigos[i]);
         }
 
-        // Cria um chão (Plataforma do tipo Chao)
-        Chao chao = new Chao(0, 400, 600, 5); // Chão que cobre a largura da janela
+        // Geração de múltiplos blocos de chão
+        int larguraChao = 500; // Largura do chão
+        int alturaChao = 50;   // Altura do chão
+        int numeroDeChao = 3;  // Número de blocos de chão
+        Chao[] chaoBlocos = new Chao[numeroDeChao];
 
-        // Adiciona o chão à janela
-        janela.adicionarObjeto(chao);
+        for (int i = 0; i < numeroDeChao; i++) {
+            chaoBlocos[i] = new Chao(i * larguraChao, 400, larguraChao, alturaChao); // Posição inicial dos blocos
+            janela.adicionarObjeto(chaoBlocos[i]);
+        }
 
-        // Cria um JLabel para exibir a pontuação
         JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
         pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
         pontuacaoLabel.setForeground(Color.BLACK);
@@ -57,48 +52,48 @@ public class Main {
 
         long startTime = System.currentTimeMillis();
 
-        // Loop infinito para manter a janela aberta
         while (true) {
-            // Atualiza todos os inimigos com intervalo
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
                 if (inimigo != null) {
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime - startTime >= i * 2000) { // 2000 ms = 2 segundos por inimigo
+                    if (currentTime - startTime >= i * 2000) {
                         inimigo.atualizar();
                     }
 
-                    // Verifica se houve colisão entre o player e o inimigo
                     if (sensores.verificarColisao(player, inimigo)) {
-                        // Remove o inimigo e não contabiliza pontos
                         janela.removerObjeto(inimigo);
-                        inimigos[i] = null; // Marca o inimigo como nulo para não ser mais processado
+                        inimigos[i] = null;
                         System.out.println("Colisão detectada! Inimigo removido.");
                     } else if (inimigo.getRect().x < player.getRect().x) {
-                        // Inimigo ultrapassou o player sem colisão, adiciona ponto
                         pontuacao++;
                         System.out.println("Pontuação: " + pontuacao);
                         pontuacaoLabel.setText("Pontuacao: " + pontuacao);
 
-                        // Remove o inimigo da tela se ele já passou completamente
                         if (inimigo.getRect().x < -inimigo.getRect().width) {
                             janela.removerObjeto(inimigo);
-                            inimigos[i] = null; // Marca o inimigo como nulo para não ser mais processado
+                            inimigos[i] = null;
                         }
                     }
                 }
             }
 
+            // Atualiza a posição do chão
+            for (Chao chao : chaoBlocos) {
+                chao.setX(chao.getX() - 5); // Move o chão para a esquerda
+                if (chao.getX() < -larguraChao) {
+                    chao.setX(larguraChao * (numeroDeChao - 1)); // Reposiciona à direita
+                }
+            }
+
             // Atualiza a posição do player e aplica gravidade
-            movimento.aplicarGravidade(player, chao);
+            movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
             movimento.controlarSalto(player);
 
-            // Atualiza a pontuação no JLabel
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
-
             janela.repaint();
             try {
-                Thread.sleep(16); // 60 FPS
+                Thread.sleep(16);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

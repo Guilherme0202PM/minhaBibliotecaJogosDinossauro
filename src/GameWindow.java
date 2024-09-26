@@ -1,7 +1,4 @@
 import javax.swing.*;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
-
 
 //public class GameWindow extends JFrame implements MouseMotionListener {
 public class GameWindow extends JFrame{
@@ -43,8 +40,4 @@ public class GameWindow extends JFrame{
     public int getAlturaTela() {
         return getHeight();
     }
-
-
-
-
 }
