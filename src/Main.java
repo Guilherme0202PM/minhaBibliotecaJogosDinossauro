@@ -12,6 +12,9 @@ public class Main {
         Movimento movimento = new Movimento();
         Sensores sensores = new Sensores(janela);
 
+        Fundo fundo = new Fundo(600, 600, "fundo3.png");
+        janela.setFundo(fundo); // Define o fundo no GamePanel
+
         // Define o tamanho máximo do vetor e pontuação alvo
         int pontuacaoAlvo = 100; //gera varias linhas vermelhas quando o valor é alto mas não prejudica o codigo a principio
         int pontuacao = 0; // Inicializa a pontuação
@@ -40,7 +43,7 @@ public class Main {
         }
 
         // Cria um chão (Plataforma do tipo Chao)
-        Chao chao = new Chao(0, 400, 600, 50); // Chão que cobre a largura da janela
+        Chao chao = new Chao(0, 400, 600, 5); // Chão que cobre a largura da janela
 
         // Adiciona o chão à janela
         janela.adicionarObjeto(chao);

@@ -28,6 +28,10 @@ public class GameWindow extends JFrame{
         gamePanel.removeObjeto(objeto);
     }
 
+    public void setFundo(Fundo fundo) {
+        gamePanel.setFundo(fundo);
+    }
+
     public void addComponentToGamePanel(JComponent component) {
         gamePanel.add(component);
     }
