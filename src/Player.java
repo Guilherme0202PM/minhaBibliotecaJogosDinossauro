@@ -9,6 +9,7 @@ public class Player extends CriaObjeto {
     private GameWindow janela;
     private Sprite sprite; // Instância da classe Sprite
     private int metadealtura = altura/2;
+    private int ajuste = y-metadealtura;
 
 
     public Player(int x, int y, int largura, int altura, String nomeImagem, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
@@ -46,6 +47,7 @@ public class Player extends CriaObjeto {
                     movimento.movimentoY(Player.this, velocidade);
                     sprite.mudaSprite("Personagem1Abaixar.png"); // Muda para a imagem abaixada
                     altura = metadealtura; // Reduz a altura pela metade
+                    movimento.movimentoY(Player.this, ajuste);
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_Z) { // Quando clica em Z, vai para posição aleatória
@@ -105,7 +107,7 @@ public class Player extends CriaObjeto {
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    sprite.resetSprite(); // Retorna à imagem original ao soltar a tecla S
+                    sprite.resetSprite(); // Retorna à imagem original
                 }
             }
         });

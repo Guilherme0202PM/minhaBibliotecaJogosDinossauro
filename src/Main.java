@@ -28,7 +28,7 @@ public class Main {
             if (tipoInimigo == 0) {
                 inimigos[i] = new Inimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
             } else {
-                inimigos[i] = new InimigoVoador(1000, 300, 20, 20, "teste2.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new InimigoVoador(1000, 340, 20, 20, "teste2.png", -5, 0, movimento, sensores, janela);
             }
             janela.adicionarObjeto(inimigos[i]);
         }
