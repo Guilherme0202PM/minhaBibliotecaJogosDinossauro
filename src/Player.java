@@ -8,6 +8,8 @@ public class Player extends CriaObjeto {
     private Som som;
     private GameWindow janela;
     private Sprite sprite; // Instância da classe Sprite
+    private int metadealtura = altura/2;
+
 
     public Player(int x, int y, int largura, int altura, String nomeImagem, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
         super(x, y, largura, altura, nomeImagem);
@@ -43,6 +45,7 @@ public class Player extends CriaObjeto {
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
                     movimento.movimentoY(Player.this, velocidade);
                     sprite.mudaSprite("Personagem1Abaixar.png"); // Muda para a imagem abaixada
+                    altura = metadealtura; // Reduz a altura pela metade
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_Z) { // Quando clica em Z, vai para posição aleatória
@@ -61,7 +64,7 @@ public class Player extends CriaObjeto {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     movimento.iniciarSalto(Player.this); // Especificamente para o Player
                     // Exemplo de animação de salto
-                    sprite.mudaSprite("Personagem1Abaixar.png"); // Muda para a imagem abaixada
+                    sprite.mudaSprite("PersonagemVoa.png"); // Muda para a imagem abaixada
                 }
 
                 // Verifica se o Player está tocando na borda
@@ -97,6 +100,11 @@ public class Player extends CriaObjeto {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_S) {
+                    sprite.resetSprite(); // Retorna à imagem original ao soltar a tecla S
+                    altura *= 2;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     sprite.resetSprite(); // Retorna à imagem original ao soltar a tecla S
                 }
             }
