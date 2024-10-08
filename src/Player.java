@@ -7,6 +7,7 @@ public class Player extends CriaObjeto {
     private Sensores sensores;
     private Som som;
     private GameWindow janela;
+    private Sprite sprite; // Instância da classe Sprite
 
     public Player(int x, int y, int largura, int altura, String nomeImagem, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
         super(x, y, largura, altura, nomeImagem);
@@ -14,6 +15,14 @@ public class Player extends CriaObjeto {
         this.sensores = sensores;
         this.som = som;
         this.janela = janela;
+        this.sprite = new Sprite(nomeImagem); // Inicializa o Sprite com a imagem original
+    }
+
+    @Override
+    public void desenhar(Graphics g) {
+        // Atualiza a imagem do CriaObjeto com a imagem atual do Sprite
+        this.setImagem(sprite.getImagemAtual());
+        super.desenhar(g);
     }
 
     public void adicionarListener() {
@@ -23,7 +32,7 @@ public class Player extends CriaObjeto {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                int velocidade = 5; // velocidade do movimento
+                int velocidade = 5; // Velocidade do movimento
 
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     movimento.movimentoX(Player.this, -velocidade);
@@ -33,14 +42,15 @@ public class Player extends CriaObjeto {
                     movimento.movimentoY(Player.this, -velocidade);
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
                     movimento.movimentoY(Player.this, velocidade);
+                    sprite.mudaSprite("Personagem1Abaixar.png"); // Muda para a imagem abaixada
                 }
 
-                if (e.getKeyCode() == KeyEvent.VK_Z) { // quando clico em Z vou para posição aleatória
+                if (e.getKeyCode() == KeyEvent.VK_Z) { // Quando clica em Z, vai para posição aleatória
                     movimento.goPosicaoAleatoria(Player.this, janela);
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_J) {
-                    som.tocarSom(); // reutiliza a instância existente
+                    som.tocarSom(); // Reutiliza a instância existente
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_X) {
@@ -50,6 +60,8 @@ public class Player extends CriaObjeto {
                 // Adiciona salto com a tecla de espaço
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     movimento.iniciarSalto(Player.this); // Especificamente para o Player
+                    // Exemplo de animação de salto
+                    sprite.mudaSprite("Personagem1Abaixar.png"); // Muda para a imagem abaixada
                 }
 
                 // Verifica se o Player está tocando na borda
@@ -83,7 +95,19 @@ public class Player extends CriaObjeto {
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {}
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_S) {
+                    sprite.resetSprite(); // Retorna à imagem original ao soltar a tecla S
+                }
+            }
         });
+    }
+
+    // Método para atualizar a animação do Sprite
+    public void atualizarAnimacao(Graphics g) {
+        // Verifica se uma animação está em andamento
+        if (sprite != null) {
+            sprite.animacaoSprite(g, x, y, largura, altura);
+        }
     }
 }

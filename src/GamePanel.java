@@ -38,6 +38,10 @@ public class GamePanel extends JPanel {
         // Desenha os objetos depois
         for (CriaObjeto objeto : objetos) {
             objeto.desenhar(g);
+            // Se o objeto for uma instância de Player, atualiza a animação
+            if (objeto instanceof Player) {
+                ((Player) objeto).atualizarAnimacao(g);
+            }
         }
     }
 }

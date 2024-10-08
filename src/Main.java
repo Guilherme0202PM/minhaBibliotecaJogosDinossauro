@@ -11,7 +11,7 @@ public class Main {
         Sensores sensores = new Sensores(janela);
 
         Fundo fundo = new Fundo(600, 600, "fundoArvore.gif");
-        janela.setFundo(fundo);
+        janela.setFundo(fundo); // Define o fundo no GamePanel
 
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
@@ -93,7 +93,7 @@ public class Main {
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
             janela.repaint();
             try {
-                Thread.sleep(16);
+                Thread.sleep(16); // Aproximadamente 60 FPS
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

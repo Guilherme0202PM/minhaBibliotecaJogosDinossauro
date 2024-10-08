@@ -27,12 +27,18 @@ public abstract class CriaObjeto {
             if (arquivoImagem.exists()) {
                 imagem = ImageIO.read(arquivoImagem);
             } else {
-                throw new IOException("Arquivo não encontrado");
+                throw new IOException("Arquivo não encontrado: " + nomeImagem);
             }
         } catch (IOException e) {
             // Em caso de erro, define a imagem como null
             imagem = null;
+            System.err.println("Erro ao carregar imagem: " + e.getMessage());
         }
+    }
+
+    // Método para atualizar a imagem do objeto
+    public void setImagem(Image novaImagem) {
+        this.imagem = novaImagem;
     }
 
     public void desenhar(Graphics g) {
@@ -51,8 +57,8 @@ public abstract class CriaObjeto {
 
             g2d.drawImage(imagem, x, y, largura, altura, null);
         } else {
+            g2d.setColor(Color.BLUE); // Cor padrão caso não tenha imagem
             g2d.fillOval(x, y, largura, altura); // Desenha um círculo azul com largura e altura
-
         }
 
         g2d.setTransform(originalTransform); // Restaura a transformação original
@@ -103,7 +109,6 @@ public abstract class CriaObjeto {
             g.fillOval(eixo.x - 1, eixo.y - 1, 20, 20); // Desenha o círculo vermelho
         }
     }
-
 
     public int getX() {
         return x;
