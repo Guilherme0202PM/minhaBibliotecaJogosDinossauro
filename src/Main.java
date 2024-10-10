@@ -26,9 +26,9 @@ public class Main {
         for (int i = 0; i < maxInimigos; i++) {
             int tipoInimigo = random.nextInt(2);
             if (tipoInimigo == 0) {
-                inimigos[i] = new Inimigo(1000, 380, 20, 20, "Monstro.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new Inimigo(1000, 370, 30, 30, "Monstro.png", -5, 0, movimento, sensores, janela);
             } else {
-                inimigos[i] = new InimigoVoador(1000, 340, 20, 20, "teste2.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new InimigoVoador(1000, 320, 40, 40, "teste2.png", -5, 0, movimento, sensores, janela);
             }
             janela.adicionarObjeto(inimigos[i]);
         }
