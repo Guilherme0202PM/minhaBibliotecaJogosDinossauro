@@ -45,7 +45,7 @@ public class Player extends CriaObjeto {
                     movimento.movimentoY(Player.this, -velocidade);
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
                     movimento.movimentoY(Player.this, velocidade);
-                    sprite.mudaSprite("Personagem1Abaixar.png"); // Muda para a imagem abaixada
+                    sprite.mudaSprite("dino rebaixadoo_rebaixado_0.png"); // Muda para a imagem abaixada
                     altura = metadealtura; // Reduz a altura pela metade
                     movimento.movimentoY(Player.this, ajuste);
                 }
@@ -66,7 +66,7 @@ public class Player extends CriaObjeto {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     movimento.iniciarSalto(Player.this); // Especificamente para o Player
                     // Exemplo de animação de salto
-                    sprite.mudaSprite("PersonagemVoa.png"); // Muda para a imagem abaixada
+                    sprite.mudaSprite("dino pulandoo_pulando_3.png"); // Muda para a imagem abaixada
                 }
 
                 // Verifica se o Player está tocando na borda
@@ -113,7 +113,7 @@ public class Player extends CriaObjeto {
         });
     }
 
-    // Método para atualizar a animação do Sprite
+    // Metodo para atualizar a animação do Sprite
     public void atualizarAnimacao(Graphics g) {
         // Verifica se uma animação está em andamento
         if (sprite != null) {

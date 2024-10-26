@@ -16,7 +16,7 @@ public class Main {
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
 
-        Player player = new Player(50, 50, 50, 50, "Personagem1.png", movimento, sensores, som, janela);
+        Player player = new Player(50, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
         janela.adicionarObjeto(player);
         player.adicionarListener();
 
