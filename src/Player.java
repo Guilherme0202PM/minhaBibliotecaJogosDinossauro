@@ -21,11 +21,10 @@ public class Player extends CriaObjeto {
         this.sprite = new Sprite(nomeImagem); // Inicializa o Sprite com a imagem original
     }
 
+
     @Override
     public void desenhar(Graphics g) {
-        // Atualiza a imagem do CriaObjeto com a imagem atual do Sprite
-        this.setImagem(sprite.getImagemAtual());
-        super.desenhar(g);
+        sprite.animacaoSprite(g, x, y, largura, altura); // Exibe a animação
     }
 
     public void adicionarListener() {
@@ -39,13 +38,17 @@ public class Player extends CriaObjeto {
 
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     movimento.movimentoX(Player.this, -velocidade);
+                    sprite.iniciarAnimacao("dino andandoo_andando_", 3, 100);
                 } else if (e.getKeyCode() == KeyEvent.VK_D) {
                     movimento.movimentoX(Player.this, velocidade);
+                    sprite.iniciarAnimacao("dino andandoo_andando_", 3, 100);
                 } else if (e.getKeyCode() == KeyEvent.VK_W) {
                     movimento.movimentoY(Player.this, -velocidade);
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
                     movimento.movimentoY(Player.this, velocidade);
-                    sprite.mudaSprite("dino rebaixadoo_rebaixado_0.png"); // Muda para a imagem abaixada
+                    //sprite.iniciarAnimacao("dino rebaixadoo_rebaixado_", 2, 100);
+                    //sprite.mudaSprite("dino rebaixadoo_rebaixado_0.png"); // Muda para a imagem abaixada
+
                     altura = metadealtura; // Reduz a altura pela metade
                     movimento.movimentoY(Player.this, ajuste);
                 }
@@ -66,7 +69,8 @@ public class Player extends CriaObjeto {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     movimento.iniciarSalto(Player.this); // Especificamente para o Player
                     // Exemplo de animação de salto
-                    sprite.mudaSprite("dino pulandoo_pulando_3.png"); // Muda para a imagem abaixada
+                    sprite.iniciarAnimacao("dino pulandoo_pulando_", 5, 100);
+                    //sprite.mudaSprite("dino pulandoo_pulando_3.png"); // Muda para a imagem abaixada
                 }
 
                 // Verifica se o Player está tocando na borda
@@ -101,17 +105,23 @@ public class Player extends CriaObjeto {
 
             @Override
             public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D) {
+                    //sprite.resetSprite(); // Retorna ao sprite original ao soltar a tecla de movimento
+                }
                 if (e.getKeyCode() == KeyEvent.VK_S) {
                     sprite.resetSprite(); // Retorna à imagem original ao soltar a tecla S
                     altura *= 2;
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    sprite.resetSprite(); // Retorna à imagem original
+                    //sprite.resetSprite(); // Retorna ao sprite original ao soltar a tecla de movimento
+                    sprite.iniciarAnimacao("dino andandoo_andando_", 3, 100);
                 }
             }
         });
     }
+
+
 
     // Metodo para atualizar a animação do Sprite
     public void atualizarAnimacao(Graphics g) {
@@ -121,3 +131,4 @@ public class Player extends CriaObjeto {
         }
     }
 }
+
