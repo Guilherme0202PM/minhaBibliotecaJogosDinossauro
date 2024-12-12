@@ -70,6 +70,14 @@ public class Player extends CriaObjeto {
                     movimento.goPosicao(Player.this, 50, 50);
                 }
 
+                if (e.getKeyCode() == KeyEvent.VK_F) {
+                    sprite.aplicarFiltroPretoBranco();
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_R) {
+                    sprite.removerFiltro();
+                }
+
                 // Adiciona salto com a tecla de espaço
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     movimento.iniciarSalto(Player.this); // Especificamente para o Player
