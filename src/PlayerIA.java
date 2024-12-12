@@ -10,6 +10,9 @@ public class PlayerIA extends CriaObjeto {
     private Sprite sprite; // Instância da classe Sprite
     private int metadealtura = altura/2;
     private int ajuste = y-metadealtura;
+    private double velocidadeVertical = 0;
+    private boolean noAr = true;
+    private boolean saltando = false;
 
 
     public PlayerIA(int x, int y, int largura, int altura, String nomeImagem, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
@@ -119,6 +122,31 @@ public class PlayerIA extends CriaObjeto {
                 }
             }
         });
+    }
+
+    // Getters e setters
+    public double getVelocidadeVertical() {
+        return velocidadeVertical;
+    }
+
+    public void setVelocidadeVertical(double velocidadeVertical) {
+        this.velocidadeVertical = velocidadeVertical;
+    }
+
+    public boolean isNoAr() {
+        return noAr;
+    }
+
+    public void setNoAr(boolean noAr) {
+        this.noAr = noAr;
+    }
+
+    public boolean isSaltando() {
+        return saltando;
+    }
+
+    public void setSaltando(boolean saltando) {
+        this.saltando = saltando;
     }
 
     // Metodo para atualizar a animação do Sprite

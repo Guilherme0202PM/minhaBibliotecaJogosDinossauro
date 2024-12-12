@@ -14,8 +14,8 @@ public class Movimento {
     private boolean noAr = true; // Indica se o player está no ar
     private boolean saltando = false; // Verifica se o salto está ativo
 
-    private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
-    private volatile boolean running = false;
+    //private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
+    //private volatile boolean running = false;
 
     public void movimentoX(CriaObjeto objeto, int velocidade) {
         objeto.x += velocidade;
@@ -49,44 +49,41 @@ public class Movimento {
         objeto.y = yAleatorio;
     }
 
-    // Metodo para atualizar a posição do player com base na gravidade
-    public void aplicarGravidade(CriaObjeto player, Plataforma chao) {
+    // Metodo para atualizar a posição do jogador com base na gravidade
+    public void aplicarGravidade(Player player, Plataforma chao) {
         // Se o player estiver no ar, aplica a gravidade
-        if (noAr) {
-            velocidadeVertical += gravidade;
-            player.setY(player.getY() + (int)velocidadeVertical);
+        if (player.isNoAr()) {
+            player.setVelocidadeVertical(player.getVelocidadeVertical() + gravidade);
+            player.setY(player.getY() + (int) player.getVelocidadeVertical());
         }
 
         // Verifica se o player colidiu com a plataforma (chão)
         if (verificarColisao(player, chao)) {
             player.setY(chao.getY() - player.getAltura()); // Coloca o player no topo da plataforma
-            noAr = false;
-            velocidadeVertical = 0; // Para a queda
+            player.setNoAr(false);
+            player.setVelocidadeVertical(0); // Para a queda
         } else {
-            noAr = true;
+            player.setNoAr(true);
         }
     }
 
     // Metodo para iniciar o salto
-    public void iniciarSalto(CriaObjeto objeto) {
-        if (objeto instanceof Player) {
-            Player player = (Player) objeto;
-            if (!noAr) { // Só permite saltar se estiver no chão
-                velocidadeVertical = salto; // Aplica a força do salto
-                noAr = true;
-                saltando = true; // Indica que o salto começou
-            }
+    public void iniciarSalto(Player player) {
+        if (!player.isNoAr()) { // Só permite saltar se estiver no chão
+            player.setVelocidadeVertical(salto); // Aplica a força do salto
+            player.setNoAr(true);
+            player.setSaltando(true); // Indica que o salto começou
         }
     }
 
     // Metodo para controlar a força do salto (salto controlado)
-    public void controlarSalto(CriaObjeto player) {
-        if (saltando) {
+    public void controlarSalto(Player player) {
+        if (player.isSaltando()) {
             // Se a tecla de salto ainda estiver pressionada, diminui a velocidade da queda
-            if (velocidadeVertical < 0) {
-                velocidadeVertical += 0.5; // Ajuste para controlar a altura do salto
+            if (player.getVelocidadeVertical() < 0) {
+                player.setVelocidadeVertical(player.getVelocidadeVertical() + 0.5); // Ajuste para controlar a altura do salto
             } else {
-                saltando = false; // Termina o controle do salto quando a velocidade começar a aumentar
+                player.setSaltando(false); // Termina o controle do salto quando a velocidade começar a aumentar
             }
         }
     }
@@ -106,5 +103,44 @@ public class Movimento {
 
     public void apontarDirecao(CriaObjeto objeto, double angulo) {
         objeto.apontarDirecao(angulo);
+    }
+
+    // Metodo para atualizar a posição do jogador com base na gravidade
+    public void aplicarGravidade(PlayerIA player, Plataforma chao) {
+        // Se o player estiver no ar, aplica a gravidade
+        if (player.isNoAr()) {
+            player.setVelocidadeVertical(player.getVelocidadeVertical() + gravidade);
+            player.setY(player.getY() + (int) player.getVelocidadeVertical());
+        }
+
+        // Verifica se o player colidiu com a plataforma (chão)
+        if (verificarColisao(player, chao)) {
+            player.setY(chao.getY() - player.getAltura()); // Coloca o player no topo da plataforma
+            player.setNoAr(false);
+            player.setVelocidadeVertical(0); // Para a queda
+        } else {
+            player.setNoAr(true);
+        }
+    }
+
+    // Metodo para iniciar o salto
+    public void iniciarSalto(PlayerIA player) {
+        if (!player.isNoAr()) { // Só permite saltar se estiver no chão
+            player.setVelocidadeVertical(salto); // Aplica a força do salto
+            player.setNoAr(true);
+            player.setSaltando(true); // Indica que o salto começou
+        }
+    }
+
+    // Metodo para controlar a força do salto (salto controlado)
+    public void controlarSalto(PlayerIA player) {
+        if (player.isSaltando()) {
+            // Se a tecla de salto ainda estiver pressionada, diminui a velocidade da queda
+            if (player.getVelocidadeVertical() < 0) {
+                player.setVelocidadeVertical(player.getVelocidadeVertical() + 0.5); // Ajuste para controlar a altura do salto
+            } else {
+                player.setSaltando(false); // Termina o controle do salto quando a velocidade começar a aumentar
+            }
+        }
     }
 }
