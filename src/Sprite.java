@@ -6,6 +6,8 @@ import javax.swing.ImageIcon;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.util.Random;
 
 public class Sprite {
     private Image imagemObjeto; // Imagem original
@@ -116,6 +118,41 @@ public class Sprite {
         imagemAtual = imagemObjeto;
         filtroAtivo = false;
     }
+
+    public void aplicarFiltroColorido() {
+        if (imagemObjeto instanceof BufferedImage) {
+            BufferedImage original = (BufferedImage) imagemObjeto;
+            int largura = original.getWidth();
+            int altura = original.getHeight();
+            imagemFiltrada = new BufferedImage(largura, altura, BufferedImage.TYPE_INT_ARGB);
+
+            // Gera valores aleatórios para os componentes RGB
+            Random random = new Random();
+            int redFilter = random.nextInt(256);
+            int greenFilter = random.nextInt(256);
+            int blueFilter = random.nextInt(256);
+
+            for (int x = 0; x < largura; x++) {
+                for (int y = 0; y < altura; y++) {
+                    int corOriginal = original.getRGB(x, y);
+                    Color cor = new Color(corOriginal, true);
+
+                    // Aplica os valores de filtro de cor
+                    int novoRed = Math.min(255, (cor.getRed() + redFilter) / 2);
+                    int novoGreen = Math.min(255, (cor.getGreen() + greenFilter) / 2);
+                    int novoBlue = Math.min(255, (cor.getBlue() + blueFilter) / 2);
+
+                    // Mantém a transparência original
+                    Color novaCor = new Color(novoRed, novoGreen, novoBlue, cor.getAlpha());
+
+                    imagemFiltrada.setRGB(x, y, novaCor.getRGB());
+                }
+            }
+            imagemAtual = imagemFiltrada;
+            filtroAtivo = true;
+        }
+    }
+
 
     // Metodo para desenhar a imagem atual
     public void desenhar(Graphics g, int x, int y, int largura, int altura) {

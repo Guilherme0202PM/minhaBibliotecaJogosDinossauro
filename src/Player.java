@@ -72,6 +72,7 @@ public class Player extends CriaObjeto {
 
                 if (e.getKeyCode() == KeyEvent.VK_F) {
                     sprite.aplicarFiltroPretoBranco();
+                    //sprite.aplicarFiltroColorido();
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_R) {
