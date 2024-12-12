@@ -20,6 +20,10 @@ public class Main {
         janela.adicionarObjeto(player);
         player.adicionarListener();
 
+        //PlayerIA player2 = new PlayerIA(200, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+        //janela.adicionarObjeto(player2);
+        //player.adicionarListener();
+
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = new Inimigo[maxInimigos];
         Random random = new Random();
@@ -87,8 +91,12 @@ public class Main {
             }
 
             // Atualiza a posição do player e aplica gravidade
+
             movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
             movimento.controlarSalto(player);
+
+            //movimento.aplicarGravidade(player2, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
+            //movimento.controlarSalto(player2);
 
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
             janela.repaint();

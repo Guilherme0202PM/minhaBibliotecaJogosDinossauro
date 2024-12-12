@@ -20,12 +20,17 @@ public class Sensores {
         return !tela.contains(objetoRect);
     }
 
+    /*
     public boolean verificarColisao(CriaObjeto obj1, CriaObjeto obj2) {
         return obj1.getRect().intersects(obj2.getRect());
-    }
+    }*/
 
-
-    // Novo metodo para verificar se dois objetos estão colidindo
-    public boolean tocandoObjeto(CriaObjeto obj1, CriaObjeto obj2) {
+    public boolean verificarColisao(CriaObjeto obj1, CriaObjeto obj2) {
+        // Ignorar colisão entre player e player2
+        if ((obj1 instanceof Player && obj2 instanceof PlayerIA) ||
+                (obj1 instanceof PlayerIA && obj2 instanceof Player)) {
+            return false;
+        }
         return obj1.getRect().intersects(obj2.getRect());
-    }}
+    }
+}

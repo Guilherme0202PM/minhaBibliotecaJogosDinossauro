@@ -80,7 +80,7 @@ public class Movimento {
     }
 
     // Metodo para controlar a força do salto (salto controlado)
-    public void controlarSalto(Player player) {
+    public void controlarSalto(CriaObjeto player) {
         if (saltando) {
             // Se a tecla de salto ainda estiver pressionada, diminui a velocidade da queda
             if (velocidadeVertical < 0) {
