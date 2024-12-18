@@ -20,9 +20,23 @@ public class Main {
         janela.adicionarObjeto(player);
         player.adicionarListener();
 
+        /*
         PlayerIA player2 = new PlayerIA(200, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
         janela.adicionarObjeto(player2);
         player2.adicionarListener();
+
+         */
+
+        // Criação de um vetor para armazenar múltiplos player2
+        int numPlayers = 5; // Número de PlayerIA
+        PlayerIA[] player2Array = new PlayerIA[numPlayers];
+
+        for (int i = 0; i < numPlayers; i++) {
+            int posX = 200 + i * 60; // Posicione-os com um espaçamento entre si
+            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
+            player2Array[i].adicionarListener();
+        }
 
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = new Inimigo[maxInimigos];
@@ -79,6 +93,14 @@ public class Main {
                             inimigos[i] = null;
                         }
                     }
+                    /*
+                    if (sensores.verificarColisao(player2, inimigo)) {
+                        janela.removerObjeto(player2);
+                        System.out.println("Colisão detectada! Inimigo removido.");
+                    }
+
+                     */
+
                 }
             }
 
@@ -95,8 +117,8 @@ public class Main {
             movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
             movimento.controlarSalto(player);
 
-            movimento.aplicarGravidade(player2, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
-            movimento.controlarSalto(player2);
+            //movimento.aplicarGravidade(player2, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
+            //movimento.controlarSalto(player2);
 
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
             janela.repaint();

@@ -37,7 +37,7 @@ public class PlayerIA extends CriaObjeto {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                int velocidade = 5; // Velocidade do movimento
+                int velocidade = 20; // Velocidade do movimento
 
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     movimento.movimentoX(PlayerIA.this, -velocidade);
@@ -74,6 +74,11 @@ public class PlayerIA extends CriaObjeto {
                     // Exemplo de animação de salto
                     sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100);
                     //sprite.mudaSprite("dino pulandoo_pulando_3.png"); // Muda para a imagem abaixada
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_F) {
+                    sprite.aplicarFiltroPretoBranco();
+                    //sprite.aplicarFiltroColorido();
                 }
 
                 // Verifica se o PlayerIA está tocando na borda
