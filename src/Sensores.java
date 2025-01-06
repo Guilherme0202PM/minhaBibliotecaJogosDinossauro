@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class Sensores {
     private GameWindow janela;
@@ -27,8 +28,27 @@ public class Sensores {
         return obj1.getRect().intersects(obj2.getRect());
     }
 
+    public boolean verificarColisao2(CriaObjeto obj1, CriaObjeto obj2) {
+        // Ignorar colisão entre player e player2
+        if ((obj1 instanceof Player && obj2 instanceof PlayerIA) ||
+                (obj1 instanceof PlayerIA && obj2 instanceof Player)) {
+            return false;
+        }
+
+        if ((obj1 instanceof Chao && obj2 instanceof PlayerIA) ||
+                (obj1 instanceof PlayerIA && obj2 instanceof Chao)) {
+            return false;
+        }
+
+        if (obj1 instanceof PlayerIA && obj2 instanceof PlayerIA) {
+            return false;
+        }
+
+        return obj1.getRect().intersects(obj2.getRect());
+    }
+
     // Metodo que desenha a area de identificação (contorno)
-    public void AreaIdentificacao(Graphics g, CriaObjeto objeto) {
+    public void CriaAreaIdentificacao(Graphics g, CriaObjeto objeto) {
         Rectangle areaIdentificacao = objeto.getRect();
 
         //Variavel para dobrar ou triplicar o tamanho
@@ -42,6 +62,7 @@ public class Sensores {
         int ajusteCentralizacao = 25 * (ajuste-1);
 
         // Desenhando o retângulo com a área de identificação centralizada
-        g.setColor(Color.RED); // Cor do contorno
-        g.drawRect(areaIdentificacao.x-ajusteCentralizacao, areaIdentificacao.y-ajusteCentralizacao, novaLargura, novaAltura);    }
+        g.setColor(Color.GREEN); // Cor do contorno
+        g.drawRect(areaIdentificacao.x-ajusteCentralizacao, areaIdentificacao.y-ajusteCentralizacao, novaLargura, novaAltura);
+    }
 }

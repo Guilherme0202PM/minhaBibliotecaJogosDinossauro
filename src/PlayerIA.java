@@ -30,7 +30,7 @@ public class PlayerIA extends CriaObjeto {
         sprite.animacaoSprite(g, x, y, largura, altura); // Exibe a animaçao
 
         // Chama o metodo de area de identificacao para desenhar o contorno
-        sensores.AreaIdentificacao(g, PlayerIA.this);
+        sensores.CriaAreaIdentificacao(g, PlayerIA.this);
     }
 
     public void adicionarListener() {
