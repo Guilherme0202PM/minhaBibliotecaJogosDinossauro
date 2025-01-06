@@ -89,7 +89,7 @@ public class Player extends CriaObjeto {
 
                 // Verifica se o Player está tocando na borda
                 if (sensores.tocandoBorda(Player.this)) {
-                    System.out.println("O Player está tocando na borda da tela!");
+                    System.out.println("O Player esta tocando na borda da tela!");
                     som.tocarSom();
 
                     // Ajusta a posição do Player para manter dentro dos limites da tela

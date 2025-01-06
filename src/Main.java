@@ -26,7 +26,7 @@ public class Main {
         player2.adicionarListener();
 
         /*
-        // Criação de um vetor para armazenar múltiplos player2
+        // Criação de um vetor para armazenar multiplos player2
         int numPlayers = 5; // Número de PlayerIA
         PlayerIA[] player2Array = new PlayerIA[numPlayers];
 

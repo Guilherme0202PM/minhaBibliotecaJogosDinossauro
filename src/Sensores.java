@@ -27,7 +27,7 @@ public class Sensores {
         return obj1.getRect().intersects(obj2.getRect());
     }
 
-    // Metodo que desenha a área de identificação (contorno)
+    // Metodo que desenha a area de identificação (contorno)
     public void AreaIdentificacao(Graphics g, CriaObjeto objeto) {
         Rectangle areaIdentificacao = objeto.getRect();
         g.setColor(Color.RED); // Cor do contorno
