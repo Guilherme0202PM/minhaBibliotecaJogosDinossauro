@@ -30,7 +30,18 @@ public class Sensores {
     // Metodo que desenha a area de identificação (contorno)
     public void AreaIdentificacao(Graphics g, CriaObjeto objeto) {
         Rectangle areaIdentificacao = objeto.getRect();
+
+        //Variavel para dobrar ou triplicar o tamanho
+        int ajuste = 3;
+
+        // Aumentando o tamanho da área de identificação
+        int novaLargura = areaIdentificacao.width * ajuste;
+        int novaAltura = areaIdentificacao.height * ajuste;
+
+        //Variavel que centraliza o retangulo com base na area do dinossauro
+        int ajusteCentralizacao = 25 * (ajuste-1);
+
+        // Desenhando o retângulo com a área de identificação centralizada
         g.setColor(Color.RED); // Cor do contorno
-        g.drawRect(areaIdentificacao.x, areaIdentificacao.y, areaIdentificacao.width, areaIdentificacao.height);
-    }
+        g.drawRect(areaIdentificacao.x-ajusteCentralizacao, areaIdentificacao.y-ajusteCentralizacao, novaLargura, novaAltura);    }
 }
