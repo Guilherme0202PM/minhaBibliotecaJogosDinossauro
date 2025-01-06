@@ -1,6 +1,4 @@
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class Sensores {
     private GameWindow janela;
@@ -20,11 +18,6 @@ public class Sensores {
         return !tela.contains(objetoRect);
     }
 
-    /*
-    public boolean verificarColisao(CriaObjeto obj1, CriaObjeto obj2) {
-        return obj1.getRect().intersects(obj2.getRect());
-    }*/
-
     public boolean verificarColisao(CriaObjeto obj1, CriaObjeto obj2) {
         // Ignorar colisão entre player e player2
         if ((obj1 instanceof Player && obj2 instanceof PlayerIA) ||
@@ -32,5 +25,12 @@ public class Sensores {
             return false;
         }
         return obj1.getRect().intersects(obj2.getRect());
+    }
+
+    // Metodo que desenha a área de identificação (contorno)
+    public void AreaIdentificacao(Graphics g, CriaObjeto objeto) {
+        Rectangle areaIdentificacao = objeto.getRect();
+        g.setColor(Color.RED); // Cor do contorno
+        g.drawRect(areaIdentificacao.x, areaIdentificacao.y, areaIdentificacao.width, areaIdentificacao.height);
     }
 }

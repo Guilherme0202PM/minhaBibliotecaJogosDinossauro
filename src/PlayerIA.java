@@ -28,6 +28,9 @@ public class PlayerIA extends CriaObjeto {
     @Override
     public void desenhar(Graphics g) {
         sprite.animacaoSprite(g, x, y, largura, altura); // Exibe a animação
+
+        // Chama o metodo de area de identificacao para desenhar o contorno
+        sensores.AreaIdentificacao(g, PlayerIA.this);
     }
 
     public void adicionarListener() {
@@ -102,12 +105,6 @@ public class PlayerIA extends CriaObjeto {
                     } else if (PlayerIARect.getMaxY() > tela.getMaxY()) {
                         PlayerIA.this.setY((int) (tela.getMaxY() - PlayerIARect.getHeight()));
                     }
-                }
-
-                // Verifica se o PlayerIA está tocando no ponteiro do mouse
-                if (sensores.tocandoPonteiroMouse(PlayerIA.this.getRect())) {
-                    System.out.println("O PlayerIA está tocando no ponteiro do mouse!");
-                    som.tocarSom();
                 }
             }
 

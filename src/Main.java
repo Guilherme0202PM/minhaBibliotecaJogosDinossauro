@@ -100,7 +100,7 @@ public class Main {
                         System.out.println("Colisão detectada! Inimigo removido.");
                     }
 
-                     
+
 
                 }
             }
