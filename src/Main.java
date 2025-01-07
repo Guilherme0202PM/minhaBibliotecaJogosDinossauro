@@ -95,13 +95,10 @@ public class Main {
                         }
                     }
 
-                    if (sensores.verificarColisao(player2, inimigo)) {
+                    if (sensores.verificarColisaoAumentada(player2, inimigo)) {
                         janela.removerObjeto(player2);
                         System.out.println("Colisão detectada! Inimigo removido.");
                     }
-
-
-
                 }
             }
 

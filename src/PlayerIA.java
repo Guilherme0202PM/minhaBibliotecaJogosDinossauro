@@ -30,7 +30,25 @@ public class PlayerIA extends CriaObjeto {
         sprite.animacaoSprite(g, x, y, largura, altura); // Exibe a animaçao
 
         // Chama o metodo de area de identificacao para desenhar o contorno
-        sensores.CriaAreaIdentificacao(g, PlayerIA.this);
+        //sensores.CriaAreaIdentificacao(g, PlayerIA.this);
+
+        Rectangle areaIdentificacao = getRect(); // Obter o retângulo do objeto
+
+        int ajuste = 4; // Variável para ajustar o tamanho do retângulo
+        int novaLargura = areaIdentificacao.width * ajuste;
+        int novaAltura = areaIdentificacao.height * ajuste;
+        int ajusteCentralizacao = 25 * (ajuste - 1);
+
+        Rectangle areaExpandida = new Rectangle(
+                areaIdentificacao.x - ajusteCentralizacao,
+                areaIdentificacao.y - ajusteCentralizacao,
+                novaLargura,
+                novaAltura
+        );
+
+        g.setColor(Color.BLUE); // Define a cor do contorno
+        g.drawRect(areaExpandida.x, areaExpandida.y, areaExpandida.width, areaExpandida.height);
+
     }
 
     public void adicionarListener() {

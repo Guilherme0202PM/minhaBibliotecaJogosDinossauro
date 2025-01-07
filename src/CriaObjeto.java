@@ -134,4 +134,5 @@ public abstract class CriaObjeto {
     public Image getImagem() {
         return imagem;
     }
+
 }
