@@ -169,6 +169,19 @@ public class PlayerIA extends CriaObjeto {
         this.saltando = saltando;
     }
 
+    // Metodo para simular o pressionamento da tecla "Espaço" (pulo)
+    public void apertarEspaco() {
+        movimento.iniciarSalto(PlayerIA.this); // Inicia o salto do PlayerIA
+        sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
+    }
+
+    // Metodo para simular o pressionamento da tecla "S" (agachar)
+    public void apertarS() {
+        movimento.movimentoY(PlayerIA.this, 20); // Ajuste de movimento para abaixar
+        altura = metadealtura; // Reduz a altura pela metade (agachado)
+        // sprite.iniciarAnimacao("dino rebaixadoo_rebaixado_", 2, 100); // (Caso tenha animação de agachar)
+    }
+
     // Metodo para atualizar a animação do Sprite
     public void atualizarAnimacao(Graphics g) {
         // Verifica se uma animação está em andamento
