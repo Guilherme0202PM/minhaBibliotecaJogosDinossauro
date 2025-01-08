@@ -34,7 +34,7 @@ public class PlayerIA extends CriaObjeto {
 
         Rectangle areaIdentificacao = getRect(); // Obter o retângulo do objeto
 
-        int ajuste = 4; // Variável para ajustar o tamanho do retângulo
+        int ajuste = 3; // Variável para ajustar o tamanho do retângulo
         int novaLargura = areaIdentificacao.width * ajuste;
         int novaAltura = areaIdentificacao.height * ajuste;
         int ajusteCentralizacao = 25 * (ajuste - 1);
@@ -58,7 +58,7 @@ public class PlayerIA extends CriaObjeto {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                int velocidade = 20; // Velocidade do movimento
+                int velocidade = 10; // Velocidade do movimento
 
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     movimento.movimentoX(PlayerIA.this, -velocidade);

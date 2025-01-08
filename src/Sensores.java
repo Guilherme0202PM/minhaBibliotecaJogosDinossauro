@@ -86,7 +86,7 @@ public class Sensores {
         Rectangle areaIdentificacao = obj1.getRect();
 
         // Variável para ajustar o tamanho do retângulo
-        int ajuste = 4;
+        int ajuste = 3;
 
         // Aumentando o tamanho da área de identificação
         int novaLargura = areaIdentificacao.width * ajuste;
