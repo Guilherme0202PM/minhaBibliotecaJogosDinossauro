@@ -100,7 +100,6 @@ public class Main {
                         // Verifica se a altura/pontoY do inimigo é igual a 350
                         if (inimigo.getY() == 350) {
                             // Simula o "apertar" da tecla espaço para o player pular
-                            player2.adicionarListener();
                             player2.apertarEspaco();
                             // Se houver colisão direta entre o player2 e o inimigo
                             if (sensores.verificarColisao(player2, inimigo)) {
@@ -109,7 +108,6 @@ public class Main {
                             }
                         } else if (inimigo.getY() < 350) {
                             // Simula o "apertar" da tecla S para o player abaixar
-                            player2.adicionarListener();
                             player2.apertarS();
                             // Se houver colisão direta entre o player2 e o inimigo
                             if (sensores.verificarColisao(player2, inimigo)) {
