@@ -46,7 +46,7 @@ public class Main {
         for (int i = 0; i < maxInimigos; i++) {
             int tipoInimigo = random.nextInt(2);
             if (tipoInimigo == 0) {
-                inimigos[i] = new Inimigo(1000, 350, 50, 50, "dinoInimigo.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new Inimigo(1000, 350, 70, 50, "dinoInimigo.png", -5, 0, movimento, sensores, janela);
             } else {
                 inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pitero.png", -5, 0, movimento, sensores, janela);
             }
@@ -55,7 +55,7 @@ public class Main {
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
-        int alturaChao = 50;   // Altura do chão
+        int alturaChao = 200;   // Altura do chão
         int numeroDeChao = 3;  // Número de blocos de chão
         Chao[] chaoBlocos = new Chao[numeroDeChao];
 
@@ -72,7 +72,7 @@ public class Main {
 
         long startTime = System.currentTimeMillis();
 
-        int limiteProximidade = 100; // Defina um limite adequado para a proximidade
+        int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
         while (true) {
             for (int i = 0; i < maxInimigos; i++) {

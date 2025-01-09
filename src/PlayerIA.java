@@ -24,7 +24,6 @@ public class PlayerIA extends CriaObjeto {
         this.sprite = new Sprite(nomeImagem); // Inicializa o Sprite com a imagem original
     }
 
-
     @Override
     public void desenhar(Graphics g) {
         sprite.animacaoSprite(g, x, y, largura, altura); // Exibe a animaçao

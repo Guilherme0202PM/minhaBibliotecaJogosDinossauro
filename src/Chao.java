@@ -3,7 +3,7 @@ import java.awt.Graphics;
 public class Chao extends Plataforma {
 
     public Chao(int x, int y, int largura, int altura) {
-        super(x, y, largura, altura, "Chao1.jpg"); // Usa a imagem Chao1.jpg
+        super(x, y, largura, altura, "Chao3.jpg"); // Usa a imagem Chao1.jpg
     }
 
 
