@@ -34,7 +34,7 @@ public class PlayerIA extends CriaObjeto {
 
         Rectangle areaIdentificacao = getRect(); // Obter o retângulo do objeto
 
-        int ajuste = 3; // Variável para ajustar o tamanho do retângulo
+        int ajuste = 6; // Variável para ajustar o tamanho do retângulo
         int novaLargura = areaIdentificacao.width * ajuste;
         int novaAltura = areaIdentificacao.height * ajuste;
         int ajusteCentralizacao = 25 * (ajuste - 1);

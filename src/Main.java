@@ -72,6 +72,8 @@ public class Main {
 
         long startTime = System.currentTimeMillis();
 
+        int limiteProximidade = 100; // Defina um limite adequado para a proximidade
+
         while (true) {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
@@ -97,25 +99,26 @@ public class Main {
                     }
 
                     if (sensores.verificarColisaoAumentada(player2, inimigo)) {
-                        // Verifica se a altura/pontoY do inimigo é igual a 350
-                        if (inimigo.getY() == 350) {
-                            // Simula o "apertar" da tecla espaço para o player pular
-                            player2.apertarEspaco();
-                            // Se houver colisão direta entre o player2 e o inimigo
-                            if (sensores.verificarColisao(player2, inimigo)) {
-                                janela.removerObjeto(player2);
-                                System.out.println("Colisão detectada! Inimigo removido.");
-                            }
-                        } else if (inimigo.getY() < 350) {
-                            // Simula o "apertar" da tecla S para o player abaixar
-                            player2.apertarS();
-                            // Se houver colisão direta entre o player2 e o inimigo
-                            if (sensores.verificarColisao(player2, inimigo)) {
-                                janela.removerObjeto(player2);
-                                System.out.println("Colisão detectada! Inimigo removido.");
+                        if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
+                            // Verifica se a altura/pontoY do inimigo é igual a 350
+                            if (inimigo.getY() == 350) {
+                                // Simula o "apertar" da tecla espaço para o player pular
+                                player2.apertarEspaco();
+                                // Se houver colisão direta entre o player2 e o inimigo
+                                if (sensores.verificarColisao(player2, inimigo)) {
+                                    janela.removerObjeto(player2);
+                                    System.out.println("Colisão detectada! Inimigo removido.");
+                                }
+                            } else if (inimigo.getY() < 350) {
+                                // Simula o "apertar" da tecla S para o player abaixar
+                                player2.apertarS();
+                                // Se houver colisão direta entre o player2 e o inimigo
+                                if (sensores.verificarColisao(player2, inimigo)) {
+                                    janela.removerObjeto(player2);
+                                    System.out.println("Colisão detectada! Inimigo removido.");
+                                }
                             }
                         }
-
                         // Se houver colisão direta entre o player2 e o inimigo
                         if (sensores.verificarColisao(player2, inimigo)) {
                             janela.removerObjeto(player2);

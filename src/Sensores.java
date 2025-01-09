@@ -27,7 +27,7 @@ public class Sensores {
         }
         return obj1.getRect().intersects(obj2.getRect());
     }
-
+    /*
     public boolean verificarColisao2(CriaObjeto obj1, CriaObjeto obj2) {
         // Ignorar colisão entre player e player2
         if ((obj1 instanceof Player && obj2 instanceof PlayerIA) ||
@@ -46,7 +46,7 @@ public class Sensores {
 
         return obj1.getRect().intersects(obj2.getRect());
     }
-    /*
+
     // Metodo que desenha a area de identificação (contorno)
     public void CriaAreaIdentificacao(Graphics g, CriaObjeto objeto) {
         Rectangle areaIdentificacao = objeto.getRect();
@@ -72,7 +72,7 @@ public class Sensores {
             return false;
         }
 
-        // Ignorar colisão entre outros tipos de objetos, como no método verificarColisao2
+        // Ignorar colisão entre outros tipos de objetos, como no metodo verificarColisao2
         if ((obj1 instanceof Chao && obj2 instanceof PlayerIA) ||
                 (obj1 instanceof PlayerIA && obj2 instanceof Chao)) {
             return false;
@@ -86,7 +86,7 @@ public class Sensores {
         Rectangle areaIdentificacao = obj1.getRect();
 
         // Variável para ajustar o tamanho do retângulo
-        int ajuste = 3;
+        int ajuste = 6;
 
         // Aumentando o tamanho da área de identificação
         int novaLargura = areaIdentificacao.width * ajuste;
@@ -106,6 +106,16 @@ public class Sensores {
         // Verificar se há interseção com o retângulo do segundo objeto
         return areaExpandida.intersects(obj2.getRect());
     }
+
+    public boolean analisarProximidade(CriaObjeto player, CriaObjeto inimigo, int limiteProximidade) {
+        // Calcula a distância em X e Y entre o player e o inimigo
+        int distanciaX = Math.abs(player.getX() - inimigo.getX());
+        int distanciaY = Math.abs(player.getY() - inimigo.getY());
+
+        // Verifica se o inimigo está dentro do limite de proximidade em X e Y
+        return distanciaX <= limiteProximidade && distanciaY <= limiteProximidade;
+    }
+
 
 
 }
