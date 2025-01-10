@@ -46,7 +46,7 @@ public class Main {
         for (int i = 0; i < maxInimigos; i++) {
             int tipoInimigo = random.nextInt(2);
             if (tipoInimigo == 0) {
-                inimigos[i] = new Inimigo(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
             } else {
                 inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
             }
@@ -73,6 +73,7 @@ public class Main {
         long startTime = System.currentTimeMillis();
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
+
         RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2);
 
 
@@ -100,19 +101,29 @@ public class Main {
                         }
                     }
 
-                    if (sensores.verificarColisaoAumentada(player2, inimigo)) {
-                        if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
-                            double[] entradas = {player2.getX(), player2.getY(), inimigo.getX(), inimigo.getY()};
-                            System.out.println("Entradas: " + java.util.Arrays.toString(entradas));
-                            double[] saidas = redeNeural.calcularSaida(entradas);
-                            System.out.println("Saídas: " + java.util.Arrays.toString(saidas));
-                            if (saidas[0] > saidas[1]) {
-                                player2.apertarEspaco(); // Pular
-                            } else {
-                                player2.apertarS(); // Abaixar
-                            }
+                    if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
+                        double[] entradas = {player2.getX(), player2.getY(), inimigo.getX(), inimigo.getY()};
+                        System.out.println("Entradas: " + java.util.Arrays.toString(entradas));
+
+                        // Ajusta os pesos da rede neural dependendo da condição do inimigo
+                        if (inimigo.getY() == 350) {
+                            redeNeural.ajustarPesosPorCondicao(entradas, 1); // Multiplica por 1
+                        } else if (inimigo.getY() < 350) {
+                            redeNeural.ajustarPesosPorCondicao(entradas, -1); // Multiplica por -1
+                        }
+
+                        // Calcula a saída da rede neural
+                        double[] saidas = redeNeural.calcularSaida(entradas);
+                        System.out.println("Saídas: " + java.util.Arrays.toString(saidas));
+
+                        // Verifica se o jogador deve pular ou abaixar
+                        if (saidas[0] > 0) {
+                            player2.apertarEspaco(); // Pular
+                        } else {
+                            player2.apertarS(); // Abaixar
                         }
                     }
+
 
 
                     /*

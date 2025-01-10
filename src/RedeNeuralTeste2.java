@@ -26,7 +26,9 @@ public class RedeNeuralTeste2 {
 
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos; j++) {
-                pesosEntradaOculta[i][j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
+                //pesosEntradaOculta[i][j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
+                pesosEntradaOculta[i][j] = arredondar(random.nextDouble() * 0.2 - 0.1); // [-0.1, 0.1]
+
             }
         }
 
@@ -88,4 +90,78 @@ public class RedeNeuralTeste2 {
 
         return saida;
     }
+//double[] saidas = redeNeural.calcularSaida(entradas);
+//System.out.println("Saídas recalculadas: " + java.util.Arrays.toString(saidas));
+
+
+
+    public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
+        // Forward pass
+        double[] camadaOculta = new double[numOcultos];
+        for (int j = 0; j < numOcultos; j++) {
+            camadaOculta[j] = biasOculta[j];
+            for (int i = 0; i < numEntradas; i++) {
+                camadaOculta[j] += entradas[i] * pesosEntradaOculta[i][j];
+            }
+            camadaOculta[j] = relu(camadaOculta[j]);
+        }
+
+        double[] saidas = new double[numSaidas];
+        for (int j = 0; j < numSaidas; j++) {
+            saidas[j] = biasSaida[j];
+            for (int i = 0; i < numOcultos; i++) {
+                saidas[j] += camadaOculta[i] * pesosOcultaSaida[i][j];
+            }
+            saidas[j] = sigmoid(saidas[j]);
+        }
+
+        // Backward pass (calcular erro e atualizar pesos)
+        double[] erroSaida = new double[numSaidas];
+        for (int j = 0; j < numSaidas; j++) {
+            erroSaida[j] = saidasEsperadas[j] - saidas[j];
+        }
+
+        double[] erroOculto = new double[numOcultos];
+        for (int j = 0; j < numOcultos; j++) {
+            for (int k = 0; k < numSaidas; k++) {
+                erroOculto[j] += erroSaida[k] * pesosOcultaSaida[j][k];
+            }
+            erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
+        }
+
+        for (int i = 0; i < numEntradas; i++) {
+            for (int j = 0; j < numOcultos; j++) {
+                pesosEntradaOculta[i][j] += taxaAprendizagem * erroOculto[j] * entradas[i];
+            }
+        }
+
+        for (int j = 0; j < numOcultos; j++) {
+            biasOculta[j] += taxaAprendizagem * erroOculto[j];
+        }
+
+        for (int j = 0; j < numOcultos; j++) {
+            for (int k = 0; k < numSaidas; k++) {
+                pesosOcultaSaida[j][k] += taxaAprendizagem * erroSaida[k] * camadaOculta[j];
+            }
+        }
+
+        for (int k = 0; k < numSaidas; k++) {
+            biasSaida[k] += taxaAprendizagem * erroSaida[k];
+        }
+    }
+
+    public void ajustarPesosPorCondicao(double[] entradas, double fator) {
+        // Ajusta os pesos da camada de entrada para a camada oculta
+        for (int i = 0; i < pesosEntradaOculta.length; i++) {
+            for (int j = 0; j < pesosEntradaOculta[i].length; j++) {
+                pesosEntradaOculta[i][j] += entradas[i] * fator;
+            }
+        }
+        // Ajusta os bias da camada oculta
+        for (int i = 0; i < biasOculta.length; i++) {
+            biasOculta[i] += fator;
+        }
+    }
+
+
 }
