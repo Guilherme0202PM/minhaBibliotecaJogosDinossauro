@@ -1,4 +1,6 @@
 import java.util.Random;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class RedeNeuralTeste2 {
     private double[][] pesosEntradaOculta; // Pesos da camada de entrada para a camada oculta
@@ -24,36 +26,41 @@ public class RedeNeuralTeste2 {
 
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos; j++) {
-                pesosEntradaOculta[i][j] = random.nextDouble() * 2 - 1; // [-1, 1]
+                pesosEntradaOculta[i][j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
             }
         }
 
         for (int j = 0; j < numOcultos; j++) {
-            biasOculta[j] = random.nextDouble() * 2 - 1; // [-1, 1]
+            biasOculta[j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
         }
 
         for (int i = 0; i < numOcultos; i++) {
             for (int j = 0; j < numSaidas; j++) {
-                pesosOcultaSaida[i][j] = random.nextDouble() * 2 - 1; // [-1, 1]
+                pesosOcultaSaida[i][j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
             }
         }
 
         for (int j = 0; j < numSaidas; j++) {
-            biasSaida[j] = random.nextDouble() * 2 - 1; // [-1, 1]
+            biasSaida[j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
         }
+    }
+
+    // Função de arredondamento para 4 casas decimais
+    private double arredondar(double valor) {
+        return new BigDecimal(valor).setScale(4, RoundingMode.HALF_UP).doubleValue();
     }
 
     // Função de ativação ReLU
     private double relu(double x) {
-        return Math.max(0, x);
+        return arredondar(Math.max(0, x));
     }
 
     // Função de ativação Sigmóide
     private double sigmoid(double x) {
-        return 1 / (1 + Math.exp(-x));
+        return arredondar(1 / (1 + Math.exp(-x)));
     }
 
-    // Metodo para calcular a saída da rede
+    // Método para calcular a saída da rede
     public double[] calcularSaida(double[] entradas) {
         double[] camadaOculta = new double[numOcultos];
 
@@ -63,17 +70,20 @@ public class RedeNeuralTeste2 {
             for (int i = 0; i < numEntradas; i++) {
                 camadaOculta[j] += entradas[i] * pesosEntradaOculta[i][j];
             }
-            camadaOculta[j] = relu(camadaOculta[j]);
+            camadaOculta[j] = arredondar(relu(camadaOculta[j]));
+            System.out.println("CalculaSaida: camada oculta " + camadaOculta[j]);
         }
 
         // Cálculo da camada de saída
         double[] saida = new double[numSaidas];
         for (int j = 0; j < numSaidas; j++) {
             saida[j] = biasSaida[j];
+            System.out.println("CalculaSaida: biasSaida " + saida[j]);
             for (int i = 0; i < numOcultos; i++) {
                 saida[j] += camadaOculta[i] * pesosOcultaSaida[i][j];
             }
-            saida[j] = sigmoid(saida[j]);
+            saida[j] = arredondar(sigmoid(saida[j]));
+            System.out.println("CalculaSaida: sigmoid(saida[j]) " + saida[j]);
         }
 
         return saida;

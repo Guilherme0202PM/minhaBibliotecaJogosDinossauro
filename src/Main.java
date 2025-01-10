@@ -11,7 +11,7 @@ public class Main {
         Movimento movimento = new Movimento();
         Sensores sensores = new Sensores(janela);
 
-        Fundo fundo = new Fundo(600, 600, "Fundo1.png");
+        Fundo fundo = new Fundo(600, 600, "Fundo.png");
         janela.setFundo(fundo); // Define o fundo no GamePanel
 
         int pontuacaoAlvo = 100;
@@ -73,6 +73,8 @@ public class Main {
         long startTime = System.currentTimeMillis();
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
+        RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2);
+
 
         while (true) {
             for (int i = 0; i < maxInimigos; i++) {
@@ -100,6 +102,22 @@ public class Main {
 
                     if (sensores.verificarColisaoAumentada(player2, inimigo)) {
                         if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
+                            double[] entradas = {player2.getX(), player2.getY(), inimigo.getX(), inimigo.getY()};
+                            System.out.println("Entradas: " + java.util.Arrays.toString(entradas));
+                            double[] saidas = redeNeural.calcularSaida(entradas);
+                            System.out.println("Saídas: " + java.util.Arrays.toString(saidas));
+                            if (saidas[0] > saidas[1]) {
+                                player2.apertarEspaco(); // Pular
+                            } else {
+                                player2.apertarS(); // Abaixar
+                            }
+                        }
+                    }
+
+
+                    /*
+                    if (sensores.verificarColisaoAumentada(player2, inimigo)) {
+                        if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
                             // Verifica se a altura/pontoY do inimigo é igual a 350
                             if (inimigo.getY() == 350) {
                                 // Simula o "apertar" da tecla espaço para o player pular
@@ -125,7 +143,7 @@ public class Main {
                             System.out.println("Colisão detectada! Inimigo removido.");
                         }
                     }
-
+                    */
                 }
             }
 
