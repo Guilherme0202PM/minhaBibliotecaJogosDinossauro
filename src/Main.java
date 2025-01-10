@@ -94,29 +94,26 @@ public class Main {
 
                     // Atualizando a interação com os PlayerIA
                     for (int j = 0; j < numPlayers; j++) {
-                        PlayerIA playerIA = player2Array[j];
+                        PlayerIA player2 = player2Array[j];
 
-                        // Realize a análise de proximidade e cálculos de rede neural para cada playerIA
-                        if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                            double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY()};
-                            System.out.println("Entradas para PlayerIA " + j + ": " + java.util.Arrays.toString(entradas));
-
-                            // Ajusta os pesos da rede neural dependendo da condição do inimigo
+                        if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
+                            // Verifica se a altura/pontoY do inimigo é igual a 350
                             if (inimigo.getY() == 350) {
-                                redesNeurais[j].ajustarPesosPorCondicao(entradas, 1); // Multiplica por 1
+                                // Simula o "apertar" da tecla espaço para o player pular
+                                player2.apertarEspaco();
+                                // Se houver colisão direta entre o player2 e o inimigo
+                                if (sensores.verificarColisao(player2, inimigo)) {
+                                    janela.removerObjeto(player2);
+                                    System.out.println("Colisão detectada! Inimigo removido.");
+                                }
                             } else if (inimigo.getY() < 350) {
-                                redesNeurais[j].ajustarPesosPorCondicao(entradas, -1); // Multiplica por -1
-                            }
-
-                            // Calcula a saída da rede neural
-                            double[] saidas = redesNeurais[j].calcularSaida(entradas);
-                            System.out.println("Saídas para PlayerIA " + j + ": " + java.util.Arrays.toString(saidas));
-
-                            // Verifica se o jogador deve pular ou abaixar
-                            if (saidas[0] > 0) {
-                                playerIA.apertarEspaco(); // Pular
-                            } else {
-                                playerIA.apertarS(); // Abaixar
+                                // Simula o "apertar" da tecla S para o player abaixar
+                                player2.apertarS();
+                                // Se houver colisão direta entre o player2 e o inimigo
+                                if (sensores.verificarColisao(player2, inimigo)) {
+                                    janela.removerObjeto(player2);
+                                    System.out.println("Colisão detectada! Inimigo removido.");
+                                }
                             }
                         }
                     }
