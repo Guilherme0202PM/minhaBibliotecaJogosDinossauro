@@ -24,26 +24,36 @@ public class RedeNeuralTeste2 {
         pesosOcultaSaida = new double[numOcultos][numSaidas];
         biasSaida = new double[numSaidas];
 
+        System.out.println("CRIAMOS A REDE NEURAL");
+
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos; j++) {
                 //pesosEntradaOculta[i][j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
                 pesosEntradaOculta[i][j] = arredondar(random.nextDouble() * 0.2 - 0.1); // [-0.1, 0.1]
+                System.out.println("RedeNeural: pesosEntradaOculta[i][j] " + pesosEntradaOculta[i][j]);
+
 
             }
         }
 
         for (int j = 0; j < numOcultos; j++) {
             biasOculta[j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
+            System.out.println("RedeNeural: biasOculta[j] " + biasOculta[j]);
+
         }
 
         for (int i = 0; i < numOcultos; i++) {
             for (int j = 0; j < numSaidas; j++) {
                 pesosOcultaSaida[i][j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
+                System.out.println("RedeNeural: pesosOcultaSaida[i][j] " + pesosOcultaSaida[i][j]);
+
             }
         }
 
         for (int j = 0; j < numSaidas; j++) {
             biasSaida[j] = arredondar(random.nextDouble() * 2 - 1); // [-1, 1]
+            System.out.println("RedeNeural: biasSaida[j] " + biasSaida[j]);
+
         }
     }
 
