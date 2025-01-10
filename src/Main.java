@@ -21,24 +21,18 @@ public class Main {
         janela.adicionarObjeto(player);
         player.adicionarListener();
 
-
-        PlayerIA player2 = new PlayerIA(200, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
-        janela.adicionarObjeto(player2);
-        player2.adicionarListener();
-
-        /*
-        // Criação de um vetor para armazenar multiplos player2
+        // Criação de um vetor para armazenar múltiplos PlayerIA
         int numPlayers = 5; // Número de PlayerIA
         PlayerIA[] player2Array = new PlayerIA[numPlayers];
+        RedeNeuralTeste2[] redesNeurais = new RedeNeuralTeste2[numPlayers]; // Array para armazenar redes neurais
 
         for (int i = 0; i < numPlayers; i++) {
             int posX = 200 + i * 60; // Posicione-os com um espaçamento entre si
             player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
             player2Array[i].adicionarListener();
+            redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
         }
-
-         */
 
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = new Inimigo[maxInimigos];
@@ -74,9 +68,6 @@ public class Main {
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
-        RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2);
-
-
         while (true) {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
@@ -101,60 +92,34 @@ public class Main {
                         }
                     }
 
-                    if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
-                        double[] entradas = {player2.getX(), player2.getY(), inimigo.getX(), inimigo.getY()};
-                        System.out.println("Entradas: " + java.util.Arrays.toString(entradas));
+                    // Atualizando a interação com os PlayerIA
+                    for (int j = 0; j < numPlayers; j++) {
+                        PlayerIA playerIA = player2Array[j];
 
-                        // Ajusta os pesos da rede neural dependendo da condição do inimigo
-                        if (inimigo.getY() == 350) {
-                            redeNeural.ajustarPesosPorCondicao(entradas, 1); // Multiplica por 1
-                        } else if (inimigo.getY() < 350) {
-                            redeNeural.ajustarPesosPorCondicao(entradas, -1); // Multiplica por -1
-                        }
+                        // Realize a análise de proximidade e cálculos de rede neural para cada playerIA
+                        if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
+                            double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY()};
+                            System.out.println("Entradas para PlayerIA " + j + ": " + java.util.Arrays.toString(entradas));
 
-                        // Calcula a saída da rede neural
-                        double[] saidas = redeNeural.calcularSaida(entradas);
-                        System.out.println("Saídas: " + java.util.Arrays.toString(saidas));
-
-                        // Verifica se o jogador deve pular ou abaixar
-                        if (saidas[0] > 0) {
-                            player2.apertarEspaco(); // Pular
-                        } else {
-                            player2.apertarS(); // Abaixar
-                        }
-                    }
-
-
-
-                    /*
-                    if (sensores.verificarColisaoAumentada(player2, inimigo)) {
-                        if (sensores.analisarProximidade(player2, inimigo, limiteProximidade)) {
-                            // Verifica se a altura/pontoY do inimigo é igual a 350
+                            // Ajusta os pesos da rede neural dependendo da condição do inimigo
                             if (inimigo.getY() == 350) {
-                                // Simula o "apertar" da tecla espaço para o player pular
-                                player2.apertarEspaco();
-                                // Se houver colisão direta entre o player2 e o inimigo
-                                if (sensores.verificarColisao(player2, inimigo)) {
-                                    janela.removerObjeto(player2);
-                                    System.out.println("Colisão detectada! Inimigo removido.");
-                                }
+                                redesNeurais[j].ajustarPesosPorCondicao(entradas, 1); // Multiplica por 1
                             } else if (inimigo.getY() < 350) {
-                                // Simula o "apertar" da tecla S para o player abaixar
-                                player2.apertarS();
-                                // Se houver colisão direta entre o player2 e o inimigo
-                                if (sensores.verificarColisao(player2, inimigo)) {
-                                    janela.removerObjeto(player2);
-                                    System.out.println("Colisão detectada! Inimigo removido.");
-                                }
+                                redesNeurais[j].ajustarPesosPorCondicao(entradas, -1); // Multiplica por -1
+                            }
+
+                            // Calcula a saída da rede neural
+                            double[] saidas = redesNeurais[j].calcularSaida(entradas);
+                            System.out.println("Saídas para PlayerIA " + j + ": " + java.util.Arrays.toString(saidas));
+
+                            // Verifica se o jogador deve pular ou abaixar
+                            if (saidas[0] > 0) {
+                                playerIA.apertarEspaco(); // Pular
+                            } else {
+                                playerIA.apertarS(); // Abaixar
                             }
                         }
-                        // Se houver colisão direta entre o player2 e o inimigo
-                        if (sensores.verificarColisao(player2, inimigo)) {
-                            janela.removerObjeto(player2);
-                            System.out.println("Colisão detectada! Inimigo removido.");
-                        }
                     }
-                    */
                 }
             }
 
@@ -167,12 +132,14 @@ public class Main {
             }
 
             // Atualiza a posição do player e aplica gravidade
-
             movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
             movimento.controlarSalto(player);
 
-            movimento.aplicarGravidade(player2, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
-            movimento.controlarSalto(player2);
+            // Atualiza a posição dos PlayerIA
+            for (int i = 0; i < numPlayers; i++) {
+                movimento.aplicarGravidade(player2Array[i], chaoBlocos[0]);
+                movimento.controlarSalto(player2Array[i]);
+            }
 
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
             janela.repaint();

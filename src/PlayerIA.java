@@ -97,8 +97,8 @@ public class PlayerIA extends CriaObjeto {
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_F) {
-                    sprite.aplicarFiltroPretoBranco();
-                    //sprite.aplicarFiltroColorido();
+                    //sprite.aplicarFiltroPretoBranco();
+                    sprite.aplicarFiltroColorido();
                 }
 
                 // Verifica se o PlayerIA está tocando na borda
