@@ -119,8 +119,16 @@ public class Main {
                             // Verifica se o jogador deve pular ou abaixar
                             if (saidas[0] > 0) {
                                 playerIA.apertarEspaco(); // Pular
+                                if (sensores.verificarColisao(playerIA, inimigo)) {
+                                    janela.removerObjeto(playerIA);
+                                    System.out.println("Colisão detectada! Inimigo removido.");
+                                }
                             } else {
                                 playerIA.apertarS(); // Abaixar
+                                if (sensores.verificarColisao(playerIA, inimigo)) {
+                                    janela.removerObjeto(playerIA);
+                                    System.out.println("Colisão detectada! Inimigo removido.");
+                                }
                             }
                         }
                     }
