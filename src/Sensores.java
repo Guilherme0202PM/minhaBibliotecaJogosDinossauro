@@ -107,7 +107,7 @@ public class Sensores {
         return areaExpandida.intersects(obj2.getRect());
     }
 
-    public boolean analisarProximidade(CriaObjeto player, CriaObjeto inimigo, int limiteProximidade) {
+        public boolean analisarProximidade(CriaObjeto player, CriaObjeto inimigo, int limiteProximidade) {
         // Calcula a distância em X e Y entre o player e o inimigo
         int distanciaX = Math.abs(player.getX() - inimigo.getX());
         int distanciaY = Math.abs(player.getY() - inimigo.getY());

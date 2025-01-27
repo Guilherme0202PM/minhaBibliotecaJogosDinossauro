@@ -13,6 +13,11 @@ public class PlayerIA extends CriaObjeto {
     private double velocidadeVertical = 0;
     private boolean noAr = true;
     private boolean saltando = false;
+    private Color corContorno = Color.BLUE; // Cor padrão do contorno
+    private boolean filtroAplicado = false; // Variável de controle
+
+
+
 
 
     public PlayerIA(int x, int y, int largura, int altura, String nomeImagem, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
@@ -22,6 +27,15 @@ public class PlayerIA extends CriaObjeto {
         this.som = som;
         this.janela = janela;
         this.sprite = new Sprite(nomeImagem); // Inicializa o Sprite com a imagem original
+    }
+
+    // Metodo para alterar a cor do contorno
+    public void ameacaDetectada() {
+            this.corContorno = Color.RED;
+    }
+
+    public void ameacaNaoDetectada() {
+        this.corContorno = Color.BLUE;
     }
 
     @Override
@@ -45,8 +59,8 @@ public class PlayerIA extends CriaObjeto {
                 novaAltura
         );
 
-        g.setColor(Color.BLUE); // Define a cor do contorno
-        g.drawRect(areaExpandida.x, areaExpandida.y, areaExpandida.width, areaExpandida.height);
+        //g.setColor(corContorno); // Define a cor do contorno
+        //g.drawRect(areaExpandida.x, areaExpandida.y, areaExpandida.width, areaExpandida.height);
 
     }
 
@@ -179,6 +193,13 @@ public class PlayerIA extends CriaObjeto {
         movimento.movimentoY(PlayerIA.this, 20); // Ajuste de movimento para abaixar
         altura = metadealtura; // Reduz a altura pela metade (agachado)
         // sprite.iniciarAnimacao("dino rebaixadoo_rebaixado_", 2, 100); // (Caso tenha animação de agachar)
+    }
+
+    public void apertaF() {
+        if (!filtroAplicado) { // Verifica se o filtro já foi aplicado
+            sprite.aplicarFiltroColorido(); // Aplica o filtro
+            filtroAplicado = true; // Marca o filtro como aplicado
+        }
     }
 
     // Metodo para atualizar a animação do Sprite

@@ -72,7 +72,7 @@ public class RedeNeuralTeste2 {
         return arredondar(1 / (1 + Math.exp(-x)));
     }
 
-    // Método para calcular a saída da rede
+    // Metodo para calcular a saída da rede
     public double[] calcularSaida(double[] entradas) {
         double[] camadaOculta = new double[numOcultos];
 
