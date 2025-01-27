@@ -22,17 +22,20 @@ public class Main {
         player.adicionarListener();
 
         // Criação de um vetor para armazenar múltiplos PlayerIA
-        int numPlayers = 5; // Número de PlayerIA
+        int numPlayers = 20; // Número de PlayerIA
         PlayerIA[] player2Array = new PlayerIA[numPlayers];
         RedeNeuralTeste2[] redesNeurais = new RedeNeuralTeste2[numPlayers]; // Array para armazenar redes neurais
 
-        for (int i = 0; i < numPlayers; i++) {
-            int posX = 200 + i * 60; // Posicione-os com um espaçamento entre si
-            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
-            janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
-            player2Array[i].adicionarListener();
-            redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
-        }
+        // Inicializa os PlayerIA e redes neurais
+        inicializarPopulacao(numPlayers, player2Array, redesNeurais, movimento, sensores, som, janela);
+
+//        for (int i = 0; i < numPlayers; i++) {
+//            int posX = 200 + i * 60; // Posicione-os com um espaçamento entre si
+//            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+//            janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
+//            player2Array[i].adicionarListener();
+//            redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
+//        }
 
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = new Inimigo[maxInimigos];
@@ -68,6 +71,8 @@ public class Main {
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
+        int quantidadeVivos = 5;
+
         while (true) {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
@@ -97,7 +102,8 @@ public class Main {
                     for (int j = 0; j < numPlayers; j++) {
                         PlayerIA playerIA = player2Array[j];
 
-                        //Aplicando filtro
+
+                            //Aplicando filtro
                         playerIA.apertaF();
 
                         // Realize a análise de proximidade e cálculos de rede neural para cada playerIA
@@ -119,16 +125,14 @@ public class Main {
                             // Verifica se o jogador deve pular ou abaixar
                             if (saidas[0] > 0) {
                                 playerIA.apertarEspaco(); // Pular
-                                if (sensores.verificarColisao(playerIA, inimigo)) {
-                                    janela.removerObjeto(playerIA);
-                                    System.out.println("Colisão detectada! Inimigo removido.");
-                                }
                             } else {
                                 playerIA.apertarS(); // Abaixar
-                                if (sensores.verificarColisao(playerIA, inimigo)) {
-                                    janela.removerObjeto(playerIA);
-                                    System.out.println("Colisão detectada! Inimigo removido.");
-                                }
+                            }
+
+                            if (sensores.verificarColisao(playerIA, inimigo)) {
+                                janela.removerObjeto(playerIA);
+                                quantidadeVivos = quantidadeVivos - 1;
+                                System.out.println("quantidadeVivos"+quantidadeVivos);
                             }
                         }
                     }
@@ -160,6 +164,17 @@ public class Main {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    private static void inicializarPopulacao(int numPlayers, PlayerIA[] player2Array, RedeNeuralTeste2[] redesNeurais,
+                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
+        for (int i = 0; i < numPlayers; i++) {
+            int posX = 100 + i * 20; // Posicione-os com um espaçamento entre si
+            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
+            player2Array[i].adicionarListener();
+            redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
         }
     }
 }
