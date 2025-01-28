@@ -29,6 +29,10 @@ public class Main {
         // Inicializa os PlayerIA e redes neurais
         inicializarPopulacao(numPlayers, player2Array, redesNeurais, movimento, sensores, som, janela);
 
+        //Geração
+        int quantidadeVivos = numPlayers;
+        int totalGeracao = 10;
+
 //        for (int i = 0; i < numPlayers; i++) {
 //            int posX = 200 + i * 60; // Posicione-os com um espaçamento entre si
 //            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
@@ -71,8 +75,6 @@ public class Main {
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
-        int quantidadeVivos = 5;
-
         while (true) {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
@@ -103,7 +105,7 @@ public class Main {
                         PlayerIA playerIA = player2Array[j];
 
 
-                            //Aplicando filtro
+                        //Aplicando filtro
                         playerIA.apertaF();
 
                         // Realize a análise de proximidade e cálculos de rede neural para cada playerIA
@@ -131,6 +133,7 @@ public class Main {
 
                             if (sensores.verificarColisao(playerIA, inimigo)) {
                                 janela.removerObjeto(playerIA);
+                                redesNeurais[j].destruirRedeNeural();
                                 quantidadeVivos = quantidadeVivos - 1;
                                 System.out.println("quantidadeVivos"+quantidadeVivos);
                             }

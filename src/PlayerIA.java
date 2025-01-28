@@ -31,7 +31,7 @@ public class PlayerIA extends CriaObjeto {
 
     // Metodo para alterar a cor do contorno
     public void ameacaDetectada() {
-            this.corContorno = Color.RED;
+        this.corContorno = Color.RED;
     }
 
     public void ameacaNaoDetectada() {

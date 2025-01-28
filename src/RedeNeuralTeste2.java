@@ -173,5 +173,15 @@ public class RedeNeuralTeste2 {
         }
     }
 
+    public void destruirRedeNeural() {
+        // Anula todos os arrays da rede neural
+        pesosEntradaOculta = null;
+        biasOculta = null;
+        pesosOcultaSaida = null;
+        biasSaida = null;
+
+        System.out.println("A rede neural foi destruída.");
+    }
+
 
 }
