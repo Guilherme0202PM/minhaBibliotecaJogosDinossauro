@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -23,11 +26,12 @@ public class Main {
 
         // Criação de um vetor para armazenar múltiplos PlayerIA
         int numPlayers = 20; // Número de PlayerIA
-        PlayerIA[] player2Array = new PlayerIA[numPlayers];
-        RedeNeuralTeste2[] redesNeurais = new RedeNeuralTeste2[numPlayers]; // Array para armazenar redes neurais
+        List<PlayerIA> player2List = new ArrayList<>();
+        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
 
-        // Inicializa os PlayerIA e redes neurais
-        inicializarPopulacao(numPlayers, player2Array, redesNeurais, movimento, sensores, som, janela);
+// Inicializa os PlayerIA e redes neurais
+        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+
 
         //Geração
         int quantidadeVivos = numPlayers;
@@ -66,6 +70,8 @@ public class Main {
             janela.adicionarObjeto(chaoBlocos[i]);
         }
 
+        //criarChao( numeroDeChao,  larguraChao,  alturaChao,  janela);
+
         JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
         pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
         pontuacaoLabel.setForeground(Color.BLACK);
@@ -98,64 +104,57 @@ public class Main {
                         if (inimigo.getRect().x < -inimigo.getRect().width) {
                             janela.removerObjeto(inimigo);
                             inimigos[i] = null;
+                            System.gc();
+
                         }
                     }
 
 
-                    // Atualizando a interação com os PlayerIA
-                    for (int j = 0; j < numPlayers; j++) {
-                        PlayerIA playerIA = player2Array[j];
-
-                        //Aplicando filtro
+                    // Interação com cada PlayerIA
+                    for (int j = 0; j < player2List.size(); j++) {
+                        PlayerIA playerIA = player2List.get(j);
                         playerIA.apertaF();
 
-                        // Realize a análise de proximidade e cálculos de rede neural para cada playerIA
+
+                        // Analisar proximidade e usar rede neural
                         if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
                             double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY()};
-                            System.out.println("Entradas para PlayerIA " + j + ": " + java.util.Arrays.toString(entradas));
+                            RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
-                            // Ajusta os pesos da rede neural dependendo da condição do inimigo
-                            if (inimigo.getY() == 350) {
-                                redesNeurais[j].ajustarPesosPorCondicao(entradas, 1); // Multiplica por 1
-                            } else if (inimigo.getY() < 350) {
-                                redesNeurais[j].ajustarPesosPorCondicao(entradas, -1); // Multiplica por -1
-                            }
+                            // Ajusta os pesos da rede neural dependendo do inimigo
+                            int fatorCondicao = (inimigo.getY() == 350) ? 1 : -1;
+                            redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
-                            // Calcula a saída da rede neural
-                            double[] saidas = redesNeurais[j].calcularSaida(entradas);
-                            System.out.println("Saídas para PlayerIA " + j + ": " + java.util.Arrays.toString(saidas));
-
-                            // Verifica se o jogador deve pular ou abaixar
+                            // Calcula as saídas da rede neural
+                            double[] saidas = redeNeural.calcularSaida(entradas);
                             if (saidas[0] > 0) {
                                 playerIA.apertarEspaco(); // Pular
                             } else {
                                 playerIA.apertarS(); // Abaixar
                             }
 
+                            // Verifica colisão com PlayerIA
                             if (sensores.verificarColisao(playerIA, inimigo)) {
-                                // Remover o playerIA da janela e do array
                                 janela.removerObjeto(playerIA);
-                                //player2Array[j] = null;
-                                // Remover a rede neural associada
-                                //redesNeurais[j] = null;
-                                // Decrementar a contagem de jogadores vivos
+                                player2List.remove(j);
+                                redesNeurais.remove(j);
                                 quantidadeVivos--;
-                                System.out.println("Quantidade de vivos: " + quantidadeVivos);
-                                // Forçar a coleta de lixo
-                                System.gc();
+                                System.out.println("Quantidade de vivos"+ quantidadeVivos);
+                                j--; // Ajusta o índice após remoção
                             }
                         }
                     }
                 }
             }
 
-            // Atualiza a posição do chão
-            for (Chao chao : chaoBlocos) {
-                chao.setX(chao.getX() - 5); // Move o chão para a esquerda
-                if (chao.getX() < -larguraChao) {
-                    chao.setX(larguraChao * (numeroDeChao - 1)); // Reposiciona à direita
-                }
-            }
+//            // Atualiza a posição do chão
+//            for (Chao chao : chaoBlocos) {
+//                chao.setX(chao.getX() - 5); // Move o chão para a esquerda
+//                if (chao.getX() < -larguraChao) {
+//                    chao.setX(larguraChao * (numeroDeChao - 1)); // Reposiciona à direita
+//                }
+//            }
+            atualizarChao(chaoBlocos, larguraChao, numeroDeChao);
 
 
             // Atualiza a posição do player e aplica gravidade
@@ -163,9 +162,9 @@ public class Main {
             movimento.controlarSalto(player);
 
             // Atualiza a posição dos PlayerIA
-            for (int i = 0; i < numPlayers; i++) {
-                movimento.aplicarGravidade(player2Array[i], chaoBlocos[0]);
-                movimento.controlarSalto(player2Array[i]);
+            for (PlayerIA playerIA : player2List) {
+                movimento.aplicarGravidade(playerIA, chaoBlocos[0]);
+                movimento.controlarSalto(playerIA);
             }
 
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
@@ -188,6 +187,21 @@ public class Main {
             redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
         }
     }
+
+    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
+        for (int i = 0; i < numPlayers; i++) {
+            int posX = 100 + i * 20; // Posicione-os com um espaçamento entre si
+            PlayerIA playerIA = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            player2List.add(playerIA);
+            janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
+            playerIA.adicionarListener();
+
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
+            redesNeurais.add(redeNeural);
+        }
+    }
+
 
     private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
         Random random = new Random();
