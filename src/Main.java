@@ -106,7 +106,6 @@ public class Main {
                     for (int j = 0; j < numPlayers; j++) {
                         PlayerIA playerIA = player2Array[j];
 
-
                         //Aplicando filtro
                         playerIA.apertaF();
 
@@ -134,9 +133,16 @@ public class Main {
                             }
 
                             if (sensores.verificarColisao(playerIA, inimigo)) {
+                                // Remover o playerIA da janela e do array
                                 janela.removerObjeto(playerIA);
-                                quantidadeVivos = quantidadeVivos - 1;
-                                System.out.println("quantidadeVivos"+quantidadeVivos);
+                                //player2Array[j] = null;
+                                // Remover a rede neural associada
+                                //redesNeurais[j] = null;
+                                // Decrementar a contagem de jogadores vivos
+                                quantidadeVivos--;
+                                System.out.println("Quantidade de vivos: " + quantidadeVivos);
+                                // Forçar a coleta de lixo
+                                System.gc();
                             }
                         }
                     }
@@ -150,6 +156,7 @@ public class Main {
                     chao.setX(larguraChao * (numeroDeChao - 1)); // Reposiciona à direita
                 }
             }
+
 
             // Atualiza a posição do player e aplica gravidade
             movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
@@ -179,6 +186,38 @@ public class Main {
             janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
             player2Array[i].adicionarListener();
             redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
+        }
+    }
+
+    private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
+        Random random = new Random();
+        Inimigo[] inimigos = new Inimigo[maxInimigos];
+        for (int i = 0; i < maxInimigos; i++) {
+            if (random.nextInt(2) == 0) {
+                inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+            } else {
+                inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+            }
+            janela.adicionarObjeto(inimigos[i]);
+        }
+        return inimigos;
+    }
+
+    private static Chao[] criarChao(int numeroDeChao, int larguraChao, int alturaChao, GameWindow janela) {
+        Chao[] chaoBlocos = new Chao[numeroDeChao];
+        for (int i = 0; i < numeroDeChao; i++) {
+            chaoBlocos[i] = new Chao(i * larguraChao, 400, larguraChao, alturaChao);
+            janela.adicionarObjeto(chaoBlocos[i]);
+        }
+        return chaoBlocos;
+    }
+
+    private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {
+        for (Chao chao : chaoBlocos) {
+            chao.setX(chao.getX() - 5);
+            if (chao.getX() < -larguraChao) {
+                chao.setX(larguraChao * (numeroDeChao - 1));
+            }
         }
     }
 }

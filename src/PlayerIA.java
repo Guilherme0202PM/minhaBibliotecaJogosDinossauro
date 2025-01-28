@@ -75,10 +75,10 @@ public class PlayerIA extends CriaObjeto {
 
                 if (e.getKeyCode() == KeyEvent.VK_A) {
                     movimento.movimentoX(PlayerIA.this, -velocidade);
-                    sprite.iniciarAnimacao("dinoIA andandoo_andando_", 3, 100);
+                    sprite.iniciarAnimacao("dinoIA andandoo_andando_", 1, 100);
                 } else if (e.getKeyCode() == KeyEvent.VK_D) {
                     movimento.movimentoX(PlayerIA.this, velocidade);
-                    sprite.iniciarAnimacao("dinoIA andandoo_andando_", 3, 100);
+                    sprite.iniciarAnimacao("dinoIA andandoo_andando_", 1, 100);
                 } else if (e.getKeyCode() == KeyEvent.VK_W) {
                     movimento.movimentoY(PlayerIA.this, -velocidade);
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
