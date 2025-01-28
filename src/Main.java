@@ -29,12 +29,12 @@ public class Main {
         List<PlayerIA> player2List = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
 
-// Inicializa os PlayerIA e redes neurais
+        // Inicializa os PlayerIA e redes neurais
         inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
 
-
-        //Geração
+        // Variáveis de controle de geração
         int quantidadeVivos = numPlayers;
+        int geracaoAtual = 0;
         int totalGeracao = 10;
 
 
@@ -54,6 +54,7 @@ public class Main {
             if (tipoInimigo == 0) {
                 inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
             } else {
+                //inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
                 inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
             }
             janela.adicionarObjeto(inimigos[i]);
@@ -83,7 +84,7 @@ public class Main {
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
 
-        while (true) {
+        while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
                 if (inimigo != null) {
@@ -139,8 +140,10 @@ public class Main {
                                 player2List.remove(j);
                                 redesNeurais.remove(j);
                                 quantidadeVivos--;
-                                System.out.println("Quantidade de vivos"+ quantidadeVivos);
+                                //System.out.println("Quantidade de vivos"+ quantidadeVivos);
                                 j--; // Ajusta o índice após remoção
+                                System.gc();
+
                             }
                         }
                     }
@@ -169,12 +172,29 @@ public class Main {
 
             pontuacaoLabel.setText("Pontuacao: " + pontuacao);
             janela.repaint();
+
+            // Verifica se todos os players IA morreram
+            if (quantidadeVivos <= 0) {
+                geracaoAtual++;
+                System.out.println("Geração " + geracaoAtual + " concluída.");
+                if (geracaoAtual < totalGeracao) {
+                    // Reinicializa a população
+                    player2List.clear();
+                    redesNeurais.clear();
+                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+                    quantidadeVivos = numPlayers;
+                }
+            }
+
+
             try {
                 Thread.sleep(16); // Aproximadamente 60 FPS
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
+        System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
+
     }
 
     private static void inicializarPopulacao(int numPlayers, PlayerIA[] player2Array, RedeNeuralTeste2[] redesNeurais,
