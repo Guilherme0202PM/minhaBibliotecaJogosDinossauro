@@ -97,6 +97,8 @@ public class Main {
                     if (sensores.verificarColisao(player, inimigo)) {
                         janela.removerObjeto(inimigo);
                         inimigos[i] = null;
+                        System.gc();
+
                         System.out.println("Colisão detectada! Inimigo removido.");
                     } else if (inimigo.getRect().x < player.getRect().x) {
                         pontuacao++;
@@ -182,11 +184,14 @@ public class Main {
                     // Reinicializa a população
                     player2List.clear();
                     redesNeurais.clear();
+
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
                     quantidadeVivos = numPlayers;
+                    //inimigos = limpezaTotal(inimigos, janela);
+
                 }
                 //limparInimigos(maxInimigos, movimento, sensores, janela);
-                criarInimigos(maxInimigos,movimento,sensores,janela);
+                //inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
             }
 
 
@@ -233,9 +238,9 @@ public class Main {
         Inimigo[] inimigos = new Inimigo[maxInimigos];
 
         // Verifica se é a primeira geração ou uma nova geração
-        if (geracaoInimigo > 0) {
-            limparInimigos(janela);
-        }
+//        if (geracaoInimigo > 0) {
+//            limparInimigos(janela);
+//        }
 
         for (int i = 0; i < maxInimigos; i++) {
             if (random.nextInt(2) == 0) {
@@ -250,17 +255,29 @@ public class Main {
 
     }
 
-    private static Inimigo[] inimigos = null; // Armazena a referência ao vetor
-
-    private static void limparInimigos(GameWindow janela) {
+    private static Inimigo[] limpezaTotal(Inimigo[] inimigos, GameWindow janela) {
         if (inimigos != null) {
-            for (Inimigo inimigo : inimigos) {
-                if (inimigo != null) {
-                    janela.removerObjeto(inimigo);
+            for (int i = 0; i < inimigos.length; i++) {
+                if (inimigos[i] != null) {
+                    janela.removerObjeto(inimigos[i]); // Remove da janela
+                    inimigos[i] = null; // Define como nulo
                 }
             }
         }
+        return inimigos; // Retorna o vetor atualizado
     }
+
+//    private static Inimigo[] inimigos = null; // Armazena a referência ao vetor
+//
+//    private static void limparInimigos(GameWindow janela) {
+//        if (inimigos != null) {
+//            for (Inimigo inimigo : inimigos) {
+//                if (inimigo != null) {
+//                    janela.removerObjeto(inimigo);
+//                }
+//            }
+//        }
+//    }
 
     private static Chao[] criarChao(int numeroDeChao, int larguraChao, int alturaChao, GameWindow janela) {
         Chao[] chaoBlocos = new Chao[numeroDeChao];

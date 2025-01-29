@@ -135,6 +135,14 @@ public class Player extends CriaObjeto {
         });
     }
 
+    public void teleporte(int newX, int newY) {
+        movimento.goPosicao(Player.this,  newX,  newY); // Inicia o salto do PlayerIA
+    }
+
+    public void limpa(int newX) {
+        movimento.movimentoX(Player.this,  newX); // Inicia o salto do PlayerIA
+    }
+
     // Getters e setters
     public double getVelocidadeVertical() {
         return velocidadeVertical;
