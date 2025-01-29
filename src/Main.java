@@ -47,18 +47,19 @@ public class Main {
 //        }
 
         int maxInimigos = pontuacaoAlvo;
-        Inimigo[] inimigos = new Inimigo[maxInimigos];
-        Random random = new Random();
-        for (int i = 0; i < maxInimigos; i++) {
-            int tipoInimigo = random.nextInt(2);
-            if (tipoInimigo == 0) {
-                inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-            } else {
-                //inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-                inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
-            }
-            janela.adicionarObjeto(inimigos[i]);
-        }
+        Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
+//        Inimigo[] inimigos = new Inimigo[maxInimigos];
+//        Random random = new Random();
+//        for (int i = 0; i < maxInimigos; i++) {
+//            int tipoInimigo = random.nextInt(2);
+//            if (tipoInimigo == 0) {
+//                inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+//            } else {
+//                //inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+//                inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+//            }
+//            janela.adicionarObjeto(inimigos[i]);
+//        }
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
