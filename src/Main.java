@@ -184,6 +184,7 @@ public class Main {
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
                     quantidadeVivos = numPlayers;
                 }
+                criarInimigos(maxInimigos,movimento,sensores,janela);
             }
 
 

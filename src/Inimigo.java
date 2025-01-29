@@ -18,6 +18,9 @@ public class Inimigo extends CriaObjeto {
         this.janela = janela;
     }
 
+    public void remover(){
+        janela.removerObjeto(this);
+    }
 
     public void atualizar() {
         // Move o inimigo na direção atual
