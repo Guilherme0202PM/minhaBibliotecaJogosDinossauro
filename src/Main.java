@@ -185,6 +185,7 @@ public class Main {
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
                     quantidadeVivos = numPlayers;
                 }
+                //limparInimigos(maxInimigos, movimento, sensores, janela);
                 criarInimigos(maxInimigos,movimento,sensores,janela);
             }
 
@@ -198,6 +199,8 @@ public class Main {
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
 
     }
+
+    private static int geracaoInimigo = 0;
 
     private static void inicializarPopulacao(int numPlayers, PlayerIA[] player2Array, RedeNeuralTeste2[] redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
@@ -228,6 +231,12 @@ public class Main {
     private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
         Random random = new Random();
         Inimigo[] inimigos = new Inimigo[maxInimigos];
+
+        // Verifica se é a primeira geração ou uma nova geração
+        if (geracaoInimigo > 0) {
+            limparInimigos(janela);
+        }
+
         for (int i = 0; i < maxInimigos; i++) {
             if (random.nextInt(2) == 0) {
                 inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
@@ -235,8 +244,22 @@ public class Main {
                 inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
             }
             janela.adicionarObjeto(inimigos[i]);
+
         }
         return inimigos;
+
+    }
+
+    private static Inimigo[] inimigos = null; // Armazena a referência ao vetor
+
+    private static void limparInimigos(GameWindow janela) {
+        if (inimigos != null) {
+            for (Inimigo inimigo : inimigos) {
+                if (inimigo != null) {
+                    janela.removerObjeto(inimigo);
+                }
+            }
+        }
     }
 
     private static Chao[] criarChao(int numeroDeChao, int larguraChao, int alturaChao, GameWindow janela) {

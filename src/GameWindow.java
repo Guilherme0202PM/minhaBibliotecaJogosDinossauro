@@ -17,6 +17,11 @@ public class GameWindow extends JFrame{
         movimento = new Movimento(); // Cria uma instância da classe Movimento
     }
 
+//    public void removerTodosInimigos() {
+//        gamePanel.removerTodosInimigos();
+//    }
+
+
     public void adicionarObjeto(CriaObjeto objeto) {
         gamePanel.adicionarObjeto(objeto);
     }
