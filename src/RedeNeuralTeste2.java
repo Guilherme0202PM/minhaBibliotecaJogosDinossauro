@@ -2,6 +2,13 @@ import java.util.Random;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 public class RedeNeuralTeste2 {
     private double[][] pesosEntradaOculta; // Pesos da camada de entrada para a camada oculta
     private double[] biasOculta; // Bias para a camada oculta
@@ -183,5 +190,62 @@ public class RedeNeuralTeste2 {
         System.out.println("A rede neural foi destruída.");
     }
 
+    public double[][] pesosEntradaOculta() {
+        return pesosEntradaOculta;
+    }
 
+    public double[] biasOculta() {
+        return biasOculta;
+    }
+
+    public double[][] pesosOcultaSaida() {
+        return pesosOcultaSaida;
+    }
+
+    public double[] biasSaida() {
+        return biasSaida;
+    }
+
+//    public int getId() {
+//        return id;
+//    }
+
+    public static void salvarDadosEmArquivo(List<RedeNeuralTeste2> redesNeurais) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("dados.txt", false))) {
+            for (int i = 0; i < redesNeurais.size(); i++) {
+                RedeNeuralTeste2 rede = redesNeurais.get(i);
+                writer.write("Rede: " + (i + 1) + "\n");
+
+                writer.write("Pesos de entrada para camada oculta:\n");
+                for (double[] linha : rede.pesosEntradaOculta()) {
+                    for (double peso : linha) {
+                        writer.write(peso + " ");
+                    }
+                    writer.write("\n");
+                }
+
+                writer.write("Bias da camada oculta:\n");
+                for (double bias : rede.biasOculta()) {
+                    writer.write(bias + " ");
+                }
+                writer.write("\n");
+
+                writer.write("Pesos da camada oculta para saída:\n");
+                for (double[] linha : rede.pesosOcultaSaida()) {
+                    for (double peso : linha) {
+                        writer.write(peso + " ");
+                    }
+                    writer.write("\n");
+                }
+
+                writer.write("Bias da camada de saída:\n");
+                for (double bias : rede.biasSaida()) {
+                    writer.write(bias + " ");
+                }
+                writer.write("\n\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

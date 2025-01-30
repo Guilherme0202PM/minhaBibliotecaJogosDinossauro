@@ -120,6 +120,7 @@ public class Main {
                             // Verifica colisão com PlayerIA
                             if (sensores.verificarColisao(playerIA, inimigo)) {
                                 janela.removerObjeto(playerIA);
+                                RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
                                 player2List.remove(j);
                                 redesNeurais.remove(j);
                                 quantidadeVivos--;
