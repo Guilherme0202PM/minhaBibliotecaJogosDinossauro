@@ -20,7 +20,7 @@ public class Main {
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
 
-        Player player = new Player(50, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
         janela.adicionarObjeto(player);
         player.adicionarListener();
 
@@ -38,28 +38,8 @@ public class Main {
         int totalGeracao = 10;
 
 
-//        for (int i = 0; i < numPlayers; i++) {
-//            int posX = 200 + i * 60; // Posicione-os com um espaçamento entre si
-//            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
-//            janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
-//            player2Array[i].adicionarListener();
-//            redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
-//        }
-
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
-//        Inimigo[] inimigos = new Inimigo[maxInimigos];
-//        Random random = new Random();
-//        for (int i = 0; i < maxInimigos; i++) {
-//            int tipoInimigo = random.nextInt(2);
-//            if (tipoInimigo == 0) {
-//                inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-//            } else {
-//                //inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-//                inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
-//            }
-//            janela.adicionarObjeto(inimigos[i]);
-//        }
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
@@ -153,13 +133,6 @@ public class Main {
                 }
             }
 
-//            // Atualiza a posição do chão
-//            for (Chao chao : chaoBlocos) {
-//                chao.setX(chao.getX() - 5); // Move o chão para a esquerda
-//                if (chao.getX() < -larguraChao) {
-//                    chao.setX(larguraChao * (numeroDeChao - 1)); // Reposiciona à direita
-//                }
-//            }
             atualizarChao(chaoBlocos, larguraChao, numeroDeChao);
 
 
@@ -187,11 +160,15 @@ public class Main {
 
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
                     quantidadeVivos = numPlayers;
-                    //inimigos = limpezaTotal(inimigos, janela);
+                    inimigos = limpezaTotal(inimigos, janela);
+                    player.teleporte(500,350);
 
                 }
                 //limparInimigos(maxInimigos, movimento, sensores, janela);
-                //inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
+                inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
+                //player.teleporte(50,350);
+
+
             }
 
 
@@ -205,27 +182,15 @@ public class Main {
 
     }
 
-    private static int geracaoInimigo = 0;
-
-    private static void inicializarPopulacao(int numPlayers, PlayerIA[] player2Array, RedeNeuralTeste2[] redesNeurais,
-                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
-        for (int i = 0; i < numPlayers; i++) {
-            int posX = 100 + i * 20; // Posicione-os com um espaçamento entre si
-            player2Array[i] = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
-            janela.adicionarObjeto(player2Array[i]); // Adiciona o PlayerIA à janela
-            player2Array[i].adicionarListener();
-            redesNeurais[i] = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
-        }
-    }
 
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 100 + i * 20; // Posicione-os com um espaçamento entre si
+            int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
             PlayerIA playerIA = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
-            playerIA.adicionarListener();
+            //playerIA.adicionarListener();
 
             RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
@@ -237,16 +202,16 @@ public class Main {
         Random random = new Random();
         Inimigo[] inimigos = new Inimigo[maxInimigos];
 
-        // Verifica se é a primeira geração ou uma nova geração
-//        if (geracaoInimigo > 0) {
-//            limparInimigos(janela);
-//        }
-
         for (int i = 0; i < maxInimigos; i++) {
+            if (i == 0) {
+                // Descarta o primeiro inimigo
+                continue;
+            }
+
             if (random.nextInt(2) == 0) {
-                inimigos[i] = new InimigoTerrestre(1000, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
             } else {
-                inimigos[i] = new InimigoVoador(1000, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+                inimigos[i] = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
             }
             janela.adicionarObjeto(inimigos[i]);
 
@@ -265,27 +230,6 @@ public class Main {
             }
         }
         return inimigos; // Retorna o vetor atualizado
-    }
-
-//    private static Inimigo[] inimigos = null; // Armazena a referência ao vetor
-//
-//    private static void limparInimigos(GameWindow janela) {
-//        if (inimigos != null) {
-//            for (Inimigo inimigo : inimigos) {
-//                if (inimigo != null) {
-//                    janela.removerObjeto(inimigo);
-//                }
-//            }
-//        }
-//    }
-
-    private static Chao[] criarChao(int numeroDeChao, int larguraChao, int alturaChao, GameWindow janela) {
-        Chao[] chaoBlocos = new Chao[numeroDeChao];
-        for (int i = 0; i < numeroDeChao; i++) {
-            chaoBlocos[i] = new Chao(i * larguraChao, 400, larguraChao, alturaChao);
-            janela.adicionarObjeto(chaoBlocos[i]);
-        }
-        return chaoBlocos;
     }
 
     private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {

@@ -67,7 +67,7 @@ public class Player extends CriaObjeto {
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_X) {
-                    movimento.goPosicao(Player.this, 50, 50);
+                    movimento.goPosicao(Player.this, 30, 50);
                 }
 
                 if (e.getKeyCode() == KeyEvent.VK_F) {
@@ -168,6 +168,10 @@ public class Player extends CriaObjeto {
         this.saltando = saltando;
     }
 
+    @Override
+    public void setLargura(int largura) {
+        super.setLargura(largura);
+    }
 
     // Metodo para atualizar a animação do Sprite
     public void atualizarAnimacao(Graphics g) {
