@@ -225,6 +225,12 @@ public class Main {
     }
 
     public static List<PlayerIA> selecao(List<PlayerIA> populacao, int numSelecionados) {
+        // Verifica se a população está vazia
+        if (populacao == null || populacao.isEmpty()) {
+            System.out.println("A população está vazia.");
+            return new ArrayList<>();
+        }
+
         // Copia a população para evitar modificar a lista original
         List<PlayerIA> copiaPopulacao = new ArrayList<>(populacao);
 
@@ -233,6 +239,14 @@ public class Main {
 
         // Garante que numSelecionados não ultrapasse o tamanho da lista
         numSelecionados = Math.min(numSelecionados, copiaPopulacao.size());
+
+        // Exibe o ranqueamento no console
+        System.out.println("Ranking da População:");
+        for (int i = 0; i < copiaPopulacao.size(); i++) {
+            System.out.println((i + 1) + "º - " + copiaPopulacao.get(i) + " | Pontuação: " + copiaPopulacao.get(i).getPontuacao());
+        }
+        System.out.println("Fim Ranking:");
+
 
         // Retorna os melhores indivíduos
         return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
