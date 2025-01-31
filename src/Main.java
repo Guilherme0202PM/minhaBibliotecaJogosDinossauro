@@ -25,6 +25,7 @@ public class Main {
         // Criação de um vetor para armazenar múltiplos PlayerIA
         int numPlayers = 20; // Número de PlayerIA
         List<PlayerIA> player2List = new ArrayList<>();
+        List<PlayerIA> coleta = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
 
         // Inicializa os PlayerIA e redes neurais
@@ -113,11 +114,11 @@ public class Main {
                                 playerIA.apertarS(); // Abaixar
                                 playerIA.incrementarPontuacao(pontuacao);
                             }
-
                             // Verifica colisão com PlayerIA
                             if (sensores.verificarColisao(playerIA, inimigo)) {
-                                janela.removerObjeto(playerIA);
+                                coleta.add(playerIA);
                                 RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
+                                janela.removerObjeto(playerIA);
                                 player2List.remove(j);
                                 redesNeurais.remove(j);
                                 quantidadeVivos--;
@@ -151,7 +152,7 @@ public class Main {
                 geracaoAtual++;
                 System.out.println("Geração " + geracaoAtual + " concluída.");
 
-                player2List = selecao(player2List, numPlayers);
+                coleta = selecao(coleta, numPlayers);
 
                 if (geracaoAtual < totalGeracao) {
                     // Reinicializa a população
