@@ -109,10 +109,10 @@ public class Main {
                             double[] saidas = redeNeural.calcularSaida(entradas);
                             if (saidas[0] > 0) {
                                 playerIA.apertarEspaco(); // Pular
-                                playerIA.incrementarPontuacao(pontuacao);
+                                playerIA.incrementarPontuacao(1);
                             } else {
                                 playerIA.apertarS(); // Abaixar
-                                playerIA.incrementarPontuacao(pontuacao);
+                                playerIA.incrementarPontuacao(1);
                             }
                             // Verifica colisão com PlayerIA
                             if (sensores.verificarColisao(playerIA, inimigo)) {
