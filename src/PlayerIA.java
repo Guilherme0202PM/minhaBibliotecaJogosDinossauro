@@ -119,6 +119,7 @@ public class PlayerIA extends CriaObjeto {
         }
     }
 
+
     // Metodo para atualizar a animação do Sprite
     public void atualizarAnimacao(Graphics g) {
         // Verifica se uma animação está em andamento

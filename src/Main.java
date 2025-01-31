@@ -61,6 +61,7 @@ public class Main {
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
 
+
         while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
@@ -158,7 +159,10 @@ public class Main {
                     // Reinicializa a população
                     player2List.clear();
                     redesNeurais.clear();
-                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+                    RedeNeuralTeste2 melhorRede = null;
+
+                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
+                    //inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
                     quantidadeVivos = numPlayers;
                     inimigos = limpezaTotal(inimigos, janela);
                     player.teleporte(500,350);
@@ -185,6 +189,26 @@ public class Main {
             //playerIA.adicionarListener();
             RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
+        }
+    }
+
+    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela,
+                                             RedeNeuralTeste2 melhorRede) {
+        for (int i = 0; i < numPlayers; i++) {
+            int posX = 50 + i * 20;
+            PlayerIA playerIA = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            player2List.add(playerIA);
+            janela.adicionarObjeto(playerIA);
+
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 6, 2);
+
+            // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
+            if (melhorRede != null) {
+                novaRede.copiarPesos(melhorRede);
+            }
+
+            redesNeurais.add(novaRede);
         }
     }
 
@@ -251,6 +275,24 @@ public class Main {
 
         // Retorna os melhores indivíduos
         return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
+    }
+
+    public static RedeNeuralTeste2 selecaoMelhorRede(List<PlayerIA> populacao, List<RedeNeuralTeste2> redesNeurais) {
+        if (populacao.isEmpty()) {
+            return null;
+        }
+
+        // Encontrar o PlayerIA com a maior pontuação
+        PlayerIA melhorPlayer = populacao.get(0);
+        for (PlayerIA player : populacao) {
+            if (player.getPontuacao() > melhorPlayer.getPontuacao()) {
+                melhorPlayer = player;
+            }
+        }
+
+        // Encontrar a rede neural correspondente ao melhor PlayerIA
+        int indiceMelhor = populacao.indexOf(melhorPlayer);
+        return redesNeurais.get(indiceMelhor);
     }
 
 }

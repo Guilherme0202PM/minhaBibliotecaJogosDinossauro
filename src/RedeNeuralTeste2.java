@@ -18,6 +18,7 @@ public class RedeNeuralTeste2 {
     private int numEntradas;
     private int numOcultos;
     private int numSaidas;
+    private double[][] pesos;
 
     public RedeNeuralTeste2(int numEntradas, int numOcultos, int numSaidas) {
         this.numEntradas = numEntradas;
@@ -164,6 +165,14 @@ public class RedeNeuralTeste2 {
 
         for (int k = 0; k < numSaidas; k++) {
             biasSaida[k] += taxaAprendizagem * erroSaida[k];
+        }
+    }
+
+    public void copiarPesos(RedeNeuralTeste2 outraRede) {
+        for (int i = 0; i < this.pesos.length; i++) {
+            for (int j = 0; j < this.pesos[i].length; j++) {
+                this.pesos[i][j] = outraRede.pesos[i][j];
+            }
         }
     }
 
