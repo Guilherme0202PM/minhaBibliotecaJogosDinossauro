@@ -64,7 +64,15 @@ public class PlayerIA extends CriaObjeto {
 
     }
 
+    private int pontuacao;
 
+    public void incrementarPontuacao(int valor) {
+        pontuacao += valor;
+    }
+
+    public int getPontuacao() {
+        return pontuacao;
+    }
 
     // Getters e setters
     public double getVelocidadeVertical() {

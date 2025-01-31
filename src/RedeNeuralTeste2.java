@@ -206,10 +206,6 @@ public class RedeNeuralTeste2 {
         return biasSaida;
     }
 
-//    public int getId() {
-//        return id;
-//    }
-
     public static void salvarDadosEmArquivo(List<RedeNeuralTeste2> redesNeurais) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("dados.txt", false))) {
             for (int i = 0; i < redesNeurais.size(); i++) {

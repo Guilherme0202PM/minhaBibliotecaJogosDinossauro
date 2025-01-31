@@ -1,10 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -37,7 +35,6 @@ public class Main {
         int geracaoAtual = 0;
         int totalGeracao = 10;
 
-
         int maxInimigos = pontuacaoAlvo;
         Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
 
@@ -51,8 +48,6 @@ public class Main {
             chaoBlocos[i] = new Chao(i * larguraChao, 400, larguraChao, alturaChao); // Posição inicial dos blocos
             janela.adicionarObjeto(chaoBlocos[i]);
         }
-
-        //criarChao( numeroDeChao,  larguraChao,  alturaChao,  janela);
 
         JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
         pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -113,8 +108,10 @@ public class Main {
                             double[] saidas = redeNeural.calcularSaida(entradas);
                             if (saidas[0] > 0) {
                                 playerIA.apertarEspaco(); // Pular
+                                playerIA.incrementarPontuacao(pontuacao);
                             } else {
                                 playerIA.apertarS(); // Abaixar
+                                playerIA.incrementarPontuacao(pontuacao);
                             }
 
                             // Verifica colisão com PlayerIA
@@ -136,7 +133,6 @@ public class Main {
 
             atualizarChao(chaoBlocos, larguraChao, numeroDeChao);
 
-
             // Atualiza a posição do player e aplica gravidade
             movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
             movimento.controlarSalto(player);
@@ -154,25 +150,21 @@ public class Main {
             if (quantidadeVivos <= 0) {
                 geracaoAtual++;
                 System.out.println("Geração " + geracaoAtual + " concluída.");
+
+                player2List = selecao(player2List, numPlayers);
+
                 if (geracaoAtual < totalGeracao) {
                     // Reinicializa a população
                     player2List.clear();
                     redesNeurais.clear();
-
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
                     quantidadeVivos = numPlayers;
                     inimigos = limpezaTotal(inimigos, janela);
                     player.teleporte(500,350);
 
                 }
-                //limparInimigos(maxInimigos, movimento, sensores, janela);
                 inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
-                //player.teleporte(50,350);
-
-
             }
-
-
             try {
                 Thread.sleep(16); // Aproximadamente 60 FPS
             } catch (InterruptedException e) {
@@ -180,9 +172,7 @@ public class Main {
             }
         }
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
-
     }
-
 
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
@@ -192,22 +182,16 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-
             RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 6, 2); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
-
 
     private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
         Random random = new Random();
         Inimigo[] inimigos = new Inimigo[maxInimigos];
 
         for (int i = 0; i < maxInimigos; i++) {
-            if (i == 0) {
-                // Descarta o primeiro inimigo
-                continue;
-            }
 
             if (random.nextInt(2) == 0) {
                 inimigos[i] = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
@@ -215,10 +199,8 @@ public class Main {
                 inimigos[i] = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
             }
             janela.adicionarObjeto(inimigos[i]);
-
         }
         return inimigos;
-
     }
 
     private static Inimigo[] limpezaTotal(Inimigo[] inimigos, GameWindow janela) {
@@ -241,4 +223,19 @@ public class Main {
             }
         }
     }
+
+    public static List<PlayerIA> selecao(List<PlayerIA> populacao, int numSelecionados) {
+        // Copia a população para evitar modificar a lista original
+        List<PlayerIA> copiaPopulacao = new ArrayList<>(populacao);
+
+        // Ordena a cópia com base na pontuação (do maior para o menor)
+        copiaPopulacao.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
+
+        // Garante que numSelecionados não ultrapasse o tamanho da lista
+        numSelecionados = Math.min(numSelecionados, copiaPopulacao.size());
+
+        // Retorna os melhores indivíduos
+        return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
+    }
+
 }
