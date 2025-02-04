@@ -85,6 +85,7 @@ public class Main {
                         janela.removerObjeto(inimigo);
                         inimigos[i] = null;
                         System.gc();
+                        //player.teleporte(50,350);
 
                         System.out.println("Colisão detectada! Inimigo removido.");
                     } else if (inimigo.getRect().x < player.getRect().x) {
