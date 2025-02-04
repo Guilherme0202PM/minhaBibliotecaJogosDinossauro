@@ -103,7 +103,7 @@ public class Main {
                             RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
                             // Ajusta os pesos da rede neural dependendo do inimigo
-                            int fatorCondicao = (inimigo.getY() == 350) ? 1 : -1;
+                            int fatorCondicao = (inimigo.getY() == 350) ? -1 : 1;
                             redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                             // Calcula as saídas da rede neural
@@ -183,7 +183,7 @@ public class Main {
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
         for (int i = 0; i < numPlayers; i++) {
             int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
-            PlayerIA playerIA = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
@@ -197,7 +197,7 @@ public class Main {
                                              RedeNeuralTeste2 melhorRede) {
         for (int i = 0; i < numPlayers; i++) {
             int posX = 50 + i * 20;
-            PlayerIA playerIA = new PlayerIA(posX, 50, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            PlayerIA playerIA = new PlayerIA(posX, 300, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
