@@ -18,6 +18,8 @@ public class Main {
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
 
+        //Deleta deleta = new Deleta(30, 50, 50, 50,"não vai ter", movimento, sensores, som, janela);
+        //janela.adicionarObjeto(deleta);
         Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
         janela.adicionarObjeto(player);
         player.adicionarListener();
@@ -60,6 +62,7 @@ public class Main {
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
+        int deletas = 0;
 
 
         while (geracaoAtual < totalGeracao) {
@@ -90,6 +93,18 @@ public class Main {
                         }
                     }
 
+//                    if (sensores.verificarColisao(deleta, inimigo)) {
+//                        janela.removerObjeto(inimigo);
+//                        inimigos[i] = null;
+//                        System.gc();
+//                        deletas++;
+//                        if (deletas < 5){
+//                            deleta.teleporte(500,350);
+//                        }else {
+//                            deleta.teleporte(500,50);
+//                            deletas = 0;
+//                        }
+//                    }
 
                     // Interação com cada PlayerIA
                     for (int j = 0; j < player2List.size(); j++) {
@@ -166,6 +181,8 @@ public class Main {
                     quantidadeVivos = numPlayers;
                     inimigos = limpezaTotal(inimigos, janela);
                     player.teleporte(500,350);
+                    //deleta.teleporte(500,350);
+                    //deletas = 0;
 
                 }
                 inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);

@@ -36,7 +36,16 @@ public abstract class CriaObjeto {
         }
     }
 
-    // Método para atualizar a imagem do objeto
+    public CriaObjeto(int x, int y, int largura, int altura) {
+        this.x = x;
+        this.y = y;
+        this.largura = largura;
+        this.altura = altura;
+        this.angulo = 90; // Inicialmente, o ângulo de rotação é 90
+
+    }
+
+    // Metodo para atualizar a imagem do objeto
     public void setImagem(Image novaImagem) {
         this.imagem = novaImagem;
     }
