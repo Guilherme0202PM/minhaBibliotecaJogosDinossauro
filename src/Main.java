@@ -17,6 +17,7 @@ public class Main {
 
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
+        int Cronometro = 0;
 
         //Deleta deleta = new Deleta(30, 50, 50, 50,"não vai ter", movimento, sensores, som, janela);
         //janela.adicionarObjeto(deleta);
@@ -38,7 +39,7 @@ public class Main {
         int geracaoAtual = 0;
         int totalGeracao = 10;
 
-        int maxInimigos = pontuacaoAlvo;
+        int maxInimigos = 100;
         Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
 
         // Geração de múltiplos blocos de chão
@@ -57,6 +58,12 @@ public class Main {
         pontuacaoLabel.setForeground(Color.BLACK);
         pontuacaoLabel.setBounds(30, 30, 200, 30);
         janela.addComponentToGamePanel(pontuacaoLabel);
+
+        JLabel cronometoLabel = new JLabel("Cronometro: 0");
+        cronometoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        cronometoLabel.setForeground(Color.BLACK);
+        cronometoLabel.setBounds(50, 50, 200, 30);
+        janela.addComponentToGamePanel(cronometoLabel);
 
         long startTime = System.currentTimeMillis();
 
@@ -192,6 +199,8 @@ public class Main {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+            Cronometro++;
+            cronometoLabel.setText("Cronometro: " + Cronometro);
         }
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
     }
