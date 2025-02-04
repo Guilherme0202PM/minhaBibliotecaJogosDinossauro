@@ -125,6 +125,13 @@ public class RedeNeuralTeste2 {
         return arredondar(1 / (1 + Math.exp(-x)));
     }
 
+    // Derivada da função de ativação Tangente Hiperbólica
+    private double tanhDerivada(double x) {
+        double th = Math.tanh(x);
+        return arredondar(1 - (th * th)); // 1 - tanh^2(x)
+    }
+
+
 //    // Metodo para calcular a saída da rede
 //    public double[] calcularSaida(double[] entradas) {
 //        double[] camadaOculta = new double[numOcultos];
