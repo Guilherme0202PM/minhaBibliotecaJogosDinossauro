@@ -71,6 +71,7 @@ public class Main {
 
         int deletas = 0;
 
+        RedeNeuralTeste2 melhorRede = null;
 
         while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
@@ -180,8 +181,10 @@ public class Main {
                 // Seleciona os melhores players com base na pontuação
                 coleta = selecao(coleta, numPlayers);
 
-                // Seleciona a melhor rede neural com base no player com maior pontuação
-                //RedeNeuralTeste2 melhorRede = selecaoMelhorRede(coleta, redesNeurais);
+                // Seleciona a melhor rede neural antes de limpar as listas
+                if (!coleta.isEmpty() && !redesNeurais.isEmpty()) {
+                    melhorRede = selecaoMelhorRede(coleta, redesNeurais);
+                }
 
                 if (geracaoAtual < totalGeracao) {
                     // Reinicializa a população
@@ -189,8 +192,8 @@ public class Main {
                     redesNeurais.clear();
                     coleta.clear();
 
-                    //inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
-                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
+                    //inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
 
 
                     quantidadeVivos = numPlayers;
