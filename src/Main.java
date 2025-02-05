@@ -177,16 +177,22 @@ public class Main {
                 geracaoAtual++;
                 System.out.println("Geração " + geracaoAtual + " concluída.");
 
+                // Seleciona os melhores players com base na pontuação
                 coleta = selecao(coleta, numPlayers);
+
+                // Seleciona a melhor rede neural com base no player com maior pontuação
+                //RedeNeuralTeste2 melhorRede = selecaoMelhorRede(coleta, redesNeurais);
 
                 if (geracaoAtual < totalGeracao) {
                     // Reinicializa a população
                     player2List.clear();
                     redesNeurais.clear();
-                    RedeNeuralTeste2 melhorRede = null;
+                    coleta.clear();
 
-                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
-                    //inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+                    //inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
+                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+
+
                     quantidadeVivos = numPlayers;
                     inimigos = limpezaTotal(inimigos, janela);
                     player.teleporte(500,350);
