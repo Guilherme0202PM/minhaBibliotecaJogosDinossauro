@@ -77,9 +77,14 @@ public class Main {
             for (int i = 0; i < maxInimigos; i++) {
                 Inimigo inimigo = inimigos[i];
                 if (inimigo != null) {
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime - startTime >= i * 2000) {
+//                    long currentTime = System.currentTimeMillis();
+//                    if (currentTime - startTime >= i * 2000) {
+//                        inimigo.atualizar();
+//                    }
+
+                    if (Cronometro >= i * 200){
                         inimigo.atualizar();
+
                     }
 
                     if (sensores.verificarColisao(player, inimigo)) {
