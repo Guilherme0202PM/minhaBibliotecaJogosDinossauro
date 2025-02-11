@@ -25,7 +25,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 10;
+        int totalGeracao = 30;
 
         int maxInimigos = 100;
         int inimigosCriados = 0;
@@ -76,7 +76,7 @@ public class Main {
             for (int i = 0; i < maxInimigos; i++) {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
-                if (Cronometro >= (inimigosCriados + 1) * 200) {
+                if (Cronometro >= (inimigosCriados + 1) * 100) {
                     criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -113,6 +113,7 @@ public class Main {
                         for (int j = 0; j < player2List.size(); j++) {
                             PlayerIA playerIA = player2List.get(j);
                             playerIA.apertaF();
+                            playerIA.levantar();
 
 
                             // Analisar proximidade e usar rede neural

@@ -9,6 +9,7 @@ public class PlayerIA extends CriaObjeto {
     private GameWindow janela;
     private Sprite sprite; // Instância da classe Sprite
     private int metadealtura = altura/2;
+    private int alturaOriginal = altura;
     private int ajuste = y-metadealtura;
     private double velocidadeVertical = 0;
     private boolean noAr = true;
@@ -101,16 +102,34 @@ public class PlayerIA extends CriaObjeto {
 
     // Metodo para simular o pressionamento da tecla "Espaço" (pulo)
     public void apertarEspaco() {
+        altura = alturaOriginal; // Reduz a altura pela metade (agachado)
         movimento.iniciarSalto(PlayerIA.this); // Inicia o salto do PlayerIA
         sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
+        agaichado = false;
     }
 
     // Metodo para simular o pressionamento da tecla "S" (agachar)
     public void apertarS() {
         movimento.movimentoY(PlayerIA.this, 20); // Ajuste de movimento para abaixar
         altura = metadealtura; // Reduz a altura pela metade (agachado)
-        // sprite.iniciarAnimacao("dino rebaixadoo_rebaixado_", 2, 100); // (Caso tenha animação de agachar)
+        agaichado = true;
     }
+
+    public void levantar() {
+        altura = alturaOriginal; // Restaura a altura original do personagem
+    }
+
+
+    public void estabilizador(){
+        if(agaichado = false){
+
+        }else {
+
+        }
+    }
+
+    private boolean agaichado;
+
 
     public void apertaF() {
         if (!filtroAplicado) { // Verifica se o filtro já foi aplicado
