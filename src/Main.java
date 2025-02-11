@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+
         GameWindow janela = new GameWindow();
         Som som = new Som("Meow.wav");
 
@@ -15,41 +16,36 @@ public class Main {
         Fundo fundo = new Fundo(600, 600, "Fundo.png");
         janela.setFundo(fundo); // Define o fundo no GamePanel
 
+        //--------------------------- VARIÁVEIS DE CONTROLE
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
         int Cronometro = 0;
 
-        //Deleta deleta = new Deleta(30, 50, 50, 50,"não vai ter", movimento, sensores, som, janela);
-        //janela.adicionarObjeto(deleta);
-        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
-        janela.adicionarObjeto(player);
-        player.adicionarListener();
-
-        // Criação de um vetor para armazenar múltiplos PlayerIA
-        int numPlayers = 20; // Número de PlayerIA
-        List<PlayerIA> player2List = new ArrayList<>();
-        List<PlayerIA> coleta = new ArrayList<>();
-        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
-
-        // Inicializa os PlayerIA e redes neurais
-        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
-
         // Variáveis de controle de geração
+        int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
         int totalGeracao = 10;
 
         int maxInimigos = 100;
-
-        //Inimigo[] inimigos2 = new Inimigo[maxInimigos];
-        //Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
-
-        // Supondo que inimigos2 seja uma lista e maxInimigos seja um valor definido:
-        List<Inimigo> inimigos3 = new ArrayList<>();
         int inimigosCriados = 0;
 
-        // Chama a nova versão para criar os inimigos
-        //criarInimigos(maxInimigos, movimento, sensores, janela);
+        int limiteProximidade = 80; // Defina um limite adequado para a proximidade
+        RedeNeuralTeste2 melhorRede = null;
+        //--------------------------- VARIÁVEIS DE CONTROLE FIM
+
+        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+        janela.adicionarObjeto(player);
+        player.adicionarListener();
+
+        // Criação de um vetor para armazenar múltiplos PlayerIA
+        List<PlayerIA> player2List = new ArrayList<>();
+        List<PlayerIA> coleta = new ArrayList<>(); //Coleta pontuações de PlayerIA
+        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
+        List<Inimigo> inimigos = new ArrayList<>(); //Armazena inimigos
+
+        // Inicializa os PlayerIA e redes neurais
+        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
 
 
         // Geração de múltiplos blocos de chão
@@ -75,93 +71,84 @@ public class Main {
         cronometoLabel.setBounds(50, 50, 200, 30);
         janela.addComponentToGamePanel(cronometoLabel);
 
-        //long startTime = System.currentTimeMillis();
-
-        int limiteProximidade = 80; // Defina um limite adequado para a proximidade
-
-        //int deletas = 0;
-
-        RedeNeuralTeste2 melhorRede = null;
 
         while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
                 if (Cronometro >= (inimigosCriados + 1) * 200) {
-                    criarInimigos2(inimigos3, movimento, sensores, janela); // Cria inimigos
+                    criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
 
-                // Acesso aos inimigos da lista inimigos3
-                if (i < inimigos3.size()) {
-                    Inimigo inimigo = inimigos3.get(i); // Agora acessamos o inimigo pela lista
+                // Acesso aos inimigos da lista inimigos
+                if (i < inimigos.size()) {
+                    Inimigo inimigo = inimigos.get(i); // Agora acessamos o inimigo pela lista
 
                     if (inimigo != null) {
 
-                    if (Cronometro >= i * 200){
-                        inimigo.atualizar();
+                        if (Cronometro >= i * 200) {
+                            inimigo.atualizar();
+                        }
 
-                    }
-
-                    if (sensores.verificarColisao(player, inimigo)) {
-                        janela.removerObjeto(inimigo);
-                        inimigos3.remove(i); // Remove o inimigo da lista
-                        System.gc();
-                        //player.teleporte(50,350);
-
-                        System.out.println("Colisão detectada! Inimigo removido.");
-                    } else if (inimigo.getRect().x < player.getRect().x) {
-                        pontuacao++;
-                        System.out.println("Pontuação: " + pontuacao);
-                        pontuacaoLabel.setText("Pontuacao: " + pontuacao);
-
-                        if (inimigo.getRect().x < -inimigo.getRect().width) {
+                        if (sensores.verificarColisao(player, inimigo)) {
                             janela.removerObjeto(inimigo);
-                            inimigos3.remove(i); // Remove o inimigo da lista
+                            inimigos.remove(i); // Remove o inimigo da lista
                             System.gc();
 
-                        }
-                    }
+                            System.out.println("Colisão detectada! Inimigo removido.");
+                        } else if (inimigo.getRect().x < player.getRect().x) {
+                            pontuacao++;
+                            System.out.println("Pontuação: " + pontuacao);
+                            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
 
-                    // Interação com cada PlayerIA
-                    for (int j = 0; j < player2List.size(); j++) {
-                        PlayerIA playerIA = player2List.get(j);
-                        playerIA.apertaF();
-
-
-                        // Analisar proximidade e usar rede neural
-                        if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                            double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY()};
-                            RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
-
-                            // Ajusta os pesos da rede neural dependendo do inimigo
-                            //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
-                            int fatorCondicao = (inimigo.getY() == 350) ? 0 : 1;
-                            redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
-
-                            // Calcula as saídas da rede neural
-                            double[] saidas = redeNeural.calcularSaida(entradas);
-                            if (saidas[0] > 0) {
-                                playerIA.apertarEspaco(); // Pular
-                                playerIA.incrementarPontuacao(1);
-                            } else {
-                                playerIA.apertarS(); // Abaixar
-                                playerIA.incrementarPontuacao(1);
-                            }
-                            // Verifica colisão com PlayerIA
-                            if (sensores.verificarColisao(playerIA, inimigo)) {
-                                coleta.add(playerIA);
-                                RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
-                                janela.removerObjeto(playerIA);
-                                player2List.remove(j);
-                                redesNeurais.remove(j);
-                                quantidadeVivos--;
-                                //System.out.println("Quantidade de vivos"+ quantidadeVivos);
-                                j--; // Ajusta o índice após remoção
+                            if (inimigo.getRect().x < -inimigo.getRect().width) {
+                                janela.removerObjeto(inimigo);
+                                inimigos.remove(i); // Remove o inimigo da lista
                                 System.gc();
                             }
                         }
-                    }
+
+                        // Interação com cada PlayerIA
+                        for (int j = 0; j < player2List.size(); j++) {
+                            PlayerIA playerIA = player2List.get(j);
+                            playerIA.apertaF();
+
+
+                            // Analisar proximidade e usar rede neural
+                            if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
+                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY()};
+                                RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
+
+                                // Ajusta os pesos da rede neural dependendo do inimigo
+                                //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
+                                //Era entre -1 e 1 mas mudei para 0 e 1
+                                int fatorCondicao = (inimigo.getY() == 350) ? 0 : 1;
+                                redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
+
+                                // Calcula as saídas da rede neural
+                                double[] saidas = redeNeural.calcularSaida(entradas);
+                                if (saidas[0] > 0) {
+                                    playerIA.apertarEspaco(); // Pular
+                                    playerIA.incrementarPontuacao(1);
+                                } else {
+                                    playerIA.apertarS(); // Abaixar
+                                    playerIA.incrementarPontuacao(1);
+                                }
+                                // Verifica colisão com PlayerIA
+                                if (sensores.verificarColisao(playerIA, inimigo)) {
+                                    coleta.add(playerIA);
+                                    RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
+                                    janela.removerObjeto(playerIA);
+                                    player2List.remove(j);
+                                    redesNeurais.remove(j);
+                                    quantidadeVivos--;
+                                    //System.out.println("Quantidade de vivos"+ quantidadeVivos);
+                                    j--; // Ajusta o índice após remoção
+                                    System.gc();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -201,17 +188,14 @@ public class Main {
                     coleta.clear();
 
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
-                    //inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
-
 
                     quantidadeVivos = numPlayers;
-                    // Limpeza dos inimigos da lista inimigos3
-                    for (Inimigo inimigo : inimigos3) {
+                    // Limpeza dos inimigos da lista inimigos
+                    for (Inimigo inimigo : inimigos) {
                         janela.removerObjeto(inimigo);
                     }
-                    inimigos3.clear();  // Limpa a lista de inimigos
+                    inimigos.clear();  // Limpa a lista de inimigos
                 }
-                //inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
             }
             try {
                 Thread.sleep(16); // Aproximadamente 60 FPS
@@ -252,26 +236,9 @@ public class Main {
             if (melhorRede != null) {
                 novaRede.copiarPesos(melhorRede);
             }
-
             redesNeurais.add(novaRede);
         }
     }
-
-//    private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
-//        Random random = new Random();
-//        Inimigo[] inimigos = new Inimigo[maxInimigos];
-//
-//        for (int i = 0; i < maxInimigos; i++) {
-//
-//            if (random.nextInt(2) == 0) {
-//                inimigos[i] = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-//            } else {
-//                inimigos[i] = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
-//            }
-//            janela.adicionarObjeto(inimigos[i]);
-//        }
-//        return inimigos;
-//    }
 
     private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela) {
         Random random = new Random();
@@ -284,27 +251,12 @@ public class Main {
         } else {
             inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
         }
-
         // Adiciona o inimigo à lista inimigos2
         inimigos2.add(inimigo);
 
         // Adiciona o inimigo à janela (presumivelmente mostrando ele na tela)
         janela.adicionarObjeto(inimigo);
     }
-
-
-
-//    private static Inimigo[] limpezaTotal(Inimigo[] inimigos, GameWindow janela) {
-//        if (inimigos != null) {
-//            for (int i = 0; i < inimigos.length; i++) {
-//                if (inimigos[i] != null) {
-//                    janela.removerObjeto(inimigos[i]); // Remove da janela
-//                    inimigos[i] = null; // Define como nulo
-//                }
-//            }
-//        }
-//        return inimigos; // Retorna o vetor atualizado
-//    }
 
     private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {
         for (Chao chao : chaoBlocos) {
@@ -338,7 +290,6 @@ public class Main {
         }
         System.out.println("Fim Ranking:");
 
-
         // Retorna os melhores indivíduos
         return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
     }
@@ -360,5 +311,4 @@ public class Main {
         int indiceMelhor = populacao.indexOf(melhorPlayer);
         return redesNeurais.get(indiceMelhor);
     }
-
 }
