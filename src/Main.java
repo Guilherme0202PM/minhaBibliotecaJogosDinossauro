@@ -40,7 +40,17 @@ public class Main {
         int totalGeracao = 10;
 
         int maxInimigos = 100;
-        Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
+
+        //Inimigo[] inimigos2 = new Inimigo[maxInimigos];
+        //Inimigo[] inimigos = criarInimigos(maxInimigos, movimento, sensores, janela);
+
+        // Supondo que inimigos2 seja uma lista e maxInimigos seja um valor definido:
+        List<Inimigo> inimigos3 = new ArrayList<>();
+        int inimigosCriados = 0;
+
+        // Chama a nova versão para criar os inimigos
+        //criarInimigos(maxInimigos, movimento, sensores, janela);
+
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
@@ -65,22 +75,28 @@ public class Main {
         cronometoLabel.setBounds(50, 50, 200, 30);
         janela.addComponentToGamePanel(cronometoLabel);
 
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
 
-        int deletas = 0;
+        //int deletas = 0;
 
         RedeNeuralTeste2 melhorRede = null;
 
         while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
-                Inimigo inimigo = inimigos[i];
-                if (inimigo != null) {
-//                    long currentTime = System.currentTimeMillis();
-//                    if (currentTime - startTime >= i * 2000) {
-//                        inimigo.atualizar();
-//                    }
+
+                // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
+                if (Cronometro >= (inimigosCriados + 1) * 200) {
+                    criarInimigos2(inimigos3, movimento, sensores, janela); // Cria inimigos
+                    inimigosCriados++; // Incrementa o contador de inimigos criados
+                }
+
+                // Acesso aos inimigos da lista inimigos3
+                if (i < inimigos3.size()) {
+                    Inimigo inimigo = inimigos3.get(i); // Agora acessamos o inimigo pela lista
+
+                    if (inimigo != null) {
 
                     if (Cronometro >= i * 200){
                         inimigo.atualizar();
@@ -89,7 +105,7 @@ public class Main {
 
                     if (sensores.verificarColisao(player, inimigo)) {
                         janela.removerObjeto(inimigo);
-                        inimigos[i] = null;
+                        inimigos3.remove(i); // Remove o inimigo da lista
                         System.gc();
                         //player.teleporte(50,350);
 
@@ -101,24 +117,11 @@ public class Main {
 
                         if (inimigo.getRect().x < -inimigo.getRect().width) {
                             janela.removerObjeto(inimigo);
-                            inimigos[i] = null;
+                            inimigos3.remove(i); // Remove o inimigo da lista
                             System.gc();
 
                         }
                     }
-
-//                    if (sensores.verificarColisao(deleta, inimigo)) {
-//                        janela.removerObjeto(inimigo);
-//                        inimigos[i] = null;
-//                        System.gc();
-//                        deletas++;
-//                        if (deletas < 5){
-//                            deleta.teleporte(500,350);
-//                        }else {
-//                            deleta.teleporte(500,50);
-//                            deletas = 0;
-//                        }
-//                    }
 
                     // Interação com cada PlayerIA
                     for (int j = 0; j < player2List.size(); j++) {
@@ -156,9 +159,9 @@ public class Main {
                                 //System.out.println("Quantidade de vivos"+ quantidadeVivos);
                                 j--; // Ajusta o índice após remoção
                                 System.gc();
-
                             }
                         }
+                    }
                     }
                 }
             }
@@ -202,13 +205,13 @@ public class Main {
 
 
                     quantidadeVivos = numPlayers;
-                    inimigos = limpezaTotal(inimigos, janela);
-                    player.teleporte(500,350);
-                    //deleta.teleporte(500,350);
-                    //deletas = 0;
-
+                    // Limpeza dos inimigos da lista inimigos3
+                    for (Inimigo inimigo : inimigos3) {
+                        janela.removerObjeto(inimigo);
+                    }
+                    inimigos3.clear();  // Limpa a lista de inimigos
                 }
-                inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
+                //inimigos = criarInimigos(maxInimigos,movimento,sensores,janela);
             }
             try {
                 Thread.sleep(16); // Aproximadamente 60 FPS
@@ -254,33 +257,54 @@ public class Main {
         }
     }
 
-    private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
+//    private static Inimigo[] criarInimigos(int maxInimigos, Movimento movimento, Sensores sensores, GameWindow janela) {
+//        Random random = new Random();
+//        Inimigo[] inimigos = new Inimigo[maxInimigos];
+//
+//        for (int i = 0; i < maxInimigos; i++) {
+//
+//            if (random.nextInt(2) == 0) {
+//                inimigos[i] = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+//            } else {
+//                inimigos[i] = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+//            }
+//            janela.adicionarObjeto(inimigos[i]);
+//        }
+//        return inimigos;
+//    }
+
+    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela) {
         Random random = new Random();
-        Inimigo[] inimigos = new Inimigo[maxInimigos];
 
-        for (int i = 0; i < maxInimigos; i++) {
+        Inimigo inimigo; // Declare a variável inimigo aqui.
 
-            if (random.nextInt(2) == 0) {
-                inimigos[i] = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-            } else {
-                inimigos[i] = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
-            }
-            janela.adicionarObjeto(inimigos[i]);
+        // Cria um inimigo aleatório
+        if (random.nextInt(2) == 0) {
+            inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+        } else {
+            inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
         }
-        return inimigos;
+
+        // Adiciona o inimigo à lista inimigos2
+        inimigos2.add(inimigo);
+
+        // Adiciona o inimigo à janela (presumivelmente mostrando ele na tela)
+        janela.adicionarObjeto(inimigo);
     }
 
-    private static Inimigo[] limpezaTotal(Inimigo[] inimigos, GameWindow janela) {
-        if (inimigos != null) {
-            for (int i = 0; i < inimigos.length; i++) {
-                if (inimigos[i] != null) {
-                    janela.removerObjeto(inimigos[i]); // Remove da janela
-                    inimigos[i] = null; // Define como nulo
-                }
-            }
-        }
-        return inimigos; // Retorna o vetor atualizado
-    }
+
+
+//    private static Inimigo[] limpezaTotal(Inimigo[] inimigos, GameWindow janela) {
+//        if (inimigos != null) {
+//            for (int i = 0; i < inimigos.length; i++) {
+//                if (inimigos[i] != null) {
+//                    janela.removerObjeto(inimigos[i]); // Remove da janela
+//                    inimigos[i] = null; // Define como nulo
+//                }
+//            }
+//        }
+//        return inimigos; // Retorna o vetor atualizado
+//    }
 
     private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {
         for (Chao chao : chaoBlocos) {
