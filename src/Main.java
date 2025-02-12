@@ -124,12 +124,12 @@ public class Main {
                                 // Ajusta os pesos da rede neural dependendo do inimigo
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
-                                int fatorCondicao = (inimigo.getY() == 350) ? 0 : 1;
+                                double fatorCondicao = (inimigo.getY() == 350) ? 0 : 1;
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida(entradas);
-                                if (saidas[0] > 0) {
+                                if (saidas[0] > saidas[1]) {
                                     playerIA.apertarEspaco(); // Pular
                                     playerIA.incrementarPontuacao(1);
                                 } else {
@@ -237,9 +237,43 @@ public class Main {
             if (melhorRede != null) {
                 novaRede.copiarPesos(melhorRede);
             }
+
             redesNeurais.add(novaRede);
+
+            double[] entrada1 = {50, 320, 600, 350};
+            double[] entrada2 = {50, 320, 600, 320};
+            double[] saida1 = {1, 0};
+            double[] saida2 = {0, 1};
+
+            novaRede.treinar(entrada1, saida1, 0.01);
+            novaRede.treinar(entrada2, saida2, 0.01);
+
+
+            // Treinamento inicial da rede neural (se necessário)
+            //double[][] entradasTreino = { {50, 320, 600, 350}, {50, 320, 600, 320} }; // Exemplos de entradas
+            //double[][] saidasTreino = { {1, 0}, {0, 1} }; // Exemplo: pular quando inimigo terrestre, abaixar quando voador
+            //novaRede.treinar(entradasTreino, saidasTreino, 1000); // Treina a rede com 1000 iterações (ajuste conforme necessário)
         }
     }
+
+//    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+//                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela,
+//                                             RedeNeuralTeste2 melhorRede) {
+//        for (int i = 0; i < numPlayers; i++) {
+//            int posX = 50 + i * 20;
+//            PlayerIA playerIA = new PlayerIA(posX, 300, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+//            player2List.add(playerIA);
+//            janela.adicionarObjeto(playerIA);
+//
+//            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 8, 2);
+//
+//            // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
+//            if (melhorRede != null) {
+//                novaRede.copiarPesos(melhorRede);
+//            }
+//            redesNeurais.add(novaRede);
+//        }
+//    }
 
     private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela) {
         Random random = new Random();
