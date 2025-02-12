@@ -37,24 +37,25 @@ public class RedeNeuralTeste2 {
     private void inicializarPesos() {
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos; j++) {
-                pesosEntradaOculta[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
+                //pesosEntradaOculta[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
+                pesosEntradaOculta[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
                 System.out.println("pesosEntradas: "+pesosEntradaOculta[i][j]);
             }
         }
         for (int i = 0; i < numOcultos; i++) {
             for (int j = 0; j < numSaidas; j++) {
-                pesosOcultaSaida[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
+                pesosOcultaSaida[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
                 System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
 
             }
         }
         for (int i = 0; i < numOcultos; i++) {
-            biasOculta[i] = random.nextDouble() * 1.0 - 0.5;
+            biasOculta[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
             System.out.println("biasOculta: "+biasOculta[i]);
 
         }
         for (int i = 0; i < numSaidas; i++) {
-            biasSaida[i] = random.nextDouble() * 1.0 - 0.5;
+            biasSaida[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
             System.out.println("biasSaida: "+biasSaida[i]);
 
         }
@@ -72,7 +73,7 @@ public class RedeNeuralTeste2 {
                 soma += entradas[j] * pesosEntradaOculta[j][i];
                 System.out.println("Cálculo da camada oculta soma depois: "+soma);
             }
-            saidaOculta[i] = relu(soma);
+            saidaOculta[i] = tanh(soma);
             System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
         }
 
@@ -105,7 +106,7 @@ public class RedeNeuralTeste2 {
     public void ajustarPesosPorCondicao(double[] entradas, double fator) {
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos; j++) {
-                pesosEntradaOculta[i][j] += fator * entradas[i];
+                pesosEntradaOculta[i][j] = fator * entradas[i];
             }
         }
     }
@@ -125,41 +126,16 @@ public class RedeNeuralTeste2 {
         return arredondar(1 / (1 + Math.exp(-x)));
     }
 
+    // Função de ativação Tangente Hiperbólica
+    private double tanh(double x) {
+        return arredondar(Math.tanh(x));
+    }
+
     // Derivada da função de ativação Tangente Hiperbólica
     private double tanhDerivada(double x) {
         double th = Math.tanh(x);
         return arredondar(1 - (th * th)); // 1 - tanh^2(x)
     }
-
-
-//    // Metodo para calcular a saída da rede
-//    public double[] calcularSaida(double[] entradas) {
-//        double[] camadaOculta = new double[numOcultos];
-//
-//        // Cálculo da camada oculta
-//        for (int j = 0; j < numOcultos; j++) {
-//            camadaOculta[j] = biasOculta[j];
-//            for (int i = 0; i < numEntradas; i++) {
-//                camadaOculta[j] += entradas[i] * pesosEntradaOculta[i][j];
-//            }
-//            camadaOculta[j] = arredondar(relu(camadaOculta[j]));
-//            System.out.println("CalculaSaida: camada oculta " + camadaOculta[j]);
-//        }
-//
-//        // Cálculo da camada de saída
-//        double[] saida = new double[numSaidas];
-//        for (int j = 0; j < numSaidas; j++) {
-//            saida[j] = biasSaida[j];
-//            System.out.println("CalculaSaida: biasSaida " + saida[j]);
-//            for (int i = 0; i < numOcultos; i++) {
-//                saida[j] += camadaOculta[i] * pesosOcultaSaida[i][j];
-//            }
-//            saida[j] = arredondar(sigmoid(saida[j]));
-//            System.out.println("CalculaSaida: sigmoid(saida[j]) " + saida[j]);
-//        }
-//
-//        return saida;
-//    }
 
     public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
         // Forward pass
@@ -169,7 +145,7 @@ public class RedeNeuralTeste2 {
             for (int i = 0; i < numEntradas; i++) {
                 camadaOculta[j] += entradas[i] * pesosEntradaOculta[i][j];
             }
-            camadaOculta[j] = relu(camadaOculta[j]);
+            camadaOculta[j] = tanh(camadaOculta[j]);  // Mudamos para tanh;
         }
 
         double[] saidas = new double[numSaidas];
@@ -192,7 +168,8 @@ public class RedeNeuralTeste2 {
             for (int k = 0; k < numSaidas; k++) {
                 erroOculto[j] += erroSaida[k] * pesosOcultaSaida[j][k];
             }
-            erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
+            //erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
+            erroOculto[j] *= tanhDerivada(camadaOculta[j]);  // Usando derivada do tanh
         }
 
         for (int i = 0; i < numEntradas; i++) {
@@ -216,36 +193,7 @@ public class RedeNeuralTeste2 {
         }
     }
 
-//    public void copiarPesos(RedeNeuralTeste2 outraRede) {
-//        for (int i = 0; i < this.pesos.length; i++) {
-//            for (int j = 0; j < this.pesos[i].length; j++) {
-//                this.pesos[i][j] = outraRede.pesos[i][j];
-//            }
-//        }
-//    }
 
-//    public void ajustarPesosPorCondicao(double[] entradas, double fator) {
-//        // Ajusta os pesos da camada de entrada para a camada oculta
-//        for (int i = 0; i < pesosEntradaOculta.length; i++) {
-//            for (int j = 0; j < pesosEntradaOculta[i].length; j++) {
-//                pesosEntradaOculta[i][j] += entradas[i] * fator;
-//            }
-//        }
-//        // Ajusta os bias da camada oculta
-//        for (int i = 0; i < biasOculta.length; i++) {
-//            biasOculta[i] += fator;
-//        }
-//    }
-
-//    public void destruirRedeNeural() {
-//        // Anula todos os arrays da rede neural
-//        pesosEntradaOculta = null;
-//        biasOculta = null;
-//        pesosOcultaSaida = null;
-//        biasSaida = null;
-//
-//        System.out.println("A rede neural foi destruída.");
-//    }
 
     public double[][] pesosEntradaOculta() {
         return pesosEntradaOculta;

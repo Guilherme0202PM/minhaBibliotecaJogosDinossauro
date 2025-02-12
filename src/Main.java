@@ -87,7 +87,7 @@ public class Main {
 
                     if (inimigo != null) {
 
-                        if (Cronometro >= i * 200) {
+                        if (Cronometro >= i * 50) {
                             inimigo.atualizar();
                         }
 
