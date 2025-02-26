@@ -77,7 +77,9 @@ public class Main {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
-                    criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
+                    //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
+                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
+
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
 
@@ -292,6 +294,35 @@ public class Main {
         // Adiciona o inimigo à janela (presumivelmente mostrando ele na tela)
         janela.adicionarObjeto(inimigo);
     }
+
+    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro) {
+        Random random = new Random();
+        Inimigo inimigo;
+
+        if (cronometro < 1000) {
+            // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+            }
+        } else {
+            // Depois de 1000, cria um InimigoTerrestre ou InimigoEspinho
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoEspinho(600, 360, 50, 50, "espinho.png", -5, 0, movimento, sensores, janela);
+            }
+        }
+
+        // Adiciona o inimigo à lista
+        inimigos2.add(inimigo);
+
+        // Adiciona o inimigo à janela (para exibição)
+        janela.adicionarObjeto(inimigo);
+    }
+
+
 
     private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {
         for (Chao chao : chaoBlocos) {
