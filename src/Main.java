@@ -299,19 +299,36 @@ public class Main {
         Random random = new Random();
         Inimigo inimigo;
 
-        if (cronometro < 1000) {
+        if (cronometro < 500) {
             // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
             if (random.nextInt(2) == 0) {
                 inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
             } else {
                 inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
             }
-        } else {
+        } else if (cronometro > 500 && cronometro < 1000){
             // Depois de 1000, cria um InimigoTerrestre ou InimigoEspinho
             if (random.nextInt(2) == 0) {
                 inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
             } else {
-                inimigo = new InimigoEspinho(600, 360, 50, 50, "espinho.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", -5, 0, movimento, sensores, janela);
+            }
+        } else if (cronometro > 1000 && cronometro < 1500) {
+            // Entre 1500 e 2000, cria um InimigoVoador ou InimigoEspinho
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", -5, 0, movimento, sensores, janela);
+            }
+        } else {
+            // Depois de 3000, cria qualquer um dos três tipos de inimigo
+            int escolha = random.nextInt(3);
+            if (escolha == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+            } else if (escolha == 1) {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", -5, 0, movimento, sensores, janela);
             }
         }
 
@@ -321,7 +338,6 @@ public class Main {
         // Adiciona o inimigo à janela (para exibição)
         janela.adicionarObjeto(inimigo);
     }
-
 
 
     private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {
