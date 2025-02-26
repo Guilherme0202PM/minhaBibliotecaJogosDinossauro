@@ -39,24 +39,24 @@ public class RedeNeuralTeste2 {
             for (int j = 0; j < numOcultos; j++) {
                 //pesosEntradaOculta[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
                 pesosEntradaOculta[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-                System.out.println("pesosEntradas: "+pesosEntradaOculta[i][j]);
+                //System.out.println("pesosEntradas: "+pesosEntradaOculta[i][j]);
             }
         }
         for (int i = 0; i < numOcultos; i++) {
             for (int j = 0; j < numSaidas; j++) {
                 pesosOcultaSaida[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-                System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
+                //System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
 
             }
         }
         for (int i = 0; i < numOcultos; i++) {
             biasOculta[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-            System.out.println("biasOculta: "+biasOculta[i]);
+            //System.out.println("biasOculta: "+biasOculta[i]);
 
         }
         for (int i = 0; i < numSaidas; i++) {
             biasSaida[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-            System.out.println("biasSaida: "+biasSaida[i]);
+            //System.out.println("biasSaida: "+biasSaida[i]);
 
         }
     }
@@ -68,25 +68,25 @@ public class RedeNeuralTeste2 {
         // Cálculo da camada oculta
         for (int i = 0; i < numOcultos; i++) {
             double soma = biasOculta[i];
-            System.out.println("Cálculo da camada oculta soma antes: "+soma);
+            //System.out.println("Cálculo da camada oculta soma antes: "+soma);
             for (int j = 0; j < numEntradas; j++) {
                 soma += entradas[j] * pesosEntradaOculta[j][i];
-                System.out.println("Cálculo da camada oculta soma depois: "+soma);
+                //System.out.println("Cálculo da camada oculta soma depois: "+soma);
             }
             saidaOculta[i] = tanh(soma);
-            System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
+            //System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
         }
 
         // Cálculo da camada de saída
         for (int i = 0; i < numSaidas; i++) {
             double soma = biasSaida[i];
-            System.out.println("Cálculo da camada de saída soma antes: "+soma);
+            //System.out.println("Cálculo da camada de saída soma antes: "+soma);
             for (int j = 0; j < numOcultos; j++) {
                 soma += saidaOculta[j] * pesosOcultaSaida[j][i];
-                System.out.println("Cálculo da camada de saída soma depois: "+soma);
+                //System.out.println("Cálculo da camada de saída soma depois: "+soma);
             }
             saidaFinal[i] = sigmoid(soma);
-            System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
+            //System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
 
         }
         return saidaFinal;
