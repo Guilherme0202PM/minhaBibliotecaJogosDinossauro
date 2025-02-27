@@ -312,20 +312,14 @@ public class Main {
     private static int aumentaVelocidade(int Cronometro){
         int velocidadeInimigos = 0;
         int controleVelocidade = -5;
-        int contadorVelociade = 0;
 
-        if(Cronometro < 500){
-            contadorVelociade = 1;
-            velocidadeInimigos = controleVelocidade * contadorVelociade;
-        } else if(Cronometro > 500 && Cronometro < 1000){
-            contadorVelociade = 2;
-            velocidadeInimigos = controleVelocidade * contadorVelociade;
-        }else if(Cronometro > 1000){
-            contadorVelociade = 3;
-            velocidadeInimigos = controleVelocidade * contadorVelociade;
-        }
+        // Calcular a fórmula com arredondamento para cima
+        double resultado = (((Cronometro / 500.0) * 3) + 5) * -1;
 
-        return velocidadeInimigos;
+        // Arredondar para cima e converter para inteiro
+        velocidadeInimigos = (int) Math.ceil(resultado);
+
+            return velocidadeInimigos;
     }
 
     private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
