@@ -20,10 +20,10 @@ public class Main {
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
         int Cronometro = 0;
-        int velocidadeAmbiente = 20;
-        int velocidadeInimigos = -5;
-        int controleVelocidade = -5;
-        int contadorVelociade = 0;
+        //int velocidadeAmbiente = 20;
+        int velocidadeInimigos = 0;
+        //int controleVelocidade = -5;
+        //int contadorVelociade = 0;
 
 
         // Variáveis de controle de geração
@@ -87,7 +87,7 @@ public class Main {
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
-                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro,velocidadeInimigos);
+                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -129,7 +129,7 @@ public class Main {
 
                             // Analisar proximidade e usar rede neural
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY()};
+                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
                                 // Ajusta os pesos da rede neural dependendo do inimigo
@@ -233,7 +233,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(4, 8, 2); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(5, 10, 2); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -247,7 +247,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 8, 2);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(5, 10, 2);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
@@ -256,13 +256,13 @@ public class Main {
 
             redesNeurais.add(novaRede);
 
-            double[] entrada1 = {50, 320, 600, 350};
-            double[] entrada2 = {50, 320, 600, 320};
-            double[] saida1 = {1, 0};
-            double[] saida2 = {0, 1};
-
-            novaRede.treinar(entrada1, saida1, 0.01);
-            novaRede.treinar(entrada2, saida2, 0.01);
+//            double[] entrada1 = {50, 320, 600, 350};
+//            double[] entrada2 = {50, 320, 600, 320};
+//            double[] saida1 = {1, 0};
+//            double[] saida2 = {0, 1};
+//
+//            novaRede.treinar(entrada1, saida1, 0.01);
+//            novaRede.treinar(entrada2, saida2, 0.01);
 
 
             // Treinamento inicial da rede neural (se necessário)
