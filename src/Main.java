@@ -134,6 +134,11 @@ public class Main {
                                 if (saidas[0] > saidas[1]) {
                                     playerIA.apertarEspaco(); // Pular
                                     playerIA.incrementarPontuacao(1);
+                                    // Verificar se o inimigo é do tipo InimigoEspinho e chamar verificarEspacoApertado
+                                    if (inimigo instanceof InimigoEspinho) {
+                                        InimigoEspinho inimigoEspinho = (InimigoEspinho) inimigo;
+                                        inimigoEspinho.verificarEspacoApertado();
+                                    }
                                 } else {
                                     playerIA.apertarS(); // Abaixar
                                     playerIA.incrementarPontuacao(1);
@@ -393,4 +398,6 @@ public class Main {
         int indiceMelhor = populacao.indexOf(melhorPlayer);
         return redesNeurais.get(indiceMelhor);
     }
+
+
 }
