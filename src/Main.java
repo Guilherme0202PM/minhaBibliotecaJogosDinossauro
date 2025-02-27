@@ -20,6 +20,11 @@ public class Main {
         int pontuacaoAlvo = 100;
         int pontuacao = 0;
         int Cronometro = 0;
+        int velocidadeAmbiente = 20;
+        int velocidadeInimigos = -5;
+        int controleVelocidade = -5;
+        int contadorVelociade = 0;
+
 
         // Variáveis de controle de geração
         int numPlayers = 20; // Número de PlayerIA
@@ -27,6 +32,7 @@ public class Main {
         int geracaoAtual = 0;
         int totalGeracao = 30;
 
+        //Controle Inimigos
         int maxInimigos = 100;
         int inimigosCriados = 0;
 
@@ -77,8 +83,15 @@ public class Main {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
+
+                    //Criando um meio de aumentar a complaxidade do desafio pela velocidade
+                    if(Cronometro >= 500){
+                        contadorVelociade = 2;
+                        velocidadeInimigos = controleVelocidade * contadorVelociade;
+                    }
                     //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
-                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
+                    //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
+                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro,velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -300,40 +313,40 @@ public class Main {
         janela.adicionarObjeto(inimigo);
     }
 
-    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro) {
+    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
         Random random = new Random();
         Inimigo inimigo;
 
         if (cronometro < 500) {
             // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
             if (random.nextInt(2) == 0) {
-                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
             } else {
-                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
             }
         } else if (cronometro > 500 && cronometro < 1000){
             // Depois de 1000, cria um InimigoTerrestre ou InimigoEspinho
             if (random.nextInt(2) == 0) {
-                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
             } else {
-                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
             }
         } else if (cronometro > 1000 && cronometro < 1500) {
             // Entre 1500 e 2000, cria um InimigoVoador ou InimigoEspinho
             if (random.nextInt(2) == 0) {
-                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
             } else {
-                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
             }
         } else {
             // Depois de 3000, cria qualquer um dos três tipos de inimigo
             int escolha = random.nextInt(3);
             if (escolha == 0) {
-                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
             } else if (escolha == 1) {
-                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
             } else {
-                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", -5, 0, movimento, sensores, janela);
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
             }
         }
 
