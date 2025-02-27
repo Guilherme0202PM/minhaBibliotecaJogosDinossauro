@@ -126,7 +126,7 @@ public class Main {
                                 // Ajusta os pesos da rede neural dependendo do inimigo
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicao = (inimigo.getY() == 350) ? 0 : 1;
+                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
