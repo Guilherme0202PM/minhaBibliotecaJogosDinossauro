@@ -84,11 +84,7 @@ public class Main {
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
 
-                    //Criando um meio de aumentar a complaxidade do desafio pela velocidade
-                    if(Cronometro >= 500){
-                        contadorVelociade = 2;
-                        velocidadeInimigos = controleVelocidade * contadorVelociade;
-                    }
+                    velocidadeInimigos = aumentaVelocidade(Cronometro);
                     //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
                     criarInimigos2(inimigos, movimento, sensores, janela, Cronometro,velocidadeInimigos);
@@ -311,6 +307,25 @@ public class Main {
 
         // Adiciona o inimigo à janela (presumivelmente mostrando ele na tela)
         janela.adicionarObjeto(inimigo);
+    }
+
+    private static int aumentaVelocidade(int Cronometro){
+        int velocidadeInimigos = 0;
+        int controleVelocidade = -5;
+        int contadorVelociade = 0;
+
+        if(Cronometro < 500){
+            contadorVelociade = 1;
+            velocidadeInimigos = controleVelocidade * contadorVelociade;
+        } else if(Cronometro > 500 && Cronometro < 1000){
+            contadorVelociade = 2;
+            velocidadeInimigos = controleVelocidade * contadorVelociade;
+        }else if(Cronometro > 1000){
+            contadorVelociade = 3;
+            velocidadeInimigos = controleVelocidade * contadorVelociade;
+        }
+
+        return velocidadeInimigos;
     }
 
     private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
