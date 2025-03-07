@@ -252,12 +252,26 @@ public class Main {
 
             RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(5, 10, 2);
 
+            // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
                 novaRede.copiarPesos(melhorRede);
-                novaRede.mutacao(0.05); // Aplica mutação em 5% dos pesos
             }
 
             redesNeurais.add(novaRede);
+
+//            double[] entrada1 = {50, 320, 600, 350};
+//            double[] entrada2 = {50, 320, 600, 320};
+//            double[] saida1 = {1, 0};
+//            double[] saida2 = {0, 1};
+//
+//            novaRede.treinar(entrada1, saida1, 0.01);
+//            novaRede.treinar(entrada2, saida2, 0.01);
+
+
+            // Treinamento inicial da rede neural (se necessário)
+            //double[][] entradasTreino = { {50, 320, 600, 350}, {50, 320, 600, 320} }; // Exemplos de entradas
+            //double[][] saidasTreino = { {1, 0}, {0, 1} }; // Exemplo: pular quando inimigo terrestre, abaixar quando voador
+            //novaRede.treinar(entradasTreino, saidasTreino, 1000); // Treina a rede com 1000 iterações (ajuste conforme necessário)
         }
     }
 
