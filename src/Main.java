@@ -204,6 +204,9 @@ public class Main {
                     redesNeurais.clear();
                     coleta.clear();
 
+                    Cronometro = 0;
+                    inimigosCriados = 0;
+
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
 
                     quantidadeVivos = numPlayers;
@@ -319,7 +322,7 @@ public class Main {
         // Arredondar para cima e converter para inteiro
         velocidadeInimigos = (int) Math.ceil(resultado);
 
-            return velocidadeInimigos;
+        return velocidadeInimigos;
     }
 
     private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
