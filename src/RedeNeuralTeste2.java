@@ -1,13 +1,10 @@
-import java.util.Random;
+import java.util.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 public class RedeNeuralTeste2 {
     private int numEntradas, numOcultos, numSaidas;
@@ -92,15 +89,38 @@ public class RedeNeuralTeste2 {
         return saidaFinal;
     }
 
+//    public void copiarPesos(RedeNeuralTeste2 outraRede) {
+//        for (int i = 0; i < numEntradas; i++) {
+//            System.arraycopy(outraRede.pesosEntradaOculta[i], 0, this.pesosEntradaOculta[i], 0, numOcultos);
+//            System.out.println(outraRede.pesosEntradaOculta[i]);
+//        }
+//        for (int i = 0; i < numOcultos; i++) {
+//            System.arraycopy(outraRede.pesosOcultaSaida[i], 0, this.pesosOcultaSaida[i], 0, numSaidas);
+//        }
+//        System.arraycopy(outraRede.biasOculta, 0, this.biasOculta, 0, numOcultos);
+//        System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidas);
+//    }
+
     public void copiarPesos(RedeNeuralTeste2 outraRede) {
+        // Copiando e imprimindo pesos da camada de entrada para a camada oculta
         for (int i = 0; i < numEntradas; i++) {
             System.arraycopy(outraRede.pesosEntradaOculta[i], 0, this.pesosEntradaOculta[i], 0, numOcultos);
+            System.out.println("Pesos Entrada-Oculta[" + i + "]: " + Arrays.toString(outraRede.pesosEntradaOculta[i]));
         }
+
+        // Copiando e imprimindo pesos da camada oculta para a camada de saída
         for (int i = 0; i < numOcultos; i++) {
             System.arraycopy(outraRede.pesosOcultaSaida[i], 0, this.pesosOcultaSaida[i], 0, numSaidas);
+            System.out.println("Pesos Oculta-Saída[" + i + "]: " + Arrays.toString(outraRede.pesosOcultaSaida[i]));
         }
+
+        // Copiando e imprimindo bias da camada oculta
         System.arraycopy(outraRede.biasOculta, 0, this.biasOculta, 0, numOcultos);
+        System.out.println("Bias Oculta: " + Arrays.toString(outraRede.biasOculta));
+
+        // Copiando e imprimindo bias da camada de saída
         System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidas);
+        System.out.println("Bias Saída: " + Arrays.toString(outraRede.biasSaida));
     }
 
     public void ajustarPesosPorCondicao(double[] entradas, double fator) {
