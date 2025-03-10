@@ -193,23 +193,72 @@ public class RedeNeuralTeste2 {
         }
     }
 
+// Getters e Setters
+//-----------------------------------------------------------------
 
+    // Métodos para numEntradas
+    public int getNumEntradas() {
+        return numEntradas;
+    }
 
-    public double[][] pesosEntradaOculta() {
+    public void setNumEntradas(int numEntradas) {
+        this.numEntradas = numEntradas;
+    }
+
+    // Métodos para numOcultos
+    public int getNumOcultos() {
+        return numOcultos;
+    }
+
+    public void setNumOcultos(int numOcultos) {
+        this.numOcultos = numOcultos;
+    }
+
+    // Métodos para numSaidas
+    public int getNumSaidas() {
+        return numSaidas;
+    }
+
+    public void setNumSaidas(int numSaidas) {
+        this.numSaidas = numSaidas;
+    }
+
+    // Métodos para pesosEntradaOculta
+    public double[][] getPesosEntradaOculta() {
         return pesosEntradaOculta;
     }
 
-    public double[] biasOculta() {
+    public void setPesosEntradaOculta(double[][] pesosEntradaOculta) {
+        this.pesosEntradaOculta = pesosEntradaOculta;
+    }
+
+    // Métodos para biasOculta
+    public double[] getBiasOculta() {
         return biasOculta;
     }
 
-    public double[][] pesosOcultaSaida() {
+    public void setBiasOculta(double[] biasOculta) {
+        this.biasOculta = biasOculta;
+    }
+
+    // Métodos para pesosOcultaSaida
+    public double[][] getPesosOcultaSaida() {
         return pesosOcultaSaida;
     }
 
-    public double[] biasSaida() {
+    public void setPesosOcultaSaida(double[][] pesosOcultaSaida) {
+        this.pesosOcultaSaida = pesosOcultaSaida;
+    }
+
+    // Métodos para biasSaida
+    public double[] getBiasSaida() {
         return biasSaida;
     }
+
+    public void setBiasSaida(double[] biasSaida) {
+        this.biasSaida = biasSaida;
+    }
+
 
     public static void salvarDadosEmArquivo(List<RedeNeuralTeste2> redesNeurais) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("dados.txt", false))) {
@@ -218,7 +267,7 @@ public class RedeNeuralTeste2 {
                 writer.write("Rede: " + (i + 1) + "\n");
 
                 writer.write("Pesos de entrada para camada oculta:\n");
-                for (double[] linha : rede.pesosEntradaOculta()) {
+                for (double[] linha : rede.getPesosEntradaOculta()) {
                     for (double peso : linha) {
                         writer.write(peso + " ");
                     }
@@ -226,13 +275,13 @@ public class RedeNeuralTeste2 {
                 }
 
                 writer.write("Bias da camada oculta:\n");
-                for (double bias : rede.biasOculta()) {
+                for (double bias : rede.getBiasOculta()) {
                     writer.write(bias + " ");
                 }
                 writer.write("\n");
 
                 writer.write("Pesos da camada oculta para saída:\n");
-                for (double[] linha : rede.pesosOcultaSaida()) {
+                for (double[] linha : rede.getPesosOcultaSaida()) {
                     for (double peso : linha) {
                         writer.write(peso + " ");
                     }
@@ -240,7 +289,7 @@ public class RedeNeuralTeste2 {
                 }
 
                 writer.write("Bias da camada de saída:\n");
-                for (double bias : rede.biasSaida()) {
+                for (double bias : rede.getBiasSaida()) {
                     writer.write(bias + " ");
                 }
                 writer.write("\n\n");
