@@ -295,23 +295,23 @@ public class Main {
 //        }
 //    }
 
-    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela) {
-        Random random = new Random();
-
-        Inimigo inimigo; // Declare a variável inimigo aqui.
-
-        // Cria um inimigo aleatório
-        if (random.nextInt(2) == 0) {
-            inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
-        } else {
-            inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
-        }
-        // Adiciona o inimigo à lista inimigos2
-        inimigos2.add(inimigo);
-
-        // Adiciona o inimigo à janela (presumivelmente mostrando ele na tela)
-        janela.adicionarObjeto(inimigo);
-    }
+//    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela) {
+//        Random random = new Random();
+//
+//        Inimigo inimigo; // Declare a variável inimigo aqui.
+//
+//        // Cria um inimigo aleatório
+//        if (random.nextInt(2) == 0) {
+//            inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", -5, 0, movimento, sensores, janela);
+//        } else {
+//            inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", -5, 0, movimento, sensores, janela);
+//        }
+//        // Adiciona o inimigo à lista inimigos2
+//        inimigos2.add(inimigo);
+//
+//        // Adiciona o inimigo à janela (presumivelmente mostrando ele na tela)
+//        janela.adicionarObjeto(inimigo);
+//    }
 
     private static int aumentaVelocidade(int Cronometro){
         int velocidadeInimigos = 0;
@@ -424,6 +424,4 @@ public class Main {
         int indiceMelhor = populacao.indexOf(melhorPlayer);
         return redesNeurais.get(indiceMelhor);
     }
-
-
 }
