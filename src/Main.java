@@ -208,7 +208,8 @@ public class Main {
 
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
-                    melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
+                    //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
+                    melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
                 }
 
@@ -428,23 +429,11 @@ public class Main {
 //    }
 
 
-    public static RedeNeuralTeste2 selecaoMelhorRede(List<PlayerIA> populacao, List<RedeNeuralTeste2> redesNeurais) {
-        if (populacao.isEmpty()) {
+    public static RedeNeuralTeste2 selecaoMelhorRede(List<RedeNeuralTeste2> redesNeurais) {
+        if (redesNeurais.isEmpty()) {
             return null;
         }
 
-        // Encontrar o PlayerIA com a maior pontuação
-        PlayerIA melhorPlayer = populacao.get(0);
-        for (PlayerIA player : populacao) {
-            if (player.getPontuacao() > melhorPlayer.getPontuacao()) {
-                melhorPlayer = player;
-                System.out.println(melhorPlayer);
-            }
-        }
-
-        // Encontrar a rede neural correspondente ao melhor PlayerIA
-        int indiceMelhor = populacao.indexOf(melhorPlayer);
-        System.out.println(indiceMelhor);
-        return redesNeurais.get(indiceMelhor);
+        return redesNeurais.get(0);
     }
 }
