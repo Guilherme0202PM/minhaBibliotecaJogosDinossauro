@@ -104,9 +104,16 @@ public class PlayerIA extends CriaObjeto {
     public void apertarEspaco() {
         altura = alturaOriginal; // Reduz a altura pela metade (agachado)
         movimento.iniciarSalto(PlayerIA.this); // Inicia o salto do PlayerIA
-        sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
+        //sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
         agaichado = false;
     }
+
+//    public void apertarEspaco() {
+//        altura = alturaOriginal; // Reduz a altura pela metade (agachado)
+//        movimento.movimentoY(PlayerIA.this, 50); // Inicia o salto do PlayerIA
+//        sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
+//        agaichado = false;
+//    }
 
     // Metodo para simular o pressionamento da tecla "S" (agachar)
     public void apertarS() {
@@ -146,4 +153,5 @@ public class PlayerIA extends CriaObjeto {
             sprite.animacaoSprite(g, x, y, largura, altura);
         }
     }
+
 }

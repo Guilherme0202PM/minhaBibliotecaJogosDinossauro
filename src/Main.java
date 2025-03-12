@@ -42,7 +42,7 @@ public class Main {
         RedeNeuralTeste2 melhorRede = null;
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
 
-        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+        Player player = new Player(30, 30, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
         janela.adicionarObjeto(player);
         player.adicionarListener();
 
@@ -95,7 +95,7 @@ public class Main {
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
-                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -343,6 +343,48 @@ public class Main {
         janela.adicionarObjeto(inimigo);
     }
 
+    private static void criarInimigos3(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
+        Random random = new Random();
+        Inimigo inimigo;
+
+        if (cronometro < 500) {
+            // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            }
+        } else if (cronometro > 500 && cronometro < 1000){
+            // Depois de 1000, cria um InimigoTerrestre ou InimigoEspinho
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                int novoValorX = random.nextInt(601) + 50; // Isso vai gerar números entre 50 e 650
+                velocidadeInimigos = (velocidadeInimigos/2)*-1;
+                inimigo = new InimigoMeteoro(novoValorX, 0, 70, 70, "Meteoro.png", 0, velocidadeInimigos, movimento, sensores, janela);
+            }
+
+        } else {
+            // Depois de 3000, cria qualquer um dos três tipos de inimigo
+            int escolha = random.nextInt(3);
+            if (escolha == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else if (escolha == 1) {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                int novoValorX = random.nextInt(601) + 50; // Isso vai gerar números entre 50 e 650
+                velocidadeInimigos = (velocidadeInimigos/2)*-1;
+                inimigo = new InimigoMeteoro(novoValorX, 0, 70, 70, "Meteoro.png", 0, velocidadeInimigos, movimento, sensores, janela);
+            }
+        }
+
+        // Adiciona o inimigo à lista
+        inimigos2.add(inimigo);
+
+        // Adiciona o inimigo à janela (para exibição)
+        janela.adicionarObjeto(inimigo);
+    }
+
 
     private static void atualizarChao(Chao[] chaoBlocos, int larguraChao, int numeroDeChao) {
         for (Chao chao : chaoBlocos) {
@@ -414,68 +456,5 @@ public class Main {
 
         return redesNeurais.get(0);
     }
-
-//    public static List<PlayerIA> SalvaInformações(List<PlayerIA> populacao, List<RedeNeuralTeste2> redesNeurais, int numSelecionados) {
-//        // Verifica se a população está vazia
-//        if (populacao == null || populacao.isEmpty()) {
-//            System.out.println("A população está vazia.");
-//            return new ArrayList<>();
-//        }
-//
-//        // Verifica se as redes neurais estão vazias
-//        if (redesNeurais == null || redesNeurais.isEmpty()) {
-//            System.out.println("As redes neurais estão vazias.");
-//            return new ArrayList<>();
-//        }
-//
-//        // Copia a população para evitar modificar a lista original
-//        List<PlayerIA> copiaPopulacao = new ArrayList<>(populacao);
-//
-//        // Copia a rede neural para evitar modificar a lista original
-//        List<RedeNeuralTeste2> copiaRedesNeurais = new ArrayList<>(redesNeurais);
-//
-//        // Ordena a cópia da população com base na pontuação (do maior para o menor)
-//        copiaPopulacao.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
-//
-//        // Garante que numSelecionados não ultrapasse o tamanho da lista
-//        numSelecionados = Math.min(numSelecionados, copiaPopulacao.size());
-//
-//        // Ordena a cópia das redes neurais com base na pontuação (do maior para o menor)
-//        copiaRedesNeurais.sort((r1, r2) -> Double.compare(r2.getPontuacao(), r1.getPontuacao()));
-//
-//        // Garante que numSelecionados não ultrapasse o tamanho da lista de redes neurais
-//        numSelecionados = Math.min(numSelecionados, copiaRedesNeurais.size());
-//
-//        // Exibe o ranqueamento da população no console
-//        System.out.println("Ranking da População:");
-//        for (int i = 0; i < copiaPopulacao.size(); i++) {
-//            System.out.println((i + 1) + "º - " + copiaPopulacao.get(i) + " | Pontuação: " + copiaPopulacao.get(i).getPontuacao());
-//        }
-//        System.out.println("Fim Ranking da População:");
-//
-//        // Exibe o ranqueamento das redes neurais no console
-//        System.out.println("Ranking das Redes Neurais:");
-//        for (int i = 0; i < copiaRedesNeurais.size(); i++) {
-//            System.out.println((i + 1) + "º - " + copiaRedesNeurais.get(i) + " | Pontuação: " + copiaRedesNeurais.get(i).getPontuacao());
-//        }
-//        System.out.println("Fim Ranking das Redes Neurais:");
-//
-//        // Agora, cria uma lista para armazenar os indivíduos e as redes neurais selecionadas
-//        List<PlayerIA> melhoresIndividuos = new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
-//
-//        // Se você quiser combinar ou emparelhar a população com as redes neurais,
-//        // pode criar um mapeamento entre elas. Exemplo: emparelhar a população com as redes neurais correspondentes
-//        for (int i = 0; i < numSelecionados; i++) {
-//            PlayerIA jogador = melhoresIndividuos.get(i);
-//            RedeNeuralTeste2 redeNeural = copiaRedesNeurais.get(i);
-//
-//            // Aqui você pode fazer algo com a relação entre o jogador e a rede neural
-//            // Exemplo: Associar a rede neural ao jogador ou salvar em outro lugar
-//            System.out.println("Indivíduo: " + jogador + " está emparelhado com a Rede Neural: " + redeNeural);
-//        }
-//
-//        // Retorna os melhores indivíduos da população
-//        return melhoresIndividuos;
-//    }
 
 }
