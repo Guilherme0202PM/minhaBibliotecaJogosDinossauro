@@ -150,23 +150,43 @@ public class RedeNeuralTeste2 {
         return Arrays.stream(z).map(v -> Math.exp(v - max) / sum).toArray();
     }
 
-    public int identificarInimigo(double[] entradas) {
-        // Calcula as saídas da rede neural
-        double[] saidas = calcularSaida(entradas);
+//    public int identificarInimigo(double[] entradas) {
+//        // Calcula as saídas da rede neural
+//        double[] saidas = calcularSaida(entradas);
+//
+//        // Encontra o índice da maior saída
+//        int tipoInimigo = 0;
+//        double maiorValor = saidas[0];
+//        for (int i = 1; i < saidas.length; i++) {
+//            if (saidas[i] > maiorValor) {
+//                maiorValor = saidas[i];
+//                tipoInimigo = i;
+//            }
+//        }
+//
+//        // Retorna o tipo de inimigo (1 a 4)
+//        return tipoInimigo + 1;
+//    }
 
-        // Encontra o índice da maior saída
-        int tipoInimigo = 0;
-        double maiorValor = saidas[0];
-        for (int i = 1; i < saidas.length; i++) {
-            if (saidas[i] > maiorValor) {
-                maiorValor = saidas[i];
-                tipoInimigo = i;
-            }
+    public int identificarInimigo(double[] entradas) {
+        double x = entradas[2];
+        double y = entradas[3];
+        double altura = entradas[4];
+        double largura = entradas[5];
+
+        if (altura == 70 && largura == 70) {
+            return 4; // InimigoMeteoro
+        } else if (y == 320) {
+            return 2; // InimigoVoador
+        } else if (y == 350) {
+            return 1; // InimigoTerrestre
+        } else if (y == 355) {
+            return 3; // InimigoEspinho
         }
 
-        // Retorna o tipo de inimigo (1 a 4)
-        return tipoInimigo + 1;
+        return -1; // Caso não corresponda a nenhum inimigo conhecido
     }
+
 
     // Treinamento, não usado
 //-----------------------------------------------------------------

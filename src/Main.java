@@ -141,47 +141,47 @@ public class Main {
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
                                 // Ajusta os pesos da rede neural dependendo das coordenadas e dimensões do inimigo
-                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
+                                int fatorCondicao = redeNeural.identificarInimigo(entradas);
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
-                                double[] saidas = redeNeural.calcularSaida(entradas);
-                                int acao = 0;
-                                if (saidas[0] > saidas[1]) {
-                                    acao = 0;
-                                }else {acao = 1;}
-
-                                // Executa a ação correspondente
-                                switch (acao) {
-                                    case 0:
-                                        playerIA.apertarEspaco(); // Pular
-                                        break;
-                                    case 1:
-                                        playerIA.apertarS(); // Abaixar
-                                        break;
-                                    case 2:
-                                        playerIA.apertarDireita(); // Mover para a direita
-                                        break;
-                                    case 3:
-                                        playerIA.apertarEsquerda(); // Mover para a esquerda
-                                        break;
-                                }
-
-//                                int tipoInimigo = redeNeural.identificarInimigo(entradas);
-//                                switch (tipoInimigo) {
-//                                    case 1:
+//                                double[] saidas = redeNeural.calcularSaida(entradas);
+//                                int acao = 0;
+//                                if (saidas[0] > saidas[1]) {
+//                                    acao = 0;
+//                                }else {acao = 1;}
+//
+//                                // Executa a ação correspondente
+//                                switch (acao) {
+//                                    case 0:
 //                                        playerIA.apertarEspaco(); // Pular
 //                                        break;
-//                                    case 2:
+//                                    case 1:
 //                                        playerIA.apertarS(); // Abaixar
 //                                        break;
-//                                    case 3:
-//                                        playerIA.apertarDireita();
+//                                    case 2:
+//                                        playerIA.apertarDireita(); // Mover para a direita
 //                                        break;
-//                                    case 4:
-//                                        playerIA.apertarEsquerda();
+//                                    case 3:
+//                                        playerIA.apertarEsquerda(); // Mover para a esquerda
 //                                        break;
 //                                }
+
+                                //int tipoInimigo = redeNeural.identificarInimigo(entradas);
+                                switch (fatorCondicao) {
+                                    case 1:
+                                        playerIA.apertarEspaco(); // Pular
+                                        break;
+                                    case 2:
+                                        playerIA.apertarS(); // Abaixar
+                                        break;
+                                    case 3:
+                                        playerIA.apertarDireita();
+                                        break;
+                                    case 4:
+                                        playerIA.apertarEsquerda();
+                                        break;
+                                }
 
                                 // Incrementa a pontuação
                                 playerIA.incrementarPontuacao(1);
