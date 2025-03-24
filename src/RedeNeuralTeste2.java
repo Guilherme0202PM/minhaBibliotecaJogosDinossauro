@@ -1,13 +1,10 @@
-import java.util.Random;
+import java.util.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 public class RedeNeuralTeste2 {
     private int numEntradas, numOcultos, numSaidas;
@@ -59,6 +56,16 @@ public class RedeNeuralTeste2 {
             //System.out.println("biasSaida: "+biasSaida[i]);
 
         }
+    }
+
+    private void inicializarPesosXavier() {
+        double limite = Math.sqrt(6.0 / (numEntradas + numOcultos));
+        for (int i = 0; i < numEntradas; i++) {
+            for (int j = 0; j < numOcultos; j++) {
+                pesosEntradaOculta[i][j] = random.nextDouble() * 2 * limite - limite;
+            }
+        }
+        // Similar para outros pesos
     }
 
     public double[] calcularSaida(double[] entradas) {
@@ -137,6 +144,32 @@ public class RedeNeuralTeste2 {
         return arredondar(1 - (th * th)); // 1 - tanh^2(x)
     }
 
+    private double[] softmax(double[] z) {
+        double max = Arrays.stream(z).max().getAsDouble();
+        double sum = Arrays.stream(z).map(v -> Math.exp(v - max)).sum();
+        return Arrays.stream(z).map(v -> Math.exp(v - max) / sum).toArray();
+    }
+
+    public int identificarInimigo(double[] entradas) {
+        // Calcula as saídas da rede neural
+        double[] saidas = calcularSaida(entradas);
+
+        // Encontra o índice da maior saída
+        int tipoInimigo = 0;
+        double maiorValor = saidas[0];
+        for (int i = 1; i < saidas.length; i++) {
+            if (saidas[i] > maiorValor) {
+                maiorValor = saidas[i];
+                tipoInimigo = i;
+            }
+        }
+
+        // Retorna o tipo de inimigo (1 a 4)
+        return tipoInimigo + 1;
+    }
+
+    // Treinamento, não usado
+//-----------------------------------------------------------------
     public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
         // Forward pass
         double[] camadaOculta = new double[numOcultos];

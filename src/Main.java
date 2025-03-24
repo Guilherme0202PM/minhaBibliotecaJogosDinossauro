@@ -167,6 +167,22 @@ public class Main {
                                         break;
                                 }
 
+//                                int tipoInimigo = redeNeural.identificarInimigo(entradas);
+//                                switch (tipoInimigo) {
+//                                    case 1:
+//                                        playerIA.apertarEspaco(); // Pular
+//                                        break;
+//                                    case 2:
+//                                        playerIA.apertarS(); // Abaixar
+//                                        break;
+//                                    case 3:
+//                                        playerIA.apertarDireita();
+//                                        break;
+//                                    case 4:
+//                                        playerIA.apertarEsquerda();
+//                                        break;
+//                                }
+
                                 // Incrementa a pontuação
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
