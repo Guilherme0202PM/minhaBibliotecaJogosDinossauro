@@ -19,6 +19,29 @@ public class Sensores {
         return !tela.contains(objetoRect);
     }
 
+    public Point corrigirPosicao(CriaObjeto objeto) {
+        Rectangle objetoRect = objeto.getRect();
+        Rectangle tela = new Rectangle(0, 0, janela.getContentPane().getWidth(), janela.getContentPane().getHeight());
+
+        int novoX = objetoRect.x;
+        int novoY = objetoRect.y;
+
+        if (objetoRect.getX() < tela.getX()) {
+            novoX = 0;
+        } else if (objetoRect.getMaxX() > tela.getMaxX()) {
+            novoX = (int) (tela.getMaxX() - objetoRect.getWidth());
+        }
+
+        if (objetoRect.getY() < tela.getY()) {
+            novoY = 0;
+        } else if (objetoRect.getMaxY() > tela.getMaxY()) {
+            novoY = (int) (tela.getMaxY() - objetoRect.getHeight());
+        }
+
+        return new Point(novoX, novoY);
+    }
+
+
     public boolean verificarColisao(CriaObjeto obj1, CriaObjeto obj2) {
         // Ignorar colisão entre player e player2
         if ((obj1 instanceof Player && obj2 instanceof PlayerIA) ||

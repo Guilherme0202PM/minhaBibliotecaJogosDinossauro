@@ -124,24 +124,35 @@ public class PlayerIA extends CriaObjeto {
 
     public  void apertarDireita(){
         movimento.movimentoX(PlayerIA.this, 20);
+
+        if (!sensores.tocandoBorda(PlayerIA.this)) return; // Se não estiver tocando, nem entra
+
+        System.out.println("O Player está tocando na borda da tela!");
+        som.tocarSom();
+
+        Point novaPosicao = sensores.corrigirPosicao(PlayerIA.this);
+        PlayerIA.this.setX(novaPosicao.x);
+        PlayerIA.this.setY(novaPosicao.y);
+
     }
 
     public  void apertarEsquerda(){
         movimento.movimentoX(PlayerIA.this, -20);
+
+        if (!sensores.tocandoBorda(PlayerIA.this)) return; // Se não estiver tocando, nem entra
+
+        System.out.println("O Player está tocando na borda da tela!");
+        som.tocarSom();
+
+        Point novaPosicao = sensores.corrigirPosicao(PlayerIA.this);
+        PlayerIA.this.setX(novaPosicao.x);
+        PlayerIA.this.setY(novaPosicao.y);
     }
 
     public void levantar() {
         altura = alturaOriginal; // Restaura a altura original do personagem
     }
 
-
-    public void estabilizador(){
-        if(agaichado = false){
-
-        }else {
-
-        }
-    }
 
     private boolean agaichado;
 

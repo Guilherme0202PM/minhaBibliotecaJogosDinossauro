@@ -89,25 +89,12 @@ public class Player extends CriaObjeto {
 
                 // Verifica se o Player está tocando na borda
                 if (sensores.tocandoBorda(Player.this)) {
-                    System.out.println("O Player esta tocando na borda da tela!");
+                    System.out.println("O Player está tocando na borda da tela!");
                     som.tocarSom();
 
-                    // Ajusta a posição do Player para manter dentro dos limites da tela
-                    Rectangle tela = new Rectangle(0, 0, janela.getContentPane().getWidth(), janela.getContentPane().getHeight());
-                    Rectangle playerRect = Player.this.getRect();
-
-                    // Corrige a posição se estiver fora da borda
-                    if (playerRect.getX() < tela.getX()) {
-                        Player.this.setX(0);
-                    } else if (playerRect.getMaxX() > tela.getMaxX()) {
-                        Player.this.setX((int) (tela.getMaxX() - playerRect.getWidth()));
-                    }
-
-                    if (playerRect.getY() < tela.getY()) {
-                        Player.this.setY(0);
-                    } else if (playerRect.getMaxY() > tela.getMaxY()) {
-                        Player.this.setY((int) (tela.getMaxY() - playerRect.getHeight()));
-                    }
+                    Point novaPosicao = sensores.corrigirPosicao(Player.this);
+                    Player.this.setX(novaPosicao.x);
+                    Player.this.setY(novaPosicao.y);
                 }
 
                 // Verifica se o Player está tocando no ponteiro do mouse

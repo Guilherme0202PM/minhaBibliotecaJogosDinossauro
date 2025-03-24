@@ -148,10 +148,10 @@ public class Main {
                                     // Se for um meteoro, use um valor específico
                                     fatorCondicao = 2;
                                 } else if (inimigo instanceof InimigoVoador) {
-                                    // Se for um inimigo terrestre
+                                    // Se for um inimigo voador
                                     fatorCondicao = 1;
                                 } else {
-                                    // Se for um inimigo voador
+                                    // Se for um inimigo terrestre
                                     fatorCondicao = 0;
                                 }
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
