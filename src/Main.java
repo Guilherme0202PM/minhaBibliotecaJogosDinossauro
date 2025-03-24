@@ -144,31 +144,8 @@ public class Main {
                                 int fatorCondicao = redeNeural.identificarInimigo(entradas);
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
-                                // Calcula as saídas da rede neural
-//                                double[] saidas = redeNeural.calcularSaida(entradas);
-//                                int acao = 0;
-//                                if (saidas[0] > saidas[1]) {
-//                                    acao = 0;
-//                                }else {acao = 1;}
-//
-//                                // Executa a ação correspondente
-//                                switch (acao) {
-//                                    case 0:
-//                                        playerIA.apertarEspaco(); // Pular
-//                                        break;
-//                                    case 1:
-//                                        playerIA.apertarS(); // Abaixar
-//                                        break;
-//                                    case 2:
-//                                        playerIA.apertarDireita(); // Mover para a direita
-//                                        break;
-//                                    case 3:
-//                                        playerIA.apertarEsquerda(); // Mover para a esquerda
-//                                        break;
-//                                }
-
-                                //int tipoInimigo = redeNeural.identificarInimigo(entradas);
-                                switch (fatorCondicao) {
+                                int tipoInimigo = redeNeural.identificarInimigo(entradas);
+                                switch (tipoInimigo) {
                                     case 1:
                                         playerIA.apertarEspaco(); // Pular
                                         break;
