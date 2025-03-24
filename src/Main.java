@@ -137,37 +137,21 @@ public class Main {
 
                             // Analisar proximidade e usar rede neural
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(),inimigo.getAltura(),inimigo.getLargura(), velocidadeInimigos};
+                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
-                                // Ajusta os pesos da rede neural dependendo do inimigo
-                                //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
-                                //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicao;
-                                if (inimigo instanceof InimigoMeteoro) {
-                                    // Se for um meteoro, use um valor específico
-                                    fatorCondicao = 3;
-                                } else if (inimigo instanceof InimigoVoador) {
-                                    // Se for um inimigo voador
-                                    fatorCondicao = 1;
-                                } else {
-                                    // Se for um inimigo terrestre
-                                    fatorCondicao = 0;
-                                }
-                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+                                // Ajusta os pesos da rede neural dependendo das coordenadas e dimensões do inimigo
+                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
+                                redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
-                                double[] saidas = redeNeural.calcularSaida2(entradas);
+                                double[] saidas = redeNeural.calcularSaida(entradas);
                                 int acao = 0;
-                                double maiorValor = saidas[0];
-                                for (int k = 1; k < saidas.length; k++) {
-                                    if (saidas[k] > maiorValor) {
-                                        maiorValor = saidas[k];
-                                        acao = k;
-                                    }
-                                }
+                                if (saidas[0] > saidas[1]) {
+                                    acao = 0;
+                                }else {acao = 1;}
 
-// Executa a ação correspondente
+                                // Executa a ação correspondente
                                 switch (acao) {
                                     case 0:
                                         playerIA.apertarEspaco(); // Pular
@@ -183,17 +167,11 @@ public class Main {
                                         break;
                                 }
 
-// Incrementa a pontuação
+                                // Incrementa a pontuação
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
 
-// Verificar se o inimigo é do tipo InimigoEspinho e chamar verificarEspacoApertado
-                                if (inimigo instanceof InimigoEspinho) {
-                                    InimigoEspinho inimigoEspinho = (InimigoEspinho) inimigo;
-                                    inimigoEspinho.verificarEspacoApertado();
-                                }
-
-// Verifica colisão com PlayerIA
+                                // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
@@ -289,7 +267,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 10, 4); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 4); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -303,11 +281,11 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 10, 4);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 4);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
-                novaRede.copiarPesos2(melhorRede);
+                novaRede.copiarPesos(melhorRede);
             }
 
             redesNeurais.add(novaRede);
