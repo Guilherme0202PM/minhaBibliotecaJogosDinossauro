@@ -122,6 +122,14 @@ public class PlayerIA extends CriaObjeto {
         agaichado = true;
     }
 
+    public  void apertarDireita(){
+        movimento.movimentoX(PlayerIA.this, 20);
+    }
+
+    public  void apertarEsquerda(){
+        movimento.movimentoX(PlayerIA.this, -20);
+    }
+
     public void levantar() {
         altura = alturaOriginal; // Restaura a altura original do personagem
     }

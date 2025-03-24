@@ -143,27 +143,57 @@ public class Main {
                                 // Ajusta os pesos da rede neural dependendo do inimigo
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
+                                double fatorCondicao;
+                                if (inimigo instanceof InimigoMeteoro) {
+                                    // Se for um meteoro, use um valor específico
+                                    fatorCondicao = 2;
+                                } else if (inimigo instanceof InimigoVoador) {
+                                    // Se for um inimigo terrestre
+                                    fatorCondicao = 1;
+                                } else {
+                                    // Se for um inimigo voador
+                                    fatorCondicao = 0;
+                                }
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida(entradas);
-                                if (saidas[0] > saidas[1]) {
-                                    playerIA.apertarEspaco(); // Pular
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-                                    // Verificar se o inimigo é do tipo InimigoEspinho e chamar verificarEspacoApertado
-                                    if (inimigo instanceof InimigoEspinho) {
-                                        InimigoEspinho inimigoEspinho = (InimigoEspinho) inimigo;
-                                        inimigoEspinho.verificarEspacoApertado();
+                                int acao = 0;
+                                double maiorValor = saidas[0];
+                                for (int k = 1; k < saidas.length; k++) {
+                                    if (saidas[k] > maiorValor) {
+                                        maiorValor = saidas[k];
+                                        acao = k;
                                     }
-                                } else {
-                                    playerIA.apertarS(); // Abaixar
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-
                                 }
-                                // Verifica colisão com PlayerIA
+
+// Executa a ação correspondente
+                                switch (acao) {
+                                    case 0:
+                                        playerIA.apertarEspaco(); // Pular
+                                        break;
+                                    case 1:
+                                        playerIA.apertarS(); // Abaixar
+                                        break;
+                                    case 2:
+                                        playerIA.apertarDireita(); // Mover para a direita
+                                        break;
+                                    case 3:
+                                        playerIA.apertarEsquerda(); // Mover para a esquerda
+                                        break;
+                                }
+
+// Incrementa a pontuação
+                                playerIA.incrementarPontuacao(1);
+                                redeNeural.incrementarPontuacao(1);
+
+// Verificar se o inimigo é do tipo InimigoEspinho e chamar verificarEspacoApertado
+                                if (inimigo instanceof InimigoEspinho) {
+                                    InimigoEspinho inimigoEspinho = (InimigoEspinho) inimigo;
+                                    inimigoEspinho.verificarEspacoApertado();
+                                }
+
+// Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
@@ -172,7 +202,6 @@ public class Main {
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
                                     quantidadeVivos--;
-                                    //System.out.println("Quantidade de vivos"+ quantidadeVivos);
                                     j--; // Ajusta o índice após remoção
                                     System.gc();
                                 }
@@ -260,7 +289,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 2); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 4); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -274,7 +303,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 2);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 4);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
