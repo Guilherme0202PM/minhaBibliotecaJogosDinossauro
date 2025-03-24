@@ -154,10 +154,10 @@ public class Main {
                                     // Se for um inimigo terrestre
                                     fatorCondicao = 0;
                                 }
-                                redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
+                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
-                                double[] saidas = redeNeural.calcularSaida(entradas);
+                                double[] saidas = redeNeural.calcularSaida2(entradas);
                                 int acao = 0;
                                 double maiorValor = saidas[0];
                                 for (int k = 1; k < saidas.length; k++) {
@@ -289,7 +289,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 4); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 10, 4); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -303,11 +303,11 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 4);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 10, 4);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
-                novaRede.copiarPesos(melhorRede);
+                novaRede.copiarPesos2(melhorRede);
             }
 
             redesNeurais.add(novaRede);
