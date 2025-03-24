@@ -22,26 +22,7 @@ public class RedeNeuralTeste2 {
     private double[] biasOculta2; // Bias para a camada oculta
     private double[][] pesosOcultaSaida2; // Pesos da camada oculta para a camada de saída
 
-    public RedeNeuralTeste2(int numEntradas, int numOcultos,int numOcultos2, int numSaidas) {
-        this.numEntradas = numEntradas;
-        this.numOcultos = numOcultos;
-        this.numOcultos2 = numOcultos2;
-        this.numSaidas = numSaidas;
-        random = new Random();
 
-        // Inicialização dos pesos com escala ajustada
-        pesosEntradaOculta = new double[numEntradas][numOcultos];
-        pesosOcultaSaida = new double[numOcultos][numSaidas];
-        biasOculta = new double[numOcultos];
-
-        pesosEntradaOculta2 = new double[numEntradas][numOcultos2];
-        pesosOcultaSaida2 = new double[numOcultos2][numSaidas];
-        biasOculta2 = new double[numOcultos2];
-
-        biasSaida = new double[numSaidas];
-
-        inicializarPesos2();
-    }
 
     public RedeNeuralTeste2(int numEntradas, int numOcultos, int numSaidas) {
         this.numEntradas = numEntradas;
@@ -56,6 +37,58 @@ public class RedeNeuralTeste2 {
         biasSaida = new double[numSaidas];
 
         inicializarPesos();
+    }
+
+    public RedeNeuralTeste2(int numEntradas, int numOcultos, int numOcultos2, int numSaidas) {
+        this.numEntradas = numEntradas;
+        this.numOcultos = numOcultos;
+        this.numOcultos2 = numOcultos2;
+        this.numSaidas = numSaidas;
+        random = new Random();
+
+        // Inicialização dos pesos com escala ajustada
+        pesosEntradaOculta = new double[numEntradas][numOcultos];
+        pesosOcultaSaida = new double[numOcultos][numSaidas];
+        biasOculta = new double[numOcultos];
+
+        pesosEntradaOculta2 = new double[numOcultos][numOcultos2];
+        pesosOcultaSaida2 = new double[numOcultos2][numSaidas];
+        biasOculta2 = new double[numOcultos2];
+
+        biasSaida = new double[numSaidas];
+
+        inicializarPesos2();
+    }
+
+
+
+
+
+    private void inicializarPesos() {
+        for (int i = 0; i < numEntradas; i++) {
+            for (int j = 0; j < numOcultos; j++) {
+                //pesosEntradaOculta[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
+                pesosEntradaOculta[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
+                //System.out.println("pesosEntradas: "+pesosEntradaOculta[i][j]);
+            }
+        }
+        for (int i = 0; i < numOcultos; i++) {
+            for (int j = 0; j < numSaidas; j++) {
+                pesosOcultaSaida[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
+                //System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
+
+            }
+        }
+        for (int i = 0; i < numOcultos; i++) {
+            biasOculta[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
+            //System.out.println("biasOculta: "+biasOculta[i]);
+
+        }
+        for (int i = 0; i < numSaidas; i++) {
+            biasSaida[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
+            //System.out.println("biasSaida: "+biasSaida[i]);
+
+        }
     }
 
     private void inicializarPesos2() {
@@ -98,31 +131,36 @@ public class RedeNeuralTeste2 {
 
 
 
-    private void inicializarPesos() {
-        for (int i = 0; i < numEntradas; i++) {
-            for (int j = 0; j < numOcultos; j++) {
-                //pesosEntradaOculta[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
-                pesosEntradaOculta[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-                //System.out.println("pesosEntradas: "+pesosEntradaOculta[i][j]);
-            }
-        }
-        for (int i = 0; i < numOcultos; i++) {
-            for (int j = 0; j < numSaidas; j++) {
-                pesosOcultaSaida[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-                //System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
 
-            }
-        }
-        for (int i = 0; i < numOcultos; i++) {
-            biasOculta[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-            //System.out.println("biasOculta: "+biasOculta[i]);
+    public double[] calcularSaida(double[] entradas) {
+        double[] saidaOculta = new double[numOcultos];
+        double[] saidaFinal = new double[numSaidas];
 
+        // Cálculo da camada oculta
+        for (int i = 0; i < numOcultos; i++) {
+            double soma = biasOculta[i];
+            //System.out.println("Cálculo da camada oculta soma antes: "+soma);
+            for (int j = 0; j < numEntradas; j++) {
+                soma += entradas[j] * pesosEntradaOculta[j][i];
+                //System.out.println("Cálculo da camada oculta soma depois: "+soma);
+            }
+            saidaOculta[i] = tanh(soma);
+            //System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
         }
+
+        // Cálculo da camada de saída
         for (int i = 0; i < numSaidas; i++) {
-            biasSaida[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-            //System.out.println("biasSaida: "+biasSaida[i]);
+            double soma = biasSaida[i];
+            //System.out.println("Cálculo da camada de saída soma antes: "+soma);
+            for (int j = 0; j < numOcultos; j++) {
+                soma += saidaOculta[j] * pesosOcultaSaida[j][i];
+                //System.out.println("Cálculo da camada de saída soma depois: "+soma);
+            }
+            saidaFinal[i] = sigmoid(soma);
+            //System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
 
         }
+        return saidaFinal;
     }
 
     public double[] calcularSaida2(double[] entradas) {
@@ -157,38 +195,6 @@ public class RedeNeuralTeste2 {
             saidaFinal[i] = sigmoid(soma);  // Função de ativação para a camada de saída
         }
 
-        return saidaFinal;
-    }
-
-
-    public double[] calcularSaida(double[] entradas) {
-        double[] saidaOculta = new double[numOcultos];
-        double[] saidaFinal = new double[numSaidas];
-
-        // Cálculo da camada oculta
-        for (int i = 0; i < numOcultos; i++) {
-            double soma = biasOculta[i];
-            //System.out.println("Cálculo da camada oculta soma antes: "+soma);
-            for (int j = 0; j < numEntradas; j++) {
-                soma += entradas[j] * pesosEntradaOculta[j][i];
-                //System.out.println("Cálculo da camada oculta soma depois: "+soma);
-            }
-            saidaOculta[i] = tanh(soma);
-            //System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
-        }
-
-        // Cálculo da camada de saída
-        for (int i = 0; i < numSaidas; i++) {
-            double soma = biasSaida[i];
-            //System.out.println("Cálculo da camada de saída soma antes: "+soma);
-            for (int j = 0; j < numOcultos; j++) {
-                soma += saidaOculta[j] * pesosOcultaSaida[j][i];
-                //System.out.println("Cálculo da camada de saída soma depois: "+soma);
-            }
-            saidaFinal[i] = sigmoid(soma);
-            //System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
-
-        }
         return saidaFinal;
     }
 
@@ -230,6 +236,8 @@ public class RedeNeuralTeste2 {
     }
 
 
+
+
     public void ajustarPesosPorCondicao(double[] entradas, double fator) {
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos; j++) {
@@ -249,14 +257,14 @@ public class RedeNeuralTeste2 {
         // Ajustar pesos da primeira camada oculta para a segunda camada oculta
         for (int i = 0; i < numOcultos; i++) {
             for (int j = 0; j < numOcultos2; j++) {
-                pesosEntradaOculta2[i][j] += fator * entradas[i]; // Ajuste dos pesos para a segunda camada oculta
+                pesosEntradaOculta2[i][j] += fator * entradas[j % numEntradas]; // Ajuste dos pesos para a segunda camada oculta
             }
         }
 
         // Ajustar pesos da segunda camada oculta para a camada de saída
         for (int i = 0; i < numOcultos2; i++) {
             for (int j = 0; j < numSaidas; j++) {
-                pesosOcultaSaida2[i][j] += fator * entradas[i]; // Ajuste dos pesos para a camada de saída
+                pesosOcultaSaida2[i][j] += fator * entradas[j % numEntradas]; // Ajuste dos pesos para a camada de saída
             }
         }
     }
