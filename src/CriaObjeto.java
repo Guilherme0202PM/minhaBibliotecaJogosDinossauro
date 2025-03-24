@@ -127,6 +127,10 @@ public abstract class CriaObjeto {
         return y;
     }
 
+    public int getYAnterior() {
+        return y-1;
+    }
+
     public void setX(int x) {
         this.x = x;
     }
