@@ -133,7 +133,7 @@ public class Main {
 
                             // Analisar proximidade e usar rede neural
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), velocidadeInimigos};
+                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
                                 // Ajusta os pesos da rede neural dependendo do inimigo
@@ -143,7 +143,7 @@ public class Main {
                                 redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
-                                double[] saidas = redeNeural.calcularSaida(entradas);
+                                double[] saidas = redeNeural.calcularSaida2(entradas);
                                 if (saidas[0] > saidas[1]) {
                                     playerIA.apertarEspaco(); // Pular
                                     playerIA.incrementarPontuacao(1);
@@ -163,7 +163,7 @@ public class Main {
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
-                                    RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
+                                    //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
@@ -252,7 +252,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(5, 10, 2); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 10, 2); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -266,11 +266,11 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(5, 10, 2);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 10, 2);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
-                novaRede.copiarPesos(melhorRede);
+                novaRede.copiarPesos2(melhorRede);
             }
 
             redesNeurais.add(novaRede);
@@ -398,35 +398,6 @@ public class Main {
         // Retorna os melhores indivíduos
         return new ArrayList<>(copiaPopulacaoRede.subList(0, numSelecionados));
     }
-
-//    public static List<PlayerIA> selecao(List<PlayerIA> populacao, List<RedeNeuralTeste2> redesNeurais, int numSelecionados) {
-//        // Verifica se a população está vazia
-//        if (populacao == null || populacao.isEmpty()) {
-//            System.out.println("A população está vazia.");
-//            return new ArrayList<>();
-//        }
-//
-//        // Copia a população para evitar modificar a lista original
-//        List<PlayerIA> copiaPopulacao = new ArrayList<>(populacao);
-//
-//        // Ordena a cópia com base na pontuação (do maior para o menor)
-//        copiaPopulacao.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
-//
-//        // Garante que numSelecionados não ultrapasse o tamanho da lista
-//        numSelecionados = Math.min(numSelecionados, copiaPopulacao.size());
-//
-//        // Exibe o ranqueamento no console
-//        System.out.println("Ranking da População:");
-//        for (int i = 0; i < copiaPopulacao.size(); i++) {
-//            PlayerIA player = copiaPopulacao.get(i);
-//            RedeNeuralTeste2 rede = redesNeurais.get(i); // Assume que as listas estão alinhadas
-//            System.out.println((i + 1) + "º - " + player + " | Pontuação: " + player.getPontuacao() + " | Rede Neural: " + rede);
-//        }
-//        System.out.println("Fim Ranking:");
-//
-//        // Retorna os melhores indivíduos
-//        return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
-//    }
 
 
     public static RedeNeuralTeste2 selecaoMelhorRede(List<RedeNeuralTeste2> redesNeurais) {
