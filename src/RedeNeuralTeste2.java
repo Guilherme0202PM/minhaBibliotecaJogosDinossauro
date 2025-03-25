@@ -6,15 +6,13 @@ public class RedeNeuralTeste2 {
     private int numEntradas, numOcultos1, numOcultos2,  numSaidas;
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
+    private double[][] pesosEntradaOculta2;
     private double[] biasOculta1; // Bias para a camada oculta
-    private double[][] pesosOcultaSaida; // Pesos da camada oculta para a camada de saída
+    private double[] biasOculta2;
+    private double[][] pesosOcultaSaida1; // Pesos da camada oculta para a camada de saída
+    private double[][] pesosOcultaSaida2;
     private double[] biasSaida; // Bias para a camada de saída
     private Random random;
-
-    private double[][] pesosOculta1Oculta2;
-    private double[] biasOculta2;
-    private double[][] pesosOculta2Saida;
-
 
 
     public RedeNeuralTeste2(int numEntradas, int numOcultos1, int numSaidas) {
@@ -25,7 +23,7 @@ public class RedeNeuralTeste2 {
 
         // Inicialização dos pesos com escala ajustada
         pesosEntradaOculta1 = new double[numEntradas][numOcultos1];
-        pesosOcultaSaida = new double[numOcultos1][numSaidas];
+        pesosOcultaSaida1 = new double[numOcultos1][numSaidas];
         biasOculta1 = new double[numOcultos1];
         biasSaida = new double[numSaidas];
 
@@ -42,7 +40,7 @@ public class RedeNeuralTeste2 {
         }
         for (int i = 0; i < numOcultos1; i++) {
             for (int j = 0; j < numSaidas; j++) {
-                pesosOcultaSaida[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
+                pesosOcultaSaida1[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
                 //System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
 
             }
@@ -80,7 +78,7 @@ public class RedeNeuralTeste2 {
             double soma = biasSaida[i];
             //System.out.println("Cálculo da camada de saída soma antes: "+soma);
             for (int j = 0; j < numOcultos1; j++) {
-                soma += saidaOculta[j] * pesosOcultaSaida[j][i];
+                soma += saidaOculta[j] * pesosOcultaSaida1[j][i];
                 //System.out.println("Cálculo da camada de saída soma depois: "+soma);
             }
             saidaFinal[i] = sigmoid(soma);
@@ -90,6 +88,27 @@ public class RedeNeuralTeste2 {
         return saidaFinal;
     }
 
+    public void copiarPesos(RedeNeuralTeste2 outraRede) {
+        for (int i = 0; i < numEntradas; i++) {
+            System.arraycopy(outraRede.pesosEntradaOculta1[i], 0, this.pesosEntradaOculta1[i], 0, numOcultos1);
+        }
+        for (int i = 0; i < numOcultos1; i++) {
+            System.arraycopy(outraRede.pesosOcultaSaida1[i], 0, this.pesosOcultaSaida1[i], 0, numSaidas);
+        }
+        System.arraycopy(outraRede.biasOculta1, 0, this.biasOculta1, 0, numOcultos1);
+        System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidas);
+    }
+
+    public void ajustarPesosPorCondicao(double[] entradas, double fator) {
+        for (int i = 0; i < numEntradas; i++) {
+            for (int j = 0; j < numOcultos1; j++) {
+                pesosEntradaOculta1[i][j] = fator * entradas[i];
+            }
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    //------------------------------------Rede Neural com duas Camadas
     public RedeNeuralTeste2(int numEntradas, int numOcultos1, int numOcultos2, int numSaidas) {
         this.numEntradas = numEntradas;
         this.numOcultos1 = numOcultos1;
@@ -99,9 +118,9 @@ public class RedeNeuralTeste2 {
 
         pesosEntradaOculta1 = new double[numEntradas][numOcultos1];
         biasOculta1 = new double[numOcultos1];
-        pesosOculta1Oculta2 = new double[numOcultos1][numOcultos2];
+        pesosEntradaOculta2 = new double[numOcultos1][numOcultos2];
         biasOculta2 = new double[numOcultos2];
-        pesosOculta2Saida = new double[numOcultos2][numSaidas];
+        pesosOcultaSaida2 = new double[numOcultos2][numSaidas];
         biasSaida = new double[numSaidas];
 
         inicializarPesos2();
@@ -115,12 +134,12 @@ public class RedeNeuralTeste2 {
         }
         for (int i = 0; i < numOcultos1; i++) {
             for (int j = 0; j < numOcultos2; j++) {
-                pesosOculta1Oculta2[i][j] = random.nextDouble() * 2.0 - 1.0;
+                pesosEntradaOculta2[i][j] = random.nextDouble() * 2.0 - 1.0;
             }
         }
         for (int i = 0; i < numOcultos2; i++) {
             for (int j = 0; j < numSaidas; j++) {
-                pesosOculta2Saida[i][j] = random.nextDouble() * 2.0 - 1.0;
+                pesosOcultaSaida2[i][j] = random.nextDouble() * 2.0 - 1.0;
             }
         }
         for (int i = 0; i < numOcultos1; i++) {
@@ -150,7 +169,7 @@ public class RedeNeuralTeste2 {
         for (int i = 0; i < numOcultos2; i++) {
             double soma = biasOculta2[i];
             for (int j = 0; j < numOcultos1; j++) {
-                soma += saidaOculta1[j] * pesosOculta1Oculta2[j][i];
+                soma += saidaOculta1[j] * pesosEntradaOculta2[j][i];
             }
             saidaOculta2[i] = relu(soma);
         }
@@ -158,7 +177,7 @@ public class RedeNeuralTeste2 {
         for (int i = 0; i < numSaidas; i++) {
             double soma = biasSaida[i];
             for (int j = 0; j < numOcultos2; j++) {
-                soma += saidaOculta2[j] * pesosOculta2Saida[j][i];
+                soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
             }
             saidaFinal[i] = sigmoid(soma);
         }
@@ -171,10 +190,10 @@ public class RedeNeuralTeste2 {
             System.arraycopy(outraRede.pesosEntradaOculta1[i], 0, this.pesosEntradaOculta1[i], 0, numOcultos1);
         }
         for (int i = 0; i < numOcultos1; i++) {
-            System.arraycopy(outraRede.pesosOculta1Oculta2[i], 0, this.pesosOculta1Oculta2[i], 0, numOcultos2);
+            System.arraycopy(outraRede.pesosEntradaOculta2[i], 0, this.pesosEntradaOculta2[i], 0, numOcultos2);
         }
         for (int i = 0; i < numOcultos2; i++) {
-            System.arraycopy(outraRede.pesosOculta2Saida[i], 0, this.pesosOculta2Saida[i], 0, numSaidas);
+            System.arraycopy(outraRede.pesosOcultaSaida2[i], 0, this.pesosOcultaSaida2[i], 0, numSaidas);
         }
         System.arraycopy(outraRede.biasOculta1, 0, this.biasOculta1, 0, numOcultos1);
         System.arraycopy(outraRede.biasOculta2, 0, this.biasOculta2, 0, numOcultos2);
@@ -182,25 +201,6 @@ public class RedeNeuralTeste2 {
     }
 
     public void ajustarPesosPorCondicao2(double[] entradas, double fator) {
-        for (int i = 0; i < numEntradas; i++) {
-            for (int j = 0; j < numOcultos1; j++) {
-                pesosEntradaOculta1[i][j] = fator * entradas[i];
-            }
-        }
-    }
-
-    public void copiarPesos(RedeNeuralTeste2 outraRede) {
-        for (int i = 0; i < numEntradas; i++) {
-            System.arraycopy(outraRede.pesosEntradaOculta1[i], 0, this.pesosEntradaOculta1[i], 0, numOcultos1);
-        }
-        for (int i = 0; i < numOcultos1; i++) {
-            System.arraycopy(outraRede.pesosOcultaSaida[i], 0, this.pesosOcultaSaida[i], 0, numSaidas);
-        }
-        System.arraycopy(outraRede.biasOculta1, 0, this.biasOculta1, 0, numOcultos1);
-        System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidas);
-    }
-
-    public void ajustarPesosPorCondicao(double[] entradas, double fator) {
         for (int i = 0; i < numEntradas; i++) {
             for (int j = 0; j < numOcultos1; j++) {
                 pesosEntradaOculta1[i][j] = fator * entradas[i];
@@ -249,7 +249,7 @@ public class RedeNeuralTeste2 {
         for (int j = 0; j < numSaidas; j++) {
             saidas[j] = biasSaida[j];
             for (int i = 0; i < numOcultos1; i++) {
-                saidas[j] += camadaOculta[i] * pesosOcultaSaida[i][j];
+                saidas[j] += camadaOculta[i] * pesosOcultaSaida1[i][j];
             }
             saidas[j] = sigmoid(saidas[j]);
         }
@@ -263,7 +263,7 @@ public class RedeNeuralTeste2 {
         double[] erroOculto = new double[numOcultos1];
         for (int j = 0; j < numOcultos1; j++) {
             for (int k = 0; k < numSaidas; k++) {
-                erroOculto[j] += erroSaida[k] * pesosOcultaSaida[j][k];
+                erroOculto[j] += erroSaida[k] * pesosOcultaSaida1[j][k];
             }
             //erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
             erroOculto[j] *= tanhDerivada(camadaOculta[j]);  // Usando derivada do tanh
@@ -281,7 +281,7 @@ public class RedeNeuralTeste2 {
 
         for (int j = 0; j < numOcultos1; j++) {
             for (int k = 0; k < numSaidas; k++) {
-                pesosOcultaSaida[j][k] += taxaAprendizagem * erroSaida[k] * camadaOculta[j];
+                pesosOcultaSaida1[j][k] += taxaAprendizagem * erroSaida[k] * camadaOculta[j];
             }
         }
 
