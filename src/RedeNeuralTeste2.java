@@ -1,10 +1,13 @@
-import java.util.*;
+import java.util.Random;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class RedeNeuralTeste2 {
     private int numEntradas, numOcultos, numSaidas;
@@ -58,16 +61,6 @@ public class RedeNeuralTeste2 {
         }
     }
 
-    private void inicializarPesosXavier() {
-        double limite = Math.sqrt(6.0 / (numEntradas + numOcultos));
-        for (int i = 0; i < numEntradas; i++) {
-            for (int j = 0; j < numOcultos; j++) {
-                pesosEntradaOculta[i][j] = random.nextDouble() * 2 * limite - limite;
-            }
-        }
-        // Similar para outros pesos
-    }
-
     public double[] calcularSaida(double[] entradas) {
         double[] saidaOculta = new double[numOcultos];
         double[] saidaFinal = new double[numSaidas];
@@ -80,7 +73,7 @@ public class RedeNeuralTeste2 {
                 soma += entradas[j] * pesosEntradaOculta[j][i];
                 //System.out.println("Cálculo da camada oculta soma depois: "+soma);
             }
-            saidaOculta[i] = relu(soma);
+            saidaOculta[i] = tanh(soma);
             //System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
         }
 
@@ -144,95 +137,6 @@ public class RedeNeuralTeste2 {
         return arredondar(1 - (th * th)); // 1 - tanh^2(x)
     }
 
-    private double[] softmax(double[] z) {
-        double max = Arrays.stream(z).max().getAsDouble();
-        double sum = Arrays.stream(z).map(v -> Math.exp(v - max)).sum();
-        return Arrays.stream(z).map(v -> Math.exp(v - max) / sum).toArray();
-    }
-
-//    public int identificarInimigo(double[] entradas) {
-//        // Calcula as saídas da rede neural
-//        double[] saidas = calcularSaida(entradas);
-//
-//        // Encontra o índice da maior saída
-//        int tipoInimigo = 0;
-//        double maiorValor = saidas[0];
-//        for (int i = 1; i < saidas.length; i++) {
-//            if (saidas[i] > maiorValor) {
-//                maiorValor = saidas[i];
-//                tipoInimigo = i;
-//            }
-//        }
-//
-//        // Retorna o tipo de inimigo (1 a 4)
-//        return tipoInimigo + 1;
-//    }
-
-    public int identificarInimigo(double[] entradas) {
-        double x = entradas[2];
-        double y = entradas[3];
-        double altura = entradas[4];
-        double largura = entradas[5];
-        double velocidade = entradas[6];
-
-        // Inicializa um array para armazenar as previsões
-        int[] previsoes = new int[5];
-
-        // Verificação baseada na posição X
-        if (x == 600) {
-            previsoes[0] = 2; // Suposição: InimigoVoador
-        } else {
-            previsoes[0] = -1; // Valor padrão para não identificado
-        }
-
-        // Verificação baseada na posição Y
-        if (y == 350) {
-            previsoes[1] = 1; // Suposição: InimigoTerrestre
-        } else {
-            previsoes[1] = -1;
-        }
-
-        // Verificação baseada na altura
-        if (altura == 70) {
-            previsoes[2] = 1; // Suposição: InimigoTerrestre
-        } else {
-            previsoes[2] = -1;
-        }
-
-        // Verificação baseada na largura
-        if (largura == 60) {
-            previsoes[3] = 3; // Suposição: InimigoEspinho
-        } else {
-            previsoes[3] = -1;
-        }
-
-        // Verificação baseada na velocidade
-        if (velocidade == 0) {
-            previsoes[4] = 4; // Suposição: InimigoMeteoro
-        } else {
-            previsoes[4] = -1;
-        }
-
-        // Determina o tipo de inimigo com base nas previsões
-        return determinarTipoInimigo(previsoes);
-    }
-
-    // Metodo para determinar o tipo de inimigo com base nas previsões
-    private int determinarTipoInimigo(int[] previsoes) {
-        // Lógica para determinar o tipo de inimigo com base nas previsões
-        // Por exemplo, pode usar a moda das previsões ou outra lógica
-        Map<Integer, Integer> contagem = new HashMap<>();
-        for (int previsao : previsoes) {
-            if (previsao != -1) { // Ignora previsões não identificadas
-                contagem.put(previsao, contagem.getOrDefault(previsao, 0) + 1);
-            }
-        }
-        return contagem.isEmpty() ? -1 : Collections.max(contagem.entrySet(), Map.Entry.comparingByValue()).getKey();
-    }
-
-
-    // Treinamento, não usado
-//-----------------------------------------------------------------
     public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
         // Forward pass
         double[] camadaOculta = new double[numOcultos];
@@ -241,7 +145,7 @@ public class RedeNeuralTeste2 {
             for (int i = 0; i < numEntradas; i++) {
                 camadaOculta[j] += entradas[i] * pesosEntradaOculta[i][j];
             }
-            camadaOculta[j] = relu(camadaOculta[j]);  // Mudamos para tanh;
+            camadaOculta[j] = tanh(camadaOculta[j]);  // Mudamos para tanh;
         }
 
         double[] saidas = new double[numSaidas];
@@ -265,8 +169,7 @@ public class RedeNeuralTeste2 {
                 erroOculto[j] += erroSaida[k] * pesosOcultaSaida[j][k];
             }
             //erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
-            //erroOculto[j] *= tanhDerivada(camadaOculta[j]);  // Usando derivada do tanh
-            erroOculto[j] *= relu(camadaOculta[j]);
+            erroOculto[j] *= tanhDerivada(camadaOculta[j]);  // Usando derivada do tanh
         }
 
         for (int i = 0; i < numEntradas; i++) {
