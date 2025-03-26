@@ -143,8 +143,13 @@ public class Main {
                                 //double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
 
                                 double fatorCondicao = (inimigo.getY() >= 350) ? 0 :
-                                        (inimigo.getY() >= 320 && inimigo.getY() < 350) ? 1 :
+                                        (inimigo.getY() >= 320 && inimigo.getY() < 350 && inimigo.getAltura() > 70) ? 1 :
                                                 (inimigo.getY() < 320) ? 2 : 1;
+
+                                fatorCondicao = (inimigo.getY() >= 350 && inimigo.getAltura() < 70) ? 0 :
+                                        (inimigo.getY() >= 320 && inimigo.getY() < 350 && inimigo.getAltura() < 70) ? 1 :
+                                                2; // Caso em que nenhuma das condições anteriores é atendida
+
 
                                 redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
 
@@ -163,9 +168,9 @@ public class Main {
                                     playerIA.apertarEspaco(); // Pular
                                 } else if (saidas[1] == saidasOrdenada[1]) {
                                     playerIA.apertarS(); // Abaixar
-                                } else if (saidas[2] == saidasOrdenada[2]) {
+                                } else if (saidas[2] == saidasOrdenada[2] && fatorCondicao ==2 ) {
                                     playerIA.apertarEsquerda(); // Esquerda
-                                } else if (saidas[3] == saidasOrdenada[3]) {
+                                } else if (saidas[3] == saidasOrdenada[3] && fatorCondicao ==2) {
                                     playerIA.apertarDireita(); // Direita
                                 }
                                 // Incrementa a pontuação

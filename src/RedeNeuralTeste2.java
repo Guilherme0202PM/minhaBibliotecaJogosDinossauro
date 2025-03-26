@@ -1,3 +1,6 @@
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -207,6 +210,63 @@ public class RedeNeuralTeste2 {
             }
         }
     }
+
+    public int identificarInimigo(double[] entradas) {
+        double xPlayer = entradas[0];
+        double yPlayer = entradas[1];
+        double x = entradas[2];
+        double y = entradas[3];
+        double altura = entradas[4];
+        double largura = entradas[5];
+        double velocidade = entradas[6];
+        int numeroInimigos = 4;
+
+        // Inicializa um array para armazenar as previsões
+        int[] previsoes = new int[5];
+
+        // Verificação baseada na posição Y
+        if (y == 350) {
+            previsoes[0] = random.nextInt(numeroInimigos) + 1; // Chute aleatório entre 1 e 4
+        } else if (y == 320) {
+            previsoes[0] = random.nextInt(numeroInimigos) + 1;
+        } else if (y == 355) {
+            previsoes[0] = random.nextInt(numeroInimigos) + 1;
+        } else {
+            previsoes[0] = -1;
+        }
+
+        // Verificação baseada na posição X para Meteoro
+        if (x == 600 && altura == 70 && largura == 70) {
+            previsoes[1] = random.nextInt(numeroInimigos) + 1;
+        } else {
+            previsoes[1] = -1;
+        }
+
+        // Verificação baseada nas dimensões
+        if (altura == 70 && largura == 50) {
+            previsoes[2] = random.nextInt(numeroInimigos) + 1;
+        } else if (altura == 70 && largura == 70) {
+            previsoes[2] = random.nextInt(numeroInimigos) + 1;
+        } else {
+            previsoes[2] = -1;
+        }
+
+        // Determina o tipo de inimigo com base nas previsões
+        return determinarTipoInimigo(previsoes);
+    }
+
+    // Metodo para determinar o tipo de inimigo com base nas previsões
+    private int determinarTipoInimigo(int[] previsoes) {
+        // Lógica para determinar o tipo de inimigo com base nas previsões
+        Map<Integer, Integer> contagem = new HashMap<>();
+        for (int previsao : previsoes) {
+            if (previsao != -1) { // Ignora previsões não identificadas
+                contagem.put(previsao, contagem.getOrDefault(previsao, 0) + 1);
+            }
+        }
+        return contagem.isEmpty() ? -1 : Collections.max(contagem.entrySet(), Map.Entry.comparingByValue()).getKey();
+    }
+
 
     // Função de arredondamento para 4 casas decimais
     private double arredondar(double valor) {
