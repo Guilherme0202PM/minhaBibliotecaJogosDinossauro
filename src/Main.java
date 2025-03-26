@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,32 +150,27 @@ public class Main {
 
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
-                                for (int y = 0; i < saidas.length; i++) {
-                                    System.out.println("Saida[" + i + "] = " + saidas[i]);
-                                }
-                                if (saidas[0] > saidas[1]) {
+                                double[] saidasOrdenada = redeNeural.calcularSaida2(entradas);
+
+//                                for (int y = 0; i < saidas.length; i++) {
+//                                    System.out.println("Saida[" + i + "] = " + saidas[i]);
+//                                }
+                                // Ordena o array 'saidas' em ordem decrescente
+                                Arrays.sort(saidasOrdenada);
+
+                                // Verifica o maior valor de 'saidas' após a ordenação
+                                if (saidas[0] == saidasOrdenada[0]) {
                                     playerIA.apertarEspaco(); // Pular
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-
-                                } else {
+                                } else if (saidas[1] == saidasOrdenada[1]) {
                                     playerIA.apertarS(); // Abaixar
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-
+                                } else if (saidas[2] == saidasOrdenada[2]) {
+                                    playerIA.apertarEsquerda(); // Esquerda
+                                } else if (saidas[3] == saidasOrdenada[3]) {
+                                    playerIA.apertarDireita(); // Direita
                                 }
-
-                                if (saidas[2] > saidas[3]) {
-                                    playerIA.apertarEsquerda(); // Pular
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-
-                                } else {
-                                    playerIA.apertarDireita(); // Abaixar
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-
-                                }
+                                // Incrementa a pontuação
+                                playerIA.incrementarPontuacao(1);
+                                redeNeural.incrementarPontuacao(1);
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
