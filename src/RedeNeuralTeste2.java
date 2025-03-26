@@ -210,7 +210,7 @@ public class RedeNeuralTeste2 {
 
     // Função de arredondamento para 4 casas decimais
     private double arredondar(double valor) {
-        return new BigDecimal(valor).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        return new BigDecimal(valor).setScale(4, RoundingMode.HALF_UP).doubleValue();
     }
 
     // Função de ativação ReLU

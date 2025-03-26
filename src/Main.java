@@ -40,9 +40,9 @@ public class Main {
         RedeNeuralTeste2 melhorRede = null;
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
 
-        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
-        janela.adicionarObjeto(player);
-        player.adicionarListener();
+//        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+//        janela.adicionarObjeto(player);
+//        player.adicionarListener();
 
         // Criação de um vetor para armazenar múltiplos PlayerIA
         List<PlayerIA> player2List = new ArrayList<>();
@@ -106,23 +106,23 @@ public class Main {
                             inimigo.atualizar();
                         }
 
-                        if (sensores.verificarColisao(player, inimigo)) {
-                            janela.removerObjeto(inimigo);
-                            inimigos.remove(i); // Remove o inimigo da lista
-                            System.gc();
-
-                            System.out.println("Colisão detectada! Inimigo removido.");
-                        } else if (inimigo.getRect().x < player.getRect().x) {
-                            pontuacao++;
-                            System.out.println("Pontuação: " + pontuacao);
-                            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
-
-                            if (inimigo.getRect().x < -inimigo.getRect().width) {
-                                janela.removerObjeto(inimigo);
-                                inimigos.remove(i); // Remove o inimigo da lista
-                                System.gc();
-                            }
-                        }
+//                        if (sensores.verificarColisao(player, inimigo)) {
+//                            janela.removerObjeto(inimigo);
+//                            inimigos.remove(i); // Remove o inimigo da lista
+//                            System.gc();
+//
+//                            System.out.println("Colisão detectada! Inimigo removido.");
+//                        } else if (inimigo.getRect().x < player.getRect().x) {
+//                            pontuacao++;
+//                            System.out.println("Pontuação: " + pontuacao);
+//                            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
+//
+//                            if (inimigo.getRect().x < -inimigo.getRect().width) {
+//                                janela.removerObjeto(inimigo);
+//                                inimigos.remove(i); // Remove o inimigo da lista
+//                                System.gc();
+//                            }
+//                        }
 
                         // Interação com cada PlayerIA
                         for (int j = 0; j < player2List.size(); j++) {
@@ -181,8 +181,8 @@ public class Main {
             atualizarChao(chaoBlocos, larguraChao, numeroDeChao);
 
             // Atualiza a posição do player e aplica gravidade
-            movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
-            movimento.controlarSalto(player);
+//            movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
+//            movimento.controlarSalto(player);
 
             // Atualiza a posição dos PlayerIA
             for (PlayerIA playerIA : player2List) {
