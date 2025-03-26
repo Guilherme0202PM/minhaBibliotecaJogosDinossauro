@@ -164,9 +164,9 @@ public class Main {
                                 Arrays.sort(saidasOrdenada);
 
                                 // Verifica o maior valor de 'saidas' após a ordenação
-                                if (saidas[0] == saidasOrdenada[0]) {
+                                if (fatorCondicao ==0) {
                                     playerIA.apertarEspaco(); // Pular
-                                } else if (saidas[1] == saidasOrdenada[1]) {
+                                } else if (fatorCondicao ==1) {
                                     playerIA.apertarS(); // Abaixar
                                 } else if (saidas[2] == saidasOrdenada[2] && fatorCondicao ==2 ) {
                                     playerIA.apertarEsquerda(); // Esquerda
