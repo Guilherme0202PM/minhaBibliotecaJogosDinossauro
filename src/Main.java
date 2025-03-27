@@ -92,7 +92,7 @@ public class Main {
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
-                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos4(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -389,6 +389,34 @@ public class Main {
         }
 
         // Adiciona o inimigo à lista
+        inimigos2.add(inimigo);
+
+        // Adiciona o inimigo à janela (para exibição)
+        janela.adicionarObjeto(inimigo);
+    }
+
+    private static void criarInimigos4(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
+        Random random = new Random();
+        Inimigo inimigo;
+
+        if (cronometro < 2500) {
+            // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
+            int novoValorX = random.nextInt(601) + 50; // Isso vai gerar números entre 50 e 650
+            velocidadeInimigos = (velocidadeInimigos/2)*-1;
+            inimigo = new InimigoMeteoro(novoValorX, 0, 70, 70, "Meteoro.png", 0, velocidadeInimigos, movimento, sensores, janela);
+        } else {
+            // Depois de 3000, cria qualquer um dos três tipos de inimigo
+            int escolha = random.nextInt(3);
+            if (escolha == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else if (escolha == 1) {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            }
+        }
+
+        // Adiciona o inimigo à lista.
         inimigos2.add(inimigo);
 
         // Adiciona o inimigo à janela (para exibição)
