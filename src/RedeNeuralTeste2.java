@@ -30,12 +30,16 @@ public class RedeNeuralTeste2 {
         biasOculta1 = new double[numOcultos1Neuronios];
         biasSaida = new double[numSaidasNeuronios];
 
+        // Inicialize o array de entradas com o tamanho adequado
+        entradas = new double[numEntradasNeuronios];
+
         inicializarPesos();
     }
 
     public void recebeEntradas(double[] valoresEntradas){
         for (int i = 0; i <numEntradasNeuronios; i++){
             entradas[i] = valoresEntradas[i];
+            //System.out.println("Entrada coletada"+ entradas[i]);
         }
     }
 
@@ -131,6 +135,9 @@ public class RedeNeuralTeste2 {
         biasOculta2 = new double[numOcultos2Neuronios];
         pesosOcultaSaida2 = new double[numOcultos2Neuronios][numSaidasNeuronios];
         biasSaida = new double[numSaidasNeuronios];
+
+        entradas = new double[numEntradasNeuronios];
+
 
         inicializarPesos2();
     }
