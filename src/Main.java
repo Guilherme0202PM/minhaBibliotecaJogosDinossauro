@@ -70,18 +70,26 @@ public class Main {
             janela.adicionarObjeto(chaoBlocos[i]);
         }
 
-        JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
-        pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        pontuacaoLabel.setForeground(Color.BLACK);
-        pontuacaoLabel.setBounds(30, 30, 200, 30);
-        janela.addComponentToGamePanel(pontuacaoLabel);
+        JLabel geracaoLabel = new JLabel("Geração: 1");
+        geracaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        geracaoLabel.setForeground(Color.BLACK);
+        geracaoLabel.setBounds(30, 30, 200, 30);
+        janela.addComponentToGamePanel(geracaoLabel);
+
+        JLabel dinossaurosVivosLabel = new JLabel("Dinossauros Vivos: " + numPlayers);
+        dinossaurosVivosLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        dinossaurosVivosLabel.setForeground(Color.BLACK);
+        dinossaurosVivosLabel.setBounds(30, 60, 300, 30);
+        janela.addComponentToGamePanel(dinossaurosVivosLabel);
 
         JLabel cronometoLabel = new JLabel("Cronometro: 0");
         cronometoLabel.setFont(new Font("Arial", Font.BOLD, 24));
         cronometoLabel.setForeground(Color.BLACK);
-        cronometoLabel.setBounds(50, 50, 200, 30);
+        cronometoLabel.setBounds(30, 90, 200, 30);
         janela.addComponentToGamePanel(cronometoLabel);
 
+        // Na Main, adicione uma variável para controle de exploração
+        double taxaExploracao = 0.1; // 10% de chance de ação aleatória
 
         while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
@@ -92,7 +100,7 @@ public class Main {
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
                     //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
-                    criarInimigos4(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -131,104 +139,92 @@ public class Main {
                             playerIA.apertaF();
                             playerIA.levantar();
 
+                            // Verifica se há um inimigo próximo antes de tomar qualquer ação
+                            boolean temInimigoProximo = false;
+                            Inimigo inimigoProximo = null;
+                            
+                            for (Inimigo inimigoAtual : inimigos) {
+                                if (sensores.analisarProximidade(playerIA, inimigoAtual, limiteProximidade)) {
+                                    temInimigoProximo = true;
+                                    inimigoProximo = inimigoAtual;
+                                    break;
+                                }
+                            }
 
-                            // Analisar proximidade e usar rede neural
-                            if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
-                                RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
-                                redeNeural.recebeEntradas(entradas);
-
-                                int tabelaVerdadeX, tabelaVerdadeY, tabelaVerdadeZ;
-                                if (inimigo.getY() >= 350){
-                                    tabelaVerdadeX = 0;
+                            // Só toma ações se houver um inimigo próximo
+                            if (temInimigoProximo) {
+                                if (Math.random() < taxaExploracao) {
+                                    // Ação aleatória para exploração
+                                    int acaoAleatoria = (int)(Math.random() * 4);
+                                    switch (acaoAleatoria) {
+                                        case 0: playerIA.apertarEspaco(); break;
+                                        case 1: playerIA.apertarS(); break;
+                                        case 2: playerIA.apertarEsquerda(); break;
+                                        case 3: playerIA.apertarDireita(); break;
+                                    }
                                 } else {
-                                    tabelaVerdadeX = 1;
-                                }
+                                    // Analisar proximidade e usar rede neural
+                                    double[] entradas = {playerIA.getX(), playerIA.getY(), 
+                                                        inimigoProximo.getX(), inimigoProximo.getY(), 
+                                                        inimigoProximo.getAltura(), inimigoProximo.getLargura(), 
+                                                        velocidadeInimigos};
+                                    
+                                    RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
+                                    redeNeural.recebeEntradas(entradas);
+                                    double[] saidas = redeNeural.calcularSaida2(entradas);
 
-                                if (inimigo.getAltura() >= 70){
-                                    tabelaVerdadeY = 0;
-                                } else {
-                                    tabelaVerdadeY = 1;
-                                }
+                                    double[] saidasEsperadas = new double[4];
+                                    if (sensores.verificarColisao(playerIA, inimigoProximo)) {
+                                        // Se houve colisão, penaliza todas as ações
+                                        for (int x = 0; x < saidasEsperadas.length; x++) {
+                                            saidasEsperadas[x] = 0.1;
+                                        }
+                                    } else {
+                                        // Se sobreviveu, recompensa a ação atual
+                                        for (int w = 0; w < saidasEsperadas.length; w++) {
+                                            saidasEsperadas[w] = 0.1;
+                                        }
+                                        // Identifica a melhor ação baseada na situação
+                                        int melhorAcao = determinarMelhorAcao(playerIA, inimigoProximo);
+                                        saidasEsperadas[melhorAcao] = 0.9;
+                                    }
 
-                                if (inimigo.getX() >= playerIA.getX()){
-                                    tabelaVerdadeZ = 0;
-                                } else {
-                                    tabelaVerdadeZ = 1;
-                                }
+                                    // Treina a rede com uma taxa de aprendizagem menor
+                                    redeNeural.treinar(entradas, saidasEsperadas, 0.0001);
 
-//                                0 0 = Meteoro
-//                                0 1 = Inimigo Terrestre // Pular
-//                                1 0 = Meteoro
-//                                1 1 = Voador
+                                    // Encontra o índice do maior valor
+                                    int acao = 0;
+                                    double maiorValor = saidas[0];
+                                    for (int y = 1; y < saidas.length; y++) {
+                                        if (saidas[y] > maiorValor) {
+                                            maiorValor = saidas[y];
+                                            acao = y;
+                                        }
+                                    }
 
-//                                0 0 0 Meteoro //Esquerda
-//                                0 0 1 Meteoro //Direita
-//                                0 1 0 Terrestre
-//                                0 1 1 Terrestre
-//                                1 0 0 Meteoro //Esquerda
-//                                1 0 1 Meteoro //Direita
-//                                1 1 1 Voador
+                                    // Executa a ação baseada no maior valor
+                                    switch (acao) {
+                                        case 0: playerIA.apertarEspaco(); break;
+                                        case 1: playerIA.apertarS(); break;
+                                        case 2: playerIA.apertarEsquerda(); break;
+                                        case 3: playerIA.apertarDireita(); break;
+                                    }
 
+                                    // Incrementa a pontuação
+                                    playerIA.incrementarPontuacao(1);
+                                    redeNeural.incrementarPontuacao(1);
 
-                                // Atualização do fatorCondicao com base nas possibilidades
-                                double fatorCondicao = -1; // Valor padrão caso nenhuma condição seja atendida
-                                int acao=-1;
-
-                                if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
-                                    fatorCondicao = 0;  // Meteoro - Esquerda
-                                    acao = 0;
-                                } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = 0;  // Inimigo Terrestre // Pular
-                                    acao = 1;
-                                } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
-                                    fatorCondicao = 1;  // Meteoro - Esquerda -- Direita
-                                    acao = 2;
-                                } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = 1;  // Voador
-                                    acao = 3;
-                                } else {
-                                    acao = -1;
-                                }
-
-                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
-
-                                // Calcula as saídas da rede neural
-                                double[] saidas = redeNeural.calcularSaida2(entradas);
-                                double[] saidasOrdenada = redeNeural.calcularSaida2(entradas);
-
-//                                for (int y = 0; i < saidas.length; i++) {
-//                                    System.out.println("Saida[" + i + "] = " + saidas[i]);
-//                                }
-                                // Ordena o array 'saidas' em ordem decrescente
-                                Arrays.sort(saidasOrdenada);
-
-                                // Verifica o maior valor de 'saidas' após a ordenação
-                                if (acao ==1) {
-                                    playerIA.apertarEspaco(); // Pular
-                                } else if (acao ==3) {
-                                    playerIA.apertarS(); // Abaixar
-                                } else if (acao ==0) {
-                                    playerIA.apertarEsquerda(); // Esquerda
-                                } else if (acao ==2) {
-                                    playerIA.apertarDireita(); // Direita
-                                }
-                                // Incrementa a pontuação
-                                playerIA.incrementarPontuacao(1);
-                                redeNeural.incrementarPontuacao(1);
-
-                                // Verifica colisão com PlayerIA
-                                if (sensores.verificarColisao(playerIA, inimigo)) {
-                                    coleta.add(playerIA);
-                                    redesNeuraisArmazenadas.add(redesNeurais.get(j));
-                                    //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
-                                    janela.removerObjeto(playerIA);
-                                    player2List.remove(j);
-                                    redesNeurais.remove(j);
-                                    quantidadeVivos--;
-                                    //System.out.println("Quantidade de vivos"+ quantidadeVivos);
-                                    j--; // Ajusta o índice após remoção
-                                    System.gc();
+                                    // Verifica colisão com PlayerIA
+                                    if (sensores.verificarColisao(playerIA, inimigoProximo)) {
+                                        coleta.add(playerIA);
+                                        redesNeuraisArmazenadas.add(redesNeurais.get(j));
+                                        janela.removerObjeto(playerIA);
+                                        player2List.remove(j);
+                                        redesNeurais.remove(j);
+                                        quantidadeVivos--;
+                                        j--; // Ajusta o índice após remoção
+                                        System.gc();
+                                    }
                                 }
                             }
                         }
@@ -248,7 +244,8 @@ public class Main {
                 movimento.controlarSalto(playerIA);
             }
 
-            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
+            geracaoLabel.setText("Geração: " + (geracaoAtual + 1));
+            dinossaurosVivosLabel.setText("Dinossauros Vivos: " + quantidadeVivos);
             janela.repaint();
 
             // Verifica se todos os players IA morreram
@@ -501,29 +498,35 @@ public class Main {
     }
 
     public static ArrayList<RedeNeuralTeste2> selecao2(List<RedeNeuralTeste2> redesNeurais, int numSelecionados) {
-        // Verifica se a população está vazia
         if (redesNeurais == null || redesNeurais.isEmpty()) {
             System.out.println("A população está vazia.");
             return new ArrayList<>();
         }
 
+        // Calcula o fitness para todas as redes
+        for (RedeNeuralTeste2 rede : redesNeurais) {
+            rede.calcularFitness();
+        }
+
         // Copia a população para evitar modificar a lista original
         List<RedeNeuralTeste2> copiaPopulacaoRede = new ArrayList<>(redesNeurais);
 
-        // Ordena a cópia com base na pontuação (do maior para o menor)
-        copiaPopulacaoRede.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
+        // Ordena a cópia com base no fitness
+        copiaPopulacaoRede.sort((p1, p2) -> Double.compare(p2.getFitness(), p1.getFitness()));
 
         // Garante que numSelecionados não ultrapasse o tamanho da lista
         numSelecionados = Math.min(numSelecionados, copiaPopulacaoRede.size());
 
-        // Exibe o ranqueamento no console
-        System.out.println("Ranking da População:");
+        // Exibe o ranqueamento detalhado no console
+        System.out.println("\nRanking da População:");
         for (int i = 0; i < copiaPopulacaoRede.size(); i++) {
-            System.out.println((i + 1) + "º - " + copiaPopulacaoRede.get(i) + " | Pontuação: " + copiaPopulacaoRede.get(i).getPontuacao());
+            RedeNeuralTeste2 rede = copiaPopulacaoRede.get(i);
+            System.out.printf("%dº - Fitness: %.4f | Pontuação: %d | Sobrevivência: %d | Taxa de Acertos: %.2f%%\n",
+                i + 1, rede.getFitness(), rede.getPontuacao(), 
+                rede.getSobrevivencia(), rede.getTaxaAcertos() * 100);
         }
-        System.out.println("Fim Ranking:");
+        System.out.println("Fim Ranking\n");
 
-        // Retorna os melhores indivíduos
         return new ArrayList<>(copiaPopulacaoRede.subList(0, numSelecionados));
     }
 
@@ -532,7 +535,31 @@ public class Main {
         if (redesNeurais.isEmpty()) {
             return null;
         }
-
         return redesNeurais.get(0);
+    }
+
+    private static int determinarMelhorAcao(PlayerIA playerIA, Inimigo inimigo) {
+        double distanciaX = inimigo.getX() - playerIA.getX();
+        double distanciaY = inimigo.getY() - playerIA.getY();
+        
+        // Lógica para determinar a melhor ação
+        if (inimigo instanceof InimigoTerrestre) {
+            if (distanciaX < 100) {
+                return 0; // Pular
+            }
+        } else if (inimigo instanceof InimigoVoador) {
+            if (distanciaX < 100 && distanciaY < 50) {
+                return 1; // Abaixar
+            }
+        } else if (inimigo instanceof InimigoMeteoro) {
+            if (distanciaX < 100) {
+                return 2; // Esquerda
+            } else {
+                return 3; // Direita
+            }
+        }
+        
+        // Ação padrão
+        return 0;
     }
 }
