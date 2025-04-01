@@ -245,7 +245,7 @@ public class RedeNeuralTeste2 {
         } else if (y == 355) {
             previsoes[0] = random.nextInt(numeroInimigos) + 1;
         } else {
-            previsoes[0] = -1;
+            previsoes[0] = 0;
         }
 
         // Verificação baseada na posição X para Meteoro

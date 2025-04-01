@@ -136,20 +136,60 @@ public class Main {
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
                                 double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
+                                redeNeural.recebeEntradas(entradas);
 
-                                // Ajusta os pesos da rede neural dependendo do inimigo
-                                //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
-                                //Era entre -1 e 1 mas mudei para 0 e 1
-                                //double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
+                                int tabelaVerdadeX, tabelaVerdadeY, tabelaVerdadeZ;
+                                if (inimigo.getY() >= 350){
+                                    tabelaVerdadeX = 0;
+                                } else {
+                                    tabelaVerdadeX = 1;
+                                }
 
-                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 :
-                                        (inimigo.getY() >= 320 && inimigo.getY() < 350 && inimigo.getAltura() > 70) ? 1 :
-                                                (inimigo.getY() < 320) ? 2 : 1;
+                                if (inimigo.getAltura() >= 70){
+                                    tabelaVerdadeY = 0;
+                                } else {
+                                    tabelaVerdadeY = 1;
+                                }
 
-                                fatorCondicao = (inimigo.getY() >= 350) ? 0 :
-                                        (inimigo.getY() >= 320 && inimigo.getY() < 350) ? 1 :
-                                                -1; // Caso em que nenhuma das condições anteriores é atendida
+                                if (inimigo.getX() >= playerIA.getX()){
+                                    tabelaVerdadeZ = 0;
+                                } else {
+                                    tabelaVerdadeZ = 1;
+                                }
 
+//                                0 0 = Meteoro
+//                                0 1 = Inimigo Terrestre // Pular
+//                                1 0 = Meteoro
+//                                1 1 = Voador
+
+//                                0 0 0 Meteoro //Esquerda
+//                                0 0 1 Meteoro //Direita
+//                                0 1 0 Terrestre
+//                                0 1 1 Terrestre
+//                                1 0 0 Meteoro //Esquerda
+//                                1 0 1 Meteoro //Direita
+//                                1 1 1 Voador
+
+
+                                // Atualização do fatorCondicao com base nas possibilidades
+                                double fatorCondicao = -1; // Valor padrão caso nenhuma condição seja atendida
+                                int acao=-1;
+
+                                if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
+                                    fatorCondicao = 0;  // Meteoro - Esquerda
+                                    acao = 0;
+                                } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
+                                    fatorCondicao = 0;  // Inimigo Terrestre // Pular
+                                    acao = 1;
+                                } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
+                                    fatorCondicao = 1;  // Meteoro - Esquerda -- Direita
+                                    acao = 2;
+                                } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
+                                    fatorCondicao = 1;  // Voador
+                                    acao = 3;
+                                } else {
+                                    acao = -1;
+                                }
 
                                 redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
 
@@ -164,13 +204,13 @@ public class Main {
                                 Arrays.sort(saidasOrdenada);
 
                                 // Verifica o maior valor de 'saidas' após a ordenação
-                                if (fatorCondicao ==0) {
+                                if (acao ==1) {
                                     playerIA.apertarEspaco(); // Pular
-                                } else if (fatorCondicao ==1) {
+                                } else if (acao ==3) {
                                     playerIA.apertarS(); // Abaixar
-                                } else if (saidas[2] == saidasOrdenada[2]) {
+                                } else if (acao ==0) {
                                     playerIA.apertarEsquerda(); // Esquerda
-                                } else if (saidas[3] == saidasOrdenada[3]) {
+                                } else if (acao ==2) {
                                     playerIA.apertarDireita(); // Direita
                                 }
                                 // Incrementa a pontuação
