@@ -180,6 +180,8 @@ public class RedeNeuralTeste2 {
                 soma += entradas[j] * pesosEntradaOculta1[j][i];
             }
             saidaOculta1[i] = relu(soma);
+            System.out.println("saidaOculta1: "+saidaOculta1[i]);
+
         }
 
         for (int i = 0; i < numOcultos2Neuronios; i++) {
@@ -188,6 +190,8 @@ public class RedeNeuralTeste2 {
                 soma += saidaOculta1[j] * pesosEntradaOculta2[j][i];
             }
             saidaOculta2[i] = relu(soma);
+            System.out.println("saidaOculta2: "+saidaOculta2[i]);
+
         }
 
         for (int i = 0; i < numSaidasNeuronios; i++) {
@@ -196,6 +200,7 @@ public class RedeNeuralTeste2 {
                 soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
             }
             saidaFinal[i] = sigmoid(soma);
+            System.out.println("Saida Final: "+saidaFinal[i]);
         }
 
         return saidaFinal;
