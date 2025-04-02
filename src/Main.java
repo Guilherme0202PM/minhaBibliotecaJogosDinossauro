@@ -176,17 +176,19 @@ public class Main {
                                 int acao=-1;
 
                                 if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
-                                    fatorCondicao = 0.25;  // Meteoro - Esquerda
+                                    fatorCondicao = 0;  // Meteoro - Esquerda
                                     acao = 0;
                                 } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = 0.5;  // Inimigo Terrestre // Pular
+                                    fatorCondicao = 0;  // Inimigo Terrestre // Pular
                                     acao = 1;
                                 } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
-                                    fatorCondicao = 0.75;  // Meteoro - Esquerda -- Direita
+                                    fatorCondicao = 1;  // Meteoro - Esquerda -- Direita
                                     acao = 2;
                                 } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
                                     fatorCondicao = 1;  // Voador
                                     acao = 3;
+                                } else {
+                                    acao = -1;
                                 }
 
                                 redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
@@ -202,13 +204,13 @@ public class Main {
                                 Arrays.sort(saidasOrdenada);
 
                                 // Verifica o maior valor de 'saidas' após a ordenação
-                                if (acao ==1) {
+                                if (saidas[0] == saidasOrdenada[0]) {
                                     playerIA.apertarEspaco(); // Pular
-                                } else if (acao ==3) {
+                                } else if (saidas[1] == saidasOrdenada[1]) {
                                     playerIA.apertarS(); // Abaixar
-                                } else if (acao ==0) {
+                                } else if (saidas[2] == saidasOrdenada[2]) {
                                     playerIA.apertarEsquerda(); // Esquerda
-                                } else if (acao ==2) {
+                                } else if (saidas[3] == saidasOrdenada[3]) {
                                     playerIA.apertarDireita(); // Direita
                                 }
                                 // Incrementa a pontuação
@@ -317,21 +319,21 @@ public class Main {
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                              RedeNeuralTeste2 melhorRede) {
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
-            PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            int posX = 50 + i * 20;
+            PlayerIA playerIA = new PlayerIA(posX, 300, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
-            janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
+            janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 14, 20, 8);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 4);
+
+            // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
                 novaRede.copiarPesos2(melhorRede);
-            }
-            redesNeurais.add(novaRede);
-        }
+                melhorRede.aplicarMutacaoPopulacional(redesNeurais);
 
-        // Aplica mutação populacional após criar a nova geração
-        if (melhorRede != null) {
-            melhorRede.aplicarMutacaoPopulacional(redesNeurais);
+            }
+
+            redesNeurais.add(novaRede);
         }
     }
 
