@@ -18,12 +18,6 @@ public class RedeNeuralTeste2 {
     private double [] entradas;
     private Random random;
 
-    private int pontuacao;
-    private int sobrevivencia; // Tempo de sobrevivência
-    private int acertos; // Número de decisões corretas
-    private int erros; // Número de decisões erradas
-    private double fitness; // Valor de adaptação combinado
-
     public RedeNeuralTeste2(int numEntradasNeuronios, int numOcultos1Neuronios, int numSaidasNeuronios) {
         this.numEntradasNeuronios = numEntradasNeuronios;
         this.numOcultos1Neuronios = numOcultos1Neuronios;
@@ -83,19 +77,26 @@ public class RedeNeuralTeste2 {
         // Cálculo da camada oculta
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             double soma = biasOculta1[i];
+            //System.out.println("Cálculo da camada oculta soma antes: "+soma);
             for (int j = 0; j < numEntradasNeuronios; j++) {
                 soma += entradas[j] * pesosEntradaOculta1[j][i];
+                //System.out.println("Cálculo da camada oculta soma depois: "+soma);
             }
-            saidaOculta[i] = relu(soma);
+            saidaOculta[i] = tanh(soma);
+            //System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
         }
 
         // Cálculo da camada de saída
         for (int i = 0; i < numSaidasNeuronios; i++) {
             double soma = biasSaida[i];
+            //System.out.println("Cálculo da camada de saída soma antes: "+soma);
             for (int j = 0; j < numOcultos1Neuronios; j++) {
                 soma += saidaOculta[j] * pesosOcultaSaida1[j][i];
+                //System.out.println("Cálculo da camada de saída soma depois: "+soma);
             }
             saidaFinal[i] = sigmoid(soma);
+            //System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
+
         }
         return saidaFinal;
     }
@@ -169,65 +170,54 @@ public class RedeNeuralTeste2 {
     }
 
     public double[] calcularSaida2(double[] entradas) {
-        // Primeira camada oculta
         double[] saidaOculta1 = new double[numOcultos1Neuronios];
+        double[] saidaOculta2 = new double[numOcultos2Neuronios];
+        double[] saidaFinal = new double[numSaidasNeuronios];
+
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             double soma = biasOculta1[i];
             for (int j = 0; j < numEntradasNeuronios; j++) {
                 soma += entradas[j] * pesosEntradaOculta1[j][i];
             }
             saidaOculta1[i] = relu(soma);
+            System.out.println("saidaOculta1: "+saidaOculta1[i]);
+
         }
 
-        // Segunda camada oculta
-        double[] saidaOculta2 = new double[numOcultos2Neuronios];
         for (int i = 0; i < numOcultos2Neuronios; i++) {
             double soma = biasOculta2[i];
             for (int j = 0; j < numOcultos1Neuronios; j++) {
                 soma += saidaOculta1[j] * pesosEntradaOculta2[j][i];
             }
             saidaOculta2[i] = relu(soma);
+            System.out.println("saidaOculta2: "+saidaOculta2[i]);
+
         }
 
-        // Camada de saída
-        double[] saidaFinal = new double[numSaidasNeuronios];
         for (int i = 0; i < numSaidasNeuronios; i++) {
             double soma = biasSaida[i];
             for (int j = 0; j < numOcultos2Neuronios; j++) {
                 soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
             }
             saidaFinal[i] = sigmoid(soma);
+            System.out.println("Saida Final: "+saidaFinal[i]);
         }
 
         return saidaFinal;
     }
 
     public void copiarPesos2(RedeNeuralTeste2 outraRede) {
-        // Copia pesos da primeira camada oculta
         for (int i = 0; i < numEntradasNeuronios; i++) {
-            System.arraycopy(outraRede.pesosEntradaOculta1[i], 0, 
-                            this.pesosEntradaOculta1[i], 0, numOcultos1Neuronios);
+            System.arraycopy(outraRede.pesosEntradaOculta1[i], 0, this.pesosEntradaOculta1[i], 0, numOcultos1Neuronios);
         }
-        
-        // Copia bias da primeira camada oculta
-        System.arraycopy(outraRede.biasOculta1, 0, this.biasOculta1, 0, numOcultos1Neuronios);
-        
-        // Copia pesos da segunda camada oculta
         for (int i = 0; i < numOcultos1Neuronios; i++) {
-            System.arraycopy(outraRede.pesosEntradaOculta2[i], 0, 
-                            this.pesosEntradaOculta2[i], 0, numOcultos2Neuronios);
+            System.arraycopy(outraRede.pesosEntradaOculta2[i], 0, this.pesosEntradaOculta2[i], 0, numOcultos2Neuronios);
         }
-        
-        // Copia bias da segunda camada oculta
-        System.arraycopy(outraRede.biasOculta2, 0, this.biasOculta2, 0, numOcultos2Neuronios);
-        
-        // Copia pesos da camada de saída
         for (int i = 0; i < numOcultos2Neuronios; i++) {
-            System.arraycopy(outraRede.pesosOcultaSaida2[i], 0, 
-                            this.pesosOcultaSaida2[i], 0, numSaidasNeuronios);
+            System.arraycopy(outraRede.pesosOcultaSaida2[i], 0, this.pesosOcultaSaida2[i], 0, numSaidasNeuronios);
         }
-        
-        // Copia bias da camada de saída
+        System.arraycopy(outraRede.biasOculta1, 0, this.biasOculta1, 0, numOcultos1Neuronios);
+        System.arraycopy(outraRede.biasOculta2, 0, this.biasOculta2, 0, numOcultos2Neuronios);
         System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidasNeuronios);
     }
 
@@ -324,204 +314,68 @@ public class RedeNeuralTeste2 {
 
     public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
         // Forward pass
-        // Primeira camada oculta
-        double[] saidaOculta1 = new double[numOcultos1Neuronios];
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            double soma = biasOculta1[i];
-            for (int j = 0; j < numEntradasNeuronios; j++) {
-                soma += entradas[j] * pesosEntradaOculta1[j][i];
+        double[] camadaOculta = new double[numOcultos1Neuronios];
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            camadaOculta[j] = biasOculta1[j];
+            for (int i = 0; i < numEntradasNeuronios; i++) {
+                camadaOculta[j] += entradas[i] * pesosEntradaOculta1[i][j];
             }
-            saidaOculta1[i] = relu(soma);
+            camadaOculta[j] = tanh(camadaOculta[j]);  // Mudamos para tanh;
         }
 
-        // Segunda camada oculta
-        double[] saidaOculta2 = new double[numOcultos2Neuronios];
-        for (int i = 0; i < numOcultos2Neuronios; i++) {
-            double soma = biasOculta2[i];
-            for (int j = 0; j < numOcultos1Neuronios; j++) {
-                soma += saidaOculta1[j] * pesosEntradaOculta2[j][i];
+        double[] saidas = new double[numSaidasNeuronios];
+        for (int j = 0; j < numSaidasNeuronios; j++) {
+            saidas[j] = biasSaida[j];
+            for (int i = 0; i < numOcultos1Neuronios; i++) {
+                saidas[j] += camadaOculta[i] * pesosOcultaSaida1[i][j];
             }
-            saidaOculta2[i] = relu(soma);
+            saidas[j] = sigmoid(saidas[j]);
         }
 
-        // Camada de saída
-        double[] saidaFinal = new double[numSaidasNeuronios];
-        for (int i = 0; i < numSaidasNeuronios; i++) {
-            double soma = biasSaida[i];
-            for (int j = 0; j < numOcultos2Neuronios; j++) {
-                soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
-            }
-            saidaFinal[i] = sigmoid(soma);
-        }
-
-        // Backward pass
-        // Erro na camada de saída
+        // Backward pass (calcular erro e atualizar pesos)
         double[] erroSaida = new double[numSaidasNeuronios];
-        for (int i = 0; i < numSaidasNeuronios; i++) {
-            erroSaida[i] = saidasEsperadas[i] - saidaFinal[i];
+        for (int j = 0; j < numSaidasNeuronios; j++) {
+            erroSaida[j] = saidasEsperadas[j] - saidas[j];
         }
 
-        // Erro na segunda camada oculta
-        double[] erroOculta2 = new double[numOcultos2Neuronios];
-        for (int i = 0; i < numOcultos2Neuronios; i++) {
-            for (int j = 0; j < numSaidasNeuronios; j++) {
-                erroOculta2[i] += erroSaida[j] * pesosOcultaSaida2[i][j];
+        double[] erroOculto = new double[numOcultos1Neuronios];
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            for (int k = 0; k < numSaidasNeuronios; k++) {
+                erroOculto[j] += erroSaida[k] * pesosOcultaSaida1[j][k];
             }
-            erroOculta2[i] *= (saidaOculta2[i] > 0 ? 1 : 0); // Derivada da ReLU
+            //erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
+            erroOculto[j] *= tanhDerivada(camadaOculta[j]);  // Usando derivada do tanh
         }
 
-        // Erro na primeira camada oculta
-        double[] erroOculta1 = new double[numOcultos1Neuronios];
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            for (int j = 0; j < numOcultos2Neuronios; j++) {
-                erroOculta1[i] += erroOculta2[j] * pesosEntradaOculta2[i][j];
-            }
-            erroOculta1[i] *= (saidaOculta1[i] > 0 ? 1 : 0); // Derivada da ReLU
-        }
-
-        // Atualização dos pesos
-        // Atualização pesos entrada -> oculta1
         for (int i = 0; i < numEntradasNeuronios; i++) {
             for (int j = 0; j < numOcultos1Neuronios; j++) {
-                pesosEntradaOculta1[i][j] += taxaAprendizagem * erroOculta1[j] * entradas[i];
+                pesosEntradaOculta1[i][j] += taxaAprendizagem * erroOculto[j] * entradas[i];
             }
         }
 
-        // Atualização bias oculta1
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            biasOculta1[i] += taxaAprendizagem * erroOculta1[i];
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            biasOculta1[j] += taxaAprendizagem * erroOculto[j];
         }
 
-        // Atualização pesos oculta1 -> oculta2
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            for (int j = 0; j < numOcultos2Neuronios; j++) {
-                pesosEntradaOculta2[i][j] += taxaAprendizagem * erroOculta2[j] * saidaOculta1[i];
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            for (int k = 0; k < numSaidasNeuronios; k++) {
+                pesosOcultaSaida1[j][k] += taxaAprendizagem * erroSaida[k] * camadaOculta[j];
             }
         }
 
-        // Atualização bias oculta2
-        for (int i = 0; i < numOcultos2Neuronios; i++) {
-            biasOculta2[i] += taxaAprendizagem * erroOculta2[i];
-        }
-
-        // Atualização pesos oculta2 -> saída
-        for (int i = 0; i < numOcultos2Neuronios; i++) {
-            for (int j = 0; j < numSaidasNeuronios; j++) {
-                pesosOcultaSaida2[i][j] += taxaAprendizagem * erroSaida[j] * saidaOculta2[i];
-            }
-        }
-
-        // Atualização bias saída
-        for (int i = 0; i < numSaidasNeuronios; i++) {
-            biasSaida[i] += taxaAprendizagem * erroSaida[i];
+        for (int k = 0; k < numSaidasNeuronios; k++) {
+            biasSaida[k] += taxaAprendizagem * erroSaida[k];
         }
     }
 
-    // Métodos para atualizar as métricas
+    private int pontuacao;
+
     public void incrementarPontuacao(int valor) {
         pontuacao += valor;
-    }
-
-    public void incrementarSobrevivencia() {
-        sobrevivencia++;
-    }
-
-    public void registrarAcerto() {
-        acertos++;
-    }
-
-    public void registrarErro() {
-        erros++;
-    }
-
-    // Método para calcular o fitness
-    public void calcularFitness() {
-        // Peso para cada métrica
-        double pesoPontuacao = 0.4;
-        double pesoSobrevivencia = 0.3;
-        double pesoAcertos = 0.3;
-        
-        // Normalização das métricas
-        double pontuacaoNormalizada = Math.min(pontuacao / 1000.0, 1.0); // Limita a pontuação a 1.0
-        double sobrevivenciaNormalizada = Math.min(sobrevivencia / 1000.0, 1.0); // Limita a sobrevivência a 1.0
-        
-        // Calcula taxa de acertos evitando divisão por zero
-        double taxaAcertos = 0.0;
-        if (acertos + erros > 0) {
-            taxaAcertos = acertos / (double)(acertos + erros);
-        }
-        
-        // Cálculo do fitness
-        fitness = (pesoPontuacao * pontuacaoNormalizada) +
-                 (pesoSobrevivencia * sobrevivenciaNormalizada) +
-                 (pesoAcertos * taxaAcertos);
-    }
-
-    // Getters para as métricas
-    public double getFitness() {
-        return fitness;
     }
 
     public int getPontuacao() {
         return pontuacao;
     }
 
-    public int getSobrevivencia() {
-        return sobrevivencia;
-    }
-
-    public double getTaxaAcertos() {
-        if (acertos + erros == 0) {
-            return 0.0;
-        }
-        return acertos / (double)(acertos + erros);
-    }
-
-    public void mutar(double taxaMutacao) {
-        // Mutação nos pesos da primeira camada oculta
-        for (int i = 0; i < pesosEntradaOculta1.length; i++) {
-            for (int j = 0; j < pesosEntradaOculta1[i].length; j++) {
-                if (Math.random() < taxaMutacao) {
-                    pesosEntradaOculta1[i][j] += (Math.random() - 0.5) * 0.2; // Variação de ±0.1
-                }
-            }
-        }
-        
-        // Mutação nos pesos da segunda camada oculta
-        for (int i = 0; i < pesosEntradaOculta2.length; i++) {
-            for (int j = 0; j < pesosEntradaOculta2[i].length; j++) {
-                if (Math.random() < taxaMutacao) {
-                    pesosEntradaOculta2[i][j] += (Math.random() - 0.5) * 0.2;
-                }
-            }
-        }
-        
-        // Mutação nos pesos da camada de saída
-        for (int i = 0; i < pesosOcultaSaida2.length; i++) {
-            for (int j = 0; j < pesosOcultaSaida2[i].length; j++) {
-                if (Math.random() < taxaMutacao) {
-                    pesosOcultaSaida2[i][j] += (Math.random() - 0.5) * 0.2;
-                }
-            }
-        }
-        
-        // Mutação nos bias
-        for (int i = 0; i < biasOculta1.length; i++) {
-            if (Math.random() < taxaMutacao) {
-                biasOculta1[i] += (Math.random() - 0.5) * 0.2;
-            }
-        }
-        
-        for (int i = 0; i < biasOculta2.length; i++) {
-            if (Math.random() < taxaMutacao) {
-                biasOculta2[i] += (Math.random() - 0.5) * 0.2;
-            }
-        }
-        
-        for (int i = 0; i < biasSaida.length; i++) {
-            if (Math.random() < taxaMutacao) {
-                biasSaida[i] += (Math.random() - 0.5) * 0.2;
-            }
-        }
-    }
 }
