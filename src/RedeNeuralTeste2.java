@@ -8,7 +8,6 @@ public class RedeNeuralTeste2 {
     private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
     private double taxaMutacaoIndividual = 0.7;   // 30% de diferença entre indivíduos
 
-
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
     private double[][] pesosEntradaOculta2;
     private double[] biasOculta1; // Bias para a camada oculta
