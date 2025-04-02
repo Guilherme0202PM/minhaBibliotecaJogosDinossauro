@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 
 public class Main {
@@ -46,7 +48,7 @@ public class Main {
         List<PlayerIA> player2List = new ArrayList<>();
         List<PlayerIA> coleta = new ArrayList<>(); //Coleta pontuações de PlayerIA
         List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
+        Map<Integer, RedeNeuralTeste2> redesNeuraisArmazenadas = new HashMap<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
 
 
@@ -188,15 +190,28 @@ public class Main {
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
                                 acaoRealizada = acao;
-                                acaoEsperada = redeNeural.identificarInimigo(entradas);
-                                System.out.println("Acção realizada: "+acaoRealizada);
-                                System.out.println("Acção Esperada: "+acaoEsperada);
+
+                                // Incrementa o tempo de sobrevivência
+                                redeNeural.incrementarTempoSobrevivencia();
+
+                                // Determina a ação esperada com base nas características do inimigo
+                                int[] caracteristicasInimigo = new int[3];
+                                caracteristicasInimigo[0] = (inimigo.getX() >= playerIA.getX()) ? 0 : 1;
+                                caracteristicasInimigo[1] = (inimigo.getY() >= 350) ? 0 : 1;
+                                caracteristicasInimigo[2] = (inimigo.getAltura() >= 70) ? 0 : 1;
+                                acaoEsperada = redeNeural.determinarAcaoEsperada(caracteristicasInimigo);
+
+                                // Registra a ação e verifica se foi um acerto
+                                redeNeural.registrarAcao();
+                                if (acao == acaoEsperada) {
+                                    redeNeural.registrarAcerto();
+                                }
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
                                     redeNeural.ErroAcao(acaoRealizada);
                                     coleta.add(playerIA);
-                                    redesNeuraisArmazenadas.add(redesNeurais.get(j));
+                                    redesNeuraisArmazenadas.put(j, redesNeurais.get(j));
                                     //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
@@ -235,7 +250,7 @@ public class Main {
                 //System.out.println("coleta tamanho: " + coleta.size());
                 //System.out.println("redesNeurais tamanho: " + redesNeurais.size());
 
-                coleta = selecao(coleta, numPlayers);
+                coleta = selecao(coleta, player2List, redesNeuraisArmazenadas, numPlayers);
                 redesNeuraisArmazenadas2 = selecao2(redesNeuraisArmazenadas, numPlayers);
 
 
@@ -450,58 +465,66 @@ public class Main {
         }
     }
 
-    public static List<PlayerIA> selecao(List<PlayerIA> populacao, int numSelecionados) {
-        // Verifica se a população está vazia
-        if (populacao == null || populacao.isEmpty()) {
-            System.out.println("A população está vazia.");
-            return new ArrayList<>();
+    public static List<PlayerIA> selecao(List<PlayerIA> populacao, List<PlayerIA> player2List, Map<Integer, RedeNeuralTeste2> redesNeuraisArmazenadas, int numSelecionados) {
+        // Calcula o fitness para cada indivíduo
+        Map<PlayerIA, Double> fitnessMap = new HashMap<>();
+        int tempoMaximo = 0;
+
+        // Encontra o tempo máximo de sobrevivência
+        for (PlayerIA player : populacao) {
+            int index = player2List.indexOf(player);
+            RedeNeuralTeste2 rede = redesNeuraisArmazenadas.get(index);
+            if (rede != null) {
+                tempoMaximo = Math.max(tempoMaximo, rede.getTempoSobrevivencia());
+            }
         }
 
-        // Copia a população para evitar modificar a lista original
-        List<PlayerIA> copiaPopulacao = new ArrayList<>(populacao);
+        // Se não houver tempo de sobrevivência, usa um valor padrão
+        if (tempoMaximo == 0) tempoMaximo = 1000;
 
-        // Ordena a cópia com base na pontuação (do maior para o menor)
-        copiaPopulacao.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
-
-        // Garante que numSelecionados não ultrapasse o tamanho da lista
-        numSelecionados = Math.min(numSelecionados, copiaPopulacao.size());
-
-        // Exibe o ranqueamento no console
-        System.out.println("Ranking da População:");
-        for (int i = 0; i < copiaPopulacao.size(); i++) {
-            System.out.println((i + 1) + "º - " + copiaPopulacao.get(i) + " | Pontuação: " + copiaPopulacao.get(i).getPontuacao());
+        // Calcula o fitness para cada indivíduo
+        for (PlayerIA player : populacao) {
+            int index = player2List.indexOf(player);
+            RedeNeuralTeste2 rede = redesNeuraisArmazenadas.get(index);
+            if (rede != null) {
+                double fitness = rede.calcularFitness(tempoMaximo);
+                fitnessMap.put(player, fitness);
+            }
         }
-        System.out.println("Fim Ranking:");
+
+        // Ordena a população pelo fitness (decrescente)
+        List<PlayerIA> populacaoOrdenada = new ArrayList<>(populacao);
+        populacaoOrdenada.sort((p1, p2) -> Double.compare(fitnessMap.getOrDefault(p2, 0.0), fitnessMap.getOrDefault(p1, 0.0)));
 
         // Retorna os melhores indivíduos
-        return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
+        return populacaoOrdenada.subList(0, Math.min(numSelecionados, populacaoOrdenada.size()));
     }
 
-    public static ArrayList<RedeNeuralTeste2> selecao2(List<RedeNeuralTeste2> redesNeurais, int numSelecionados) {
-        // Verifica se a população está vazia
-        if (redesNeurais == null || redesNeurais.isEmpty()) {
-            System.out.println("A população está vazia.");
-            return new ArrayList<>();
+    public static List<RedeNeuralTeste2> selecao2(Map<Integer, RedeNeuralTeste2> redesNeurais, int numSelecionados) {
+        // Calcula o fitness para cada rede
+        Map<RedeNeuralTeste2, Double> fitnessMap = new HashMap<>();
+        int tempoMaximo = 0;
+
+        // Encontra o tempo máximo de sobrevivência
+        for (RedeNeuralTeste2 rede : redesNeurais.values()) {
+            tempoMaximo = Math.max(tempoMaximo, rede.getTempoSobrevivencia());
         }
 
-        // Copia a população para evitar modificar a lista original
-        List<RedeNeuralTeste2> copiaPopulacaoRede = new ArrayList<>(redesNeurais);
+        // Se não houver tempo de sobrevivência, usa um valor padrão
+        if (tempoMaximo == 0) tempoMaximo = 1000;
 
-        // Ordena a cópia com base na pontuação (do maior para o menor)
-        copiaPopulacaoRede.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
-
-        // Garante que numSelecionados não ultrapasse o tamanho da lista
-        numSelecionados = Math.min(numSelecionados, copiaPopulacaoRede.size());
-
-        // Exibe o ranqueamento no console
-        System.out.println("Ranking da População:");
-        for (int i = 0; i < copiaPopulacaoRede.size(); i++) {
-            System.out.println((i + 1) + "º - " + copiaPopulacaoRede.get(i) + " | Pontuação: " + copiaPopulacaoRede.get(i).getPontuacao());
+        // Calcula o fitness para cada rede
+        for (RedeNeuralTeste2 rede : redesNeurais.values()) {
+            double fitness = rede.calcularFitness(tempoMaximo);
+            fitnessMap.put(rede, fitness);
         }
-        System.out.println("Fim Ranking:");
 
-        // Retorna os melhores indivíduos
-        return new ArrayList<>(copiaPopulacaoRede.subList(0, numSelecionados));
+        // Ordena a população pelo fitness (decrescente)
+        List<RedeNeuralTeste2> populacaoOrdenada = new ArrayList<>(redesNeurais.values());
+        populacaoOrdenada.sort((r1, r2) -> Double.compare(fitnessMap.get(r2), fitnessMap.get(r1)));
+
+        // Retorna as melhores redes
+        return populacaoOrdenada.subList(0, Math.min(numSelecionados, populacaoOrdenada.size()));
     }
 
 

@@ -18,6 +18,11 @@ public class RedeNeuralTeste2 {
     private double [] entradas;
     private Random random;
 
+    private int pontuacao, erroAcao;
+    private int acertos; // Contador de acertos (ações corretas)
+    private int totalAcoes; // Contador total de ações
+    private int tempoSobrevivencia; // Tempo de sobrevivência do jogador
+
     public RedeNeuralTeste2(int numEntradasNeuronios, int numOcultos1Neuronios, int numSaidasNeuronios) {
         this.numEntradasNeuronios = numEntradasNeuronios;
         this.numOcultos1Neuronios = numOcultos1Neuronios;
@@ -348,8 +353,6 @@ public class RedeNeuralTeste2 {
         }
     }
 
-    private int pontuacao, erroAcao;
-
     public void incrementarPontuacao(int valor) {
         pontuacao += valor;
     }
@@ -363,7 +366,51 @@ public class RedeNeuralTeste2 {
     }
 
     public int getErroAcao() {
-        return pontuacao;
+        return erroAcao;
+    }
+
+    // Método para registrar um acerto (ação correta)
+    public void registrarAcerto() {
+        acertos++;
+        totalAcoes++;
+    }
+
+    // Método para registrar uma ação (correta ou não)
+    public void registrarAcao() {
+        totalAcoes++;
+    }
+
+    // Método para incrementar o tempo de sobrevivência
+    public void incrementarTempoSobrevivencia() {
+        tempoSobrevivencia++;
+    }
+
+    // Método para obter a taxa de acerto
+    public double getTaxaAcerto() {
+        if (totalAcoes == 0) return 0.0;
+        return (double) acertos / totalAcoes;
+    }
+
+    // Método para obter o tempo de sobrevivência
+    public int getTempoSobrevivencia() {
+        return tempoSobrevivencia;
+    }
+
+    // Método para calcular o PreFitness
+    public double calcularPreFitness() {
+        // PreFitness = (Pontuação * 0.5) + (Taxa de Acerto * 0.3)
+        return (pontuacao * 0.5) + (getTaxaAcerto() * 0.3);
+    }
+
+    // Método para calcular o Fitness final
+    public double calcularFitness(int tempoMaximo) {
+        double preFitness = calcularPreFitness();
+
+        // Penalidade por eliminação baseada no tempo de sobrevivência
+        double penalidadeEliminacao = 0.5 * (1.0 - (double) tempoSobrevivencia / tempoMaximo);
+
+        // Fitness = PreFitness * (1 - Penalidade por Eliminação)
+        return preFitness * (1.0 - penalidadeEliminacao);
     }
 
     public void aplicarMutacaoPopulacional(List<RedeNeuralTeste2> populacao) {
