@@ -18,13 +18,9 @@ public class Main {
         janela.setFundo(fundo); // Define o fundo no GamePanel
 
         //--------------------------- VARIÁVEIS DE CONTROLE
-        int pontuacaoAlvo = 100;
         int pontuacao = 0;
         int Cronometro = 0;
-        //int velocidadeAmbiente = 20;
         int velocidadeInimigos = 0;
-        //int controleVelocidade = -5;
-        //int contadorVelociade = 0;
 
 
         // Variáveis de controle de geração
@@ -70,16 +66,22 @@ public class Main {
             janela.adicionarObjeto(chaoBlocos[i]);
         }
 
-        JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
-        pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        pontuacaoLabel.setForeground(Color.BLACK);
-        pontuacaoLabel.setBounds(30, 30, 200, 30);
-        janela.addComponentToGamePanel(pontuacaoLabel);
+        JLabel geracaoLabel = new JLabel("Geração: 1");
+        geracaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        geracaoLabel.setForeground(Color.BLACK);
+        geracaoLabel.setBounds(30, 30, 200, 30);
+        janela.addComponentToGamePanel(geracaoLabel);
+
+        JLabel dinossaurosVivosLabel = new JLabel("Dinossauros Vivos: " + numPlayers);
+        dinossaurosVivosLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        dinossaurosVivosLabel.setForeground(Color.GREEN);
+        dinossaurosVivosLabel.setBounds(30, 60, 300, 30);
+        janela.addComponentToGamePanel(dinossaurosVivosLabel);
 
         JLabel cronometoLabel = new JLabel("Cronometro: 0");
         cronometoLabel.setFont(new Font("Arial", Font.BOLD, 24));
         cronometoLabel.setForeground(Color.BLACK);
-        cronometoLabel.setBounds(50, 50, 200, 30);
+        cronometoLabel.setBounds(30, 90, 200, 30);
         janela.addComponentToGamePanel(cronometoLabel);
 
 
@@ -90,9 +92,7 @@ public class Main {
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
-                    //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
-                    //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
-                    criarInimigos4(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -247,8 +247,8 @@ public class Main {
                 movimento.atualizarFisica(playerIA, chaoBlocos[0]);
                 movimento.controlarSalto(playerIA);
             }
-
-            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
+            geracaoLabel.setText("Geração: " + (geracaoAtual + 1));
+            dinossaurosVivosLabel.setText("Dinossauros Vivos: " + quantidadeVivos);
             janela.repaint();
 
             // Verifica se todos os players IA morreram
