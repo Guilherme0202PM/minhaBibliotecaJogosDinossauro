@@ -200,7 +200,7 @@ public class RedeNeuralTeste2 {
             for (int j = 0; j < numOcultos2Neuronios; j++) {
                 soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
             }
-            saidaFinal[i] = sigmoid(soma);
+            saidaFinal[i] = relu(soma);
             System.out.println("Saida Final: "+saidaFinal[i]);
         }
 

@@ -176,19 +176,17 @@ public class Main {
                                 int acao=-1;
 
                                 if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
-                                    fatorCondicao = 0;  // Meteoro - Esquerda
+                                    fatorCondicao = 0.25;  // Meteoro - Esquerda
                                     acao = 0;
                                 } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = 0;  // Inimigo Terrestre // Pular
+                                    fatorCondicao = 0.5;  // Inimigo Terrestre // Pular
                                     acao = 1;
                                 } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
-                                    fatorCondicao = 1;  // Meteoro - Esquerda -- Direita
+                                    fatorCondicao = 0.75;  // Meteoro - Esquerda -- Direita
                                     acao = 2;
                                 } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
                                     fatorCondicao = 1;  // Voador
                                     acao = 3;
-                                } else {
-                                    acao = -1;
                                 }
 
                                 redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
@@ -210,9 +208,10 @@ public class Main {
                                     playerIA.apertarS(); // Abaixar
                                 } else if (saidas[2] == saidasOrdenada[2]) {
                                     playerIA.apertarEsquerda(); // Esquerda
-                                } else if (saidas[3] == saidasOrdenada[3]) {
-                                    playerIA.apertarDireita(); // Direita
+                                }else if (saidas[3] == saidasOrdenada[3]) {
+                                    playerIA.apertarDireita(); // Esquerda
                                 }
+
                                 // Incrementa a pontuação
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
