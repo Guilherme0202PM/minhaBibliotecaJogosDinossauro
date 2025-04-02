@@ -83,26 +83,19 @@ public class RedeNeuralTeste2 {
         // Cálculo da camada oculta
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             double soma = biasOculta1[i];
-            //System.out.println("Cálculo da camada oculta soma antes: "+soma);
             for (int j = 0; j < numEntradasNeuronios; j++) {
                 soma += entradas[j] * pesosEntradaOculta1[j][i];
-                //System.out.println("Cálculo da camada oculta soma depois: "+soma);
             }
-            saidaOculta[i] = tanh(soma);
-            //System.out.println("Cálculo da camada oculta relu: "+saidaOculta[i]);
+            saidaOculta[i] = relu(soma);
         }
 
         // Cálculo da camada de saída
         for (int i = 0; i < numSaidasNeuronios; i++) {
             double soma = biasSaida[i];
-            //System.out.println("Cálculo da camada de saída soma antes: "+soma);
             for (int j = 0; j < numOcultos1Neuronios; j++) {
                 soma += saidaOculta[j] * pesosOcultaSaida1[j][i];
-                //System.out.println("Cálculo da camada de saída soma depois: "+soma);
             }
             saidaFinal[i] = sigmoid(soma);
-            //System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
-
         }
         return saidaFinal;
     }
@@ -449,9 +442,14 @@ public class RedeNeuralTeste2 {
         double pesoAcertos = 0.3;
         
         // Normalização das métricas
-        double pontuacaoNormalizada = pontuacao / 1000.0; // Ajuste conforme necessário
-        double sobrevivenciaNormalizada = sobrevivencia / 1000.0; // Ajuste conforme necessário
-        double taxaAcertos = acertos / (double)(acertos + erros);
+        double pontuacaoNormalizada = Math.min(pontuacao / 1000.0, 1.0); // Limita a pontuação a 1.0
+        double sobrevivenciaNormalizada = Math.min(sobrevivencia / 1000.0, 1.0); // Limita a sobrevivência a 1.0
+        
+        // Calcula taxa de acertos evitando divisão por zero
+        double taxaAcertos = 0.0;
+        if (acertos + erros > 0) {
+            taxaAcertos = acertos / (double)(acertos + erros);
+        }
         
         // Cálculo do fitness
         fitness = (pesoPontuacao * pontuacaoNormalizada) +
@@ -473,6 +471,57 @@ public class RedeNeuralTeste2 {
     }
 
     public double getTaxaAcertos() {
+        if (acertos + erros == 0) {
+            return 0.0;
+        }
         return acertos / (double)(acertos + erros);
+    }
+
+    public void mutar(double taxaMutacao) {
+        // Mutação nos pesos da primeira camada oculta
+        for (int i = 0; i < pesosEntradaOculta1.length; i++) {
+            for (int j = 0; j < pesosEntradaOculta1[i].length; j++) {
+                if (Math.random() < taxaMutacao) {
+                    pesosEntradaOculta1[i][j] += (Math.random() - 0.5) * 0.2; // Variação de ±0.1
+                }
+            }
+        }
+        
+        // Mutação nos pesos da segunda camada oculta
+        for (int i = 0; i < pesosEntradaOculta2.length; i++) {
+            for (int j = 0; j < pesosEntradaOculta2[i].length; j++) {
+                if (Math.random() < taxaMutacao) {
+                    pesosEntradaOculta2[i][j] += (Math.random() - 0.5) * 0.2;
+                }
+            }
+        }
+        
+        // Mutação nos pesos da camada de saída
+        for (int i = 0; i < pesosOcultaSaida2.length; i++) {
+            for (int j = 0; j < pesosOcultaSaida2[i].length; j++) {
+                if (Math.random() < taxaMutacao) {
+                    pesosOcultaSaida2[i][j] += (Math.random() - 0.5) * 0.2;
+                }
+            }
+        }
+        
+        // Mutação nos bias
+        for (int i = 0; i < biasOculta1.length; i++) {
+            if (Math.random() < taxaMutacao) {
+                biasOculta1[i] += (Math.random() - 0.5) * 0.2;
+            }
+        }
+        
+        for (int i = 0; i < biasOculta2.length; i++) {
+            if (Math.random() < taxaMutacao) {
+                biasOculta2[i] += (Math.random() - 0.5) * 0.2;
+            }
+        }
+        
+        for (int i = 0; i < biasSaida.length; i++) {
+            if (Math.random() < taxaMutacao) {
+                biasSaida[i] += (Math.random() - 0.5) * 0.2;
+            }
+        }
     }
 }

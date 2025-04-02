@@ -56,7 +56,7 @@ public class Main {
         List<Inimigo> inimigos = new ArrayList<>(); //Armazena inimigos
 
         // Inicializa os PlayerIA e redes neurais
-        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
+        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
 
 
         // Geração de múltiplos blocos de chão
@@ -210,12 +210,14 @@ public class Main {
                                         case 3: playerIA.apertarDireita(); break;
                                     }
 
-                                    // Incrementa a pontuação
+                                    // Incrementa a pontuação e sobrevivência
                                     playerIA.incrementarPontuacao(1);
                                     redeNeural.incrementarPontuacao(1);
+                                    redeNeural.incrementarSobrevivencia();
 
                                     // Verifica colisão com PlayerIA
                                     if (sensores.verificarColisao(playerIA, inimigoProximo)) {
+                                        redeNeural.registrarErro();
                                         coleta.add(playerIA);
                                         redesNeuraisArmazenadas.add(redesNeurais.get(j));
                                         janela.removerObjeto(playerIA);
@@ -224,6 +226,8 @@ public class Main {
                                         quantidadeVivos--;
                                         j--; // Ajusta o índice após remoção
                                         System.gc();
+                                    } else {
+                                        redeNeural.registrarAcerto();
                                     }
                                 }
                             }
@@ -300,38 +304,50 @@ public class Main {
     }
 
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
-                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
-        for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
-            PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
-            player2List.add(playerIA);
-            janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
-            //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 20, 4); // Configure a rede neural conforme necessário
-            redesNeurais.add(redeNeural);
-        }
-    }
-
-    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                              RedeNeuralTeste2 melhorRede) {
-        for (int i = 0; i < numPlayers; i++) {
+        // Limpar listas existentes
+        player2List.clear();
+        redesNeurais.clear();
+        
+        // Se tivermos um melhor indivíduo da geração anterior, preservá-lo
+        if (melhorRede != null) {
+            // Criar cópia exata do melhor indivíduo
+            RedeNeuralTeste2 copiaMelhor = new RedeNeuralTeste2(7, 14, 20, 4);
+            copiaMelhor.copiarPesos2(melhorRede);
+            redesNeurais.add(copiaMelhor);
+            
+            // Criar o PlayerIA correspondente
+            PlayerIA playerIA = new PlayerIA(50, 300, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            player2List.add(playerIA);
+            janela.adicionarObjeto(playerIA);
+            
+            System.out.println("Melhor indivíduo preservado:");
+            System.out.println("Fitness: " + melhorRede.getFitness());
+            System.out.println("Pontuação: " + melhorRede.getPontuacao());
+            System.out.println("Sobrevivência: " + melhorRede.getSobrevivencia());
+            System.out.println("Taxa de Acertos: " + (melhorRede.getTaxaAcertos() * 100) + "%");
+        }
+        
+        // Completar a população
+        int inicio = melhorRede != null ? 1 : 0;
+        for (int i = inicio; i < numPlayers; i++) {
             int posX = 50 + i * 20;
             PlayerIA playerIA = new PlayerIA(posX, 300, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
-
+            
             RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 4);
-
-            // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
+            
+            // Se tivermos um melhor indivíduo, usar como base
             if (melhorRede != null) {
                 novaRede.copiarPesos2(melhorRede);
+                novaRede.mutar(0.1); // 10% de chance de mutação
             }
-
+            
             redesNeurais.add(novaRede);
         }
     }
-
 
     private static int aumentaVelocidade(int Cronometro){
         int velocidadeInimigos = 0;
