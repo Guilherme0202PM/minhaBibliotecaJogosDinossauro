@@ -108,24 +108,6 @@ public class Main {
                             inimigo.atualizar();
                         }
 
-//                        if (sensores.verificarColisao(player, inimigo)) {
-//                            janela.removerObjeto(inimigo);
-//                            inimigos.remove(i); // Remove o inimigo da lista
-//                            System.gc();
-//
-//                            System.out.println("Colisão detectada! Inimigo removido.");
-//                        } else if (inimigo.getRect().x < player.getRect().x) {
-//                            pontuacao++;
-//                            System.out.println("Pontuação: " + pontuacao);
-//                            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
-//
-//                            if (inimigo.getRect().x < -inimigo.getRect().width) {
-//                                janela.removerObjeto(inimigo);
-//                                inimigos.remove(i); // Remove o inimigo da lista
-//                                System.gc();
-//                            }
-//                        }
-
                         // Interação com cada PlayerIA
                         for (int j = 0; j < player2List.size(); j++) {
                             PlayerIA playerIA = player2List.get(j);
@@ -140,54 +122,38 @@ public class Main {
                                 redeNeural.recebeEntradas(entradas);
 
                                 int tabelaVerdadeX, tabelaVerdadeY, tabelaVerdadeZ;
-                                if (inimigo.getY() >= 350){
+
+                                if (inimigo.getX() >= playerIA.getX()){
                                     tabelaVerdadeX = 0;
                                 } else {
                                     tabelaVerdadeX = 1;
                                 }
 
-                                if (inimigo.getAltura() >= 70){
-                                    tabelaVerdadeY = 0;
+                                if (inimigo.getY() >= 350){
+                                    tabelaVerdadeY = 0; //Pula
                                 } else {
-                                    tabelaVerdadeY = 1;
+                                    tabelaVerdadeY = 1; //Abaixa
                                 }
 
-                                if (inimigo.getX() >= playerIA.getX()){
-                                    tabelaVerdadeZ = 0;
+                                if (inimigo.getAltura() >= 70){
+                                    tabelaVerdadeZ = 0; //Meteoro
                                 } else {
                                     tabelaVerdadeZ = 1;
                                 }
 
-//                                0 0 = Meteoro
-//                                0 1 = Inimigo Terrestre // Pular
-//                                1 0 = Meteoro
-//                                1 1 = Voador
-
-//                                0 0 0 Meteoro //Esquerda
-//                                0 0 1 Meteoro //Direita
-//                                0 1 0 Terrestre
-//                                0 1 1 Terrestre
-//                                1 0 0 Meteoro //Esquerda
-//                                1 0 1 Meteoro //Direita
-//                                1 1 1 Voador
-
-
                                 // Atualização do fatorCondicao com base nas possibilidades
-                                double fatorCondicao = -1; // Valor padrão caso nenhuma condição seja atendida
-                                int acao=-1;
+                                double fatorCondicao = 0; // Valor padrão caso nenhuma condição seja atendida
+                                int acao = 0;
+                                int acaoRealizada, acaoEsperada;
 
-                                if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
-                                    fatorCondicao = 0.25;  // Meteoro - Esquerda
-                                    acao = 0;
-                                } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = 0.5;  // Inimigo Terrestre // Pular
-                                    acao = 1;
-                                } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
-                                    fatorCondicao = 0.75;  // Meteoro - Esquerda -- Direita
-                                    acao = 2;
-                                } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
+                                if (tabelaVerdadeY == 0 && tabelaVerdadeZ == 1) {
+                                    fatorCondicao = 0.25;  // Inimigo Terrestre // Pular
+                                }else if (tabelaVerdadeX == 0 && tabelaVerdadeZ == 0) {
+                                    fatorCondicao = 0.5;  // Esquerda
+                                } else if (tabelaVerdadeX == 1 && tabelaVerdadeZ == 0) {
+                                    fatorCondicao = 0.75;  // Meteoro  Direita
+                                } else if (tabelaVerdadeY == 1 && tabelaVerdadeZ == 1) {
                                     fatorCondicao = 1;  // Voador
-                                    acao = 3;
                                 }
 
                                 redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
@@ -195,6 +161,7 @@ public class Main {
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
                                 double[] saidasOrdenada = redeNeural.calcularSaida2(entradas);
+
 
 //                                for (int y = 0; i < saidas.length; i++) {
 //                                    System.out.println("Saida[" + i + "] = " + saidas[i]);
@@ -205,20 +172,29 @@ public class Main {
                                 // Verifica o maior valor de 'saidas' após a ordenação
                                 if (saidas[0] == saidasOrdenada[0]) {
                                     playerIA.apertarEspaco(); // Pular
+                                    acao = 1;
                                 } else if (saidas[1] == saidasOrdenada[1]) {
                                     playerIA.apertarS(); // Abaixar
+                                    acao = 2;
                                 } else if (saidas[2] == saidasOrdenada[2]) {
                                     playerIA.apertarEsquerda(); // Esquerda
+                                    acao = 3;
                                 }else if (saidas[3] == saidasOrdenada[3]) {
                                     playerIA.apertarDireita(); // Esquerda
+                                    acao = 4;
                                 }
 
                                 // Incrementa a pontuação
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
+                                acaoRealizada = acao;
+                                acaoEsperada = redeNeural.identificarInimigo(entradas);
+                                System.out.println("Acção realizada: "+acaoRealizada);
+                                System.out.println("Acção Esperada: "+acaoEsperada);
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
+                                    redeNeural.ErroAcao(acaoRealizada);
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
                                     //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
@@ -226,7 +202,6 @@ public class Main {
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
                                     quantidadeVivos--;
-                                    //System.out.println("Quantidade de vivos"+ quantidadeVivos);
                                     j--; // Ajusta o índice após remoção
                                     System.gc();
                                 }
