@@ -30,7 +30,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 30;
+        int totalGeracao = 20;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -38,6 +38,10 @@ public class Main {
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
         RedeNeuralTeste2 melhorRede = null;
+
+        // Lista para armazenar os resultados de cada geração
+        List<String> resultadosGeracoes = new ArrayList<>();
+
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
 
 //        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
@@ -259,6 +263,11 @@ public class Main {
                     //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
                     melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
+
+                    // Imprime informações sobre o melhor indivíduo da geração atual
+                    System.out.println("\n===== MELHOR INDIVÍDUO DA GERAÇÃO " + geracaoAtual + " =====");
+                    String resultadoGeracao = imprimirMelhorIndividuo(coleta, redesNeuraisArmazenadas2);
+                    resultadosGeracoes.add("Geração " + geracaoAtual + ":\n" + resultadoGeracao);
                 }
 
                 if (geracaoAtual < totalGeracao) {
@@ -270,6 +279,10 @@ public class Main {
 
                     Cronometro = 0;
                     inimigosCriados = 0;
+
+                    // Imprime informações sobre o melhor indivíduo da geração atual
+                    System.out.println("\nGeração " + geracaoAtual + " concluída.");
+                    System.out.println("Iniciando próxima geração...\n");
 
                     inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
 
@@ -290,6 +303,22 @@ public class Main {
             cronometoLabel.setText("Cronometro: " + Cronometro);
         }
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
+
+        // Imprime informações sobre o melhor indivíduo de todas as gerações
+        if (!redesNeuraisArmazenadas2.isEmpty()) {
+            System.out.println("\n===== MELHOR INDIVÍDUO DE TODAS AS GERAÇÕES =====");
+            imprimirMelhorIndividuo(coleta, redesNeuraisArmazenadas2);
+        } else {
+            System.out.println("\nNão foi possível determinar o melhor indivíduo de todas as gerações.");
+        }
+
+        // Imprime todos os resultados de todas as gerações
+        System.out.println("\n\n===== RESULTADOS DE TODAS AS GERAÇÕES =====");
+        for (String resultado : resultadosGeracoes) {
+            System.out.println(resultado);
+            System.out.println();
+        }
+        System.out.println("===========================================");
     }
 
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
@@ -534,5 +563,56 @@ public class Main {
         }
 
         return redesNeurais.get(0);
+    }
+
+    public static String imprimirMelhorIndividuo(List<PlayerIA> populacao, List<RedeNeuralTeste2> redesNeurais) {
+        if (redesNeurais == null || redesNeurais.isEmpty()) {
+            return "Não há redes neurais para analisar.";
+        }
+
+        // Encontra o tempo máximo de sobrevivência
+        int tempoMaximo = 0;
+        for (RedeNeuralTeste2 rede : redesNeurais) {
+            tempoMaximo = Math.max(tempoMaximo, rede.getTempoSobrevivencia());
+        }
+
+        // Encontra a melhor rede neural com base no fitness
+        RedeNeuralTeste2 melhorRede = null;
+        double melhorFitness = Double.NEGATIVE_INFINITY;
+
+        for (RedeNeuralTeste2 rede : redesNeurais) {
+            double fitness = rede.calcularFitness(tempoMaximo);
+            if (fitness > melhorFitness) {
+                melhorFitness = fitness;
+                melhorRede = rede;
+            }
+        }
+
+        if (melhorRede != null) {
+            StringBuilder resultado = new StringBuilder();
+            resultado.append("===== MELHOR INDIVÍDUO =====\n");
+            resultado.append("Tempo de Sobrevivência: ").append(melhorRede.getTempoSobrevivencia()).append("\n");
+            resultado.append("Pontuação: ").append(melhorRede.getPontuacao()).append("\n");
+            resultado.append("Taxa de Acerto: ").append(String.format("%.2f", melhorRede.getTaxaAcerto() * 100)).append("%\n");
+            resultado.append("Fitness: ").append(String.format("%.2f", melhorFitness)).append("\n");
+
+            // Adiciona informações sobre o preFitness
+            double preFitness = melhorRede.calcularPreFitness();
+            resultado.append("PreFitness: ").append(String.format("%.2f", preFitness)).append("\n");
+
+            // Adiciona informações sobre erros
+            resultado.append("Erros de Ação: ").append(melhorRede.getErroAcao()).append("\n");
+
+            resultado.append("===========================");
+
+            // Imprime o resultado no console
+            System.out.println(resultado.toString());
+
+            return resultado.toString();
+        } else {
+            String mensagem = "Não foi possível encontrar o melhor indivíduo.";
+            System.out.println(mensagem);
+            return mensagem;
+        }
     }
 }
