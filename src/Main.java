@@ -30,7 +30,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 30;
+        int totalGeracao = 3;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -50,6 +50,9 @@ public class Main {
         List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
+        List<RedeNeuralTeste2> redesNeuraisMelhorDesenpenho = new ArrayList<>();
+
+
 
 
         List<Inimigo> inimigos = new ArrayList<>(); //Armazena inimigos
@@ -69,16 +72,22 @@ public class Main {
             janela.adicionarObjeto(chaoBlocos[i]);
         }
 
-        JLabel pontuacaoLabel = new JLabel("Pontuacao: 0");
-        pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        pontuacaoLabel.setForeground(Color.BLACK);
-        pontuacaoLabel.setBounds(30, 30, 200, 30);
-        janela.addComponentToGamePanel(pontuacaoLabel);
+        JLabel geracaoLabel = new JLabel("Geração: 1");
+        geracaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        geracaoLabel.setForeground(Color.BLACK);
+        geracaoLabel.setBounds(30, 30, 200, 30);
+        janela.addComponentToGamePanel(geracaoLabel);
+
+        JLabel dinossaurosVivosLabel = new JLabel("Dinossauros Vivos: " + numPlayers);
+        dinossaurosVivosLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        dinossaurosVivosLabel.setForeground(Color.GREEN);
+        dinossaurosVivosLabel.setBounds(30, 60, 300, 30);
+        janela.addComponentToGamePanel(dinossaurosVivosLabel);
 
         JLabel cronometoLabel = new JLabel("Cronometro: 0");
         cronometoLabel.setFont(new Font("Arial", Font.BOLD, 24));
         cronometoLabel.setForeground(Color.BLACK);
-        cronometoLabel.setBounds(50, 50, 200, 30);
+        cronometoLabel.setBounds(30, 90, 200, 30);
         janela.addComponentToGamePanel(cronometoLabel);
 
 
@@ -190,8 +199,10 @@ public class Main {
                 movimento.controlarSalto(playerIA);
             }
 
-            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
+            geracaoLabel.setText("Geração: " + (geracaoAtual + 1));
+            dinossaurosVivosLabel.setText("Dinossauros Vivos: " + quantidadeVivos);
             janela.repaint();
+
 
             // Verifica se todos os players IA morreram
             if (quantidadeVivos <= 0) {
@@ -205,12 +216,14 @@ public class Main {
                 coleta = selecao(coleta, numPlayers);
                 redesNeuraisArmazenadas2 = selecao2(redesNeuraisArmazenadas, numPlayers);
 
-
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
                     //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
                     melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
+
+                    redesNeuraisMelhorDesenpenho.add(melhorRede);
+
                 }
 
                 if (geracaoAtual < totalGeracao) {
@@ -242,6 +255,11 @@ public class Main {
             cronometoLabel.setText("Cronometro: " + Cronometro);
         }
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
+        for (int i = 0; i < redesNeuraisMelhorDesenpenho.size(); i++) {
+            RedeNeuralTeste2 rede = redesNeuraisMelhorDesenpenho.get(i);
+            System.out.println((i + 1) + "º - " + rede + " | Pontuação: " + rede.getPontuacao());
+        }
+        System.out.println("Fim Ranking.");
     }
 
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
