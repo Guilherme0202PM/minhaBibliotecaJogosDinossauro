@@ -30,7 +30,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 3;
+        int totalGeracao = 20;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -50,7 +50,7 @@ public class Main {
         List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
-        List<RedeNeuralTeste2> redesNeuraisMelhorDesenpenho = new ArrayList<>();
+        List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
 
 
 
@@ -222,8 +222,8 @@ public class Main {
                     melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
 
-                    redesNeuraisMelhorDesenpenho.add(melhorRede);
-
+                    // Adicionando a rede neural com o cronômetro
+                    redesNeuraisMelhorDesempenho.add(new RedeNeuralDesempenho(melhorRede, Cronometro));
                 }
 
                 if (geracaoAtual < totalGeracao) {
@@ -255,9 +255,8 @@ public class Main {
             cronometoLabel.setText("Cronometro: " + Cronometro);
         }
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
-        for (int i = 0; i < redesNeuraisMelhorDesenpenho.size(); i++) {
-            RedeNeuralTeste2 rede = redesNeuraisMelhorDesenpenho.get(i);
-            System.out.println((i + 1) + "º - " + rede + " | Pontuação: " + rede.getPontuacao());
+        for (int i = 0; i < redesNeuraisMelhorDesempenho.size(); i++) {
+            System.out.println((i + 1) + "º - " + redesNeuraisMelhorDesempenho.get(i));
         }
         System.out.println("Fim Ranking.");
     }

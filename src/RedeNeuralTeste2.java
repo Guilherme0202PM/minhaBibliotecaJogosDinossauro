@@ -6,7 +6,7 @@ import java.util.List;
 public class RedeNeuralTeste2 {
     private int numEntradas, numOcultos1, numOcultos2,  numSaidas;
     private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
-    private double taxaMutacaoIndividual = 0.7;   // 30% de diferença entre indivíduos
+    private double taxaMutacaoIndividual = 0.3;   // 30% de diferença entre indivíduos
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
     private double[][] pesosEntradaOculta2;
