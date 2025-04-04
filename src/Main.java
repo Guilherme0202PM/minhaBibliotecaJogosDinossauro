@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -17,20 +19,16 @@ public class Main {
         janela.setFundo(fundo); // Define o fundo no GamePanel
 
         //--------------------------- VARIÁVEIS DE CONTROLE
-        int pontuacaoAlvo = 100;
         int pontuacao = 0;
         int Cronometro = 0;
-        //int velocidadeAmbiente = 20;
         int velocidadeInimigos = 0;
-        //int controleVelocidade = -5;
-        //int contadorVelociade = 0;
 
 
         // Variáveis de controle de geração
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 20;
+        int totalGeracao = 30;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -50,15 +48,12 @@ public class Main {
         List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
         List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
-        List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
-
-
 
 
         List<Inimigo> inimigos = new ArrayList<>(); //Armazena inimigos
 
         // Inicializa os PlayerIA e redes neurais
-        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
+        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela);
 
 
         // Geração de múltiplos blocos de chão
@@ -98,9 +93,7 @@ public class Main {
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
-                    //criarInimigos2(inimigos, movimento, sensores, janela); // Cria inimigos
-                    //criarInimigos2(inimigos, movimento, sensores, janela, Cronometro);
-                    criarInimigos2(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -144,30 +137,86 @@ public class Main {
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
                                 double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
+                                redeNeural.recebeEntradas(entradas);
 
-                                // Ajusta os pesos da rede neural dependendo do inimigo
-                                //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
-                                //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
+                                int tabelaVerdadeX, tabelaVerdadeY, tabelaVerdadeZ;
+                                if (inimigo.getY() >= 350){
+                                    tabelaVerdadeX = 0;
+                                } else {
+                                    tabelaVerdadeX = 1;
+                                }
+
+                                if (inimigo.getAltura() >= 70){
+                                    tabelaVerdadeY = 0;
+                                } else {
+                                    tabelaVerdadeY = 1;
+                                }
+
+                                if (inimigo.getX() >= playerIA.getX()){
+                                    tabelaVerdadeZ = 0;
+                                } else {
+                                    tabelaVerdadeZ = 1;
+                                }
+
+//                                0 0 = Meteoro
+//                                0 1 = Inimigo Terrestre // Pular
+//                                1 0 = Meteoro
+//                                1 1 = Voador
+
+//                                0 0 0 Meteoro //Esquerda
+//                                0 0 1 Meteoro //Direita
+//                                0 1 0 Terrestre
+//                                0 1 1 Terrestre
+//                                1 0 0 Meteoro //Esquerda
+//                                1 0 1 Meteoro //Direita
+//                                1 1 1 Voador
+
+
+                                // Atualização do fatorCondicao com base nas possibilidades
+                                double fatorCondicao = -1; // Valor padrão caso nenhuma condição seja atendida
+                                int acao=-1;
+
+                                if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
+                                    fatorCondicao = -1;  // Meteoro - Esquerda
+                                    acao = 0;
+                                } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
+                                    fatorCondicao = -1;  // Inimigo Terrestre // Pular
+                                    acao = 1;
+                                } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
+                                    fatorCondicao = 1;  // Meteoro - Esquerda -- Direita
+                                    acao = 2;
+                                } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
+                                    fatorCondicao = 1;  // Voador
+                                    acao = 3;
+                                }
+
                                 redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
-                                if (saidas[0] > saidas[1]) {
-                                    playerIA.apertarEspaco(); // Pular
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-                                    // Verificar se o inimigo é do tipo InimigoEspinho e chamar verificarEspacoApertado
-                                    if (inimigo instanceof InimigoEspinho) {
-                                        InimigoEspinho inimigoEspinho = (InimigoEspinho) inimigo;
-                                        inimigoEspinho.verificarEspacoApertado();
-                                    }
-                                } else {
-                                    playerIA.apertarS(); // Abaixar
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
+                                double[] saidasOrdenada = redeNeural.calcularSaida2(entradas);
 
+//                                for (int y = 0; i < saidas.length; i++) {
+//                                    System.out.println("Saida[" + i + "] = " + saidas[i]);
+//                                }
+                                // Ordena o array 'saidas' em ordem decrescente
+                                Arrays.sort(saidasOrdenada);
+
+                                // Verifica o maior valor de 'saidas' após a ordenação
+                                if (saidas[0] < 0) {
+                                    playerIA.apertarEspaco(); // Pular
+                                } else if (saidas[1] > 0) {
+                                    playerIA.apertarS(); // Abaixar
+                                } else if (saidas[2] < 0) {
+                                    playerIA.apertarEsquerda(); // Esquerda
+                                }else if (saidas[3] > 0) {
+                                    playerIA.apertarDireita(); // Esquerda
                                 }
+
+                                // Incrementa a pontuação
+                                playerIA.incrementarPontuacao(1);
+                                redeNeural.incrementarPontuacao(1);
+
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
                                     coleta.add(playerIA);
@@ -198,11 +247,9 @@ public class Main {
                 movimento.atualizarFisica(playerIA, chaoBlocos[0]);
                 movimento.controlarSalto(playerIA);
             }
-
             geracaoLabel.setText("Geração: " + (geracaoAtual + 1));
             dinossaurosVivosLabel.setText("Dinossauros Vivos: " + quantidadeVivos);
             janela.repaint();
-
 
             // Verifica se todos os players IA morreram
             if (quantidadeVivos <= 0) {
@@ -216,14 +263,12 @@ public class Main {
                 coleta = selecao(coleta, numPlayers);
                 redesNeuraisArmazenadas2 = selecao2(redesNeuraisArmazenadas, numPlayers);
 
+
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
                     //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
                     melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
-
-                    // Adicionando a rede neural com o cronômetro
-                    redesNeuraisMelhorDesempenho.add(new RedeNeuralDesempenho(melhorRede, Cronometro));
                 }
 
                 if (geracaoAtual < totalGeracao) {
@@ -255,31 +300,40 @@ public class Main {
             cronometoLabel.setText("Cronometro: " + Cronometro);
         }
         System.out.println("Simulação concluída após " + totalGeracao + " gerações.");
-        for (int i = 0; i < redesNeuraisMelhorDesempenho.size(); i++) {
-            System.out.println((i + 1) + "º - " + redesNeuraisMelhorDesempenho.get(i));
+    }
+
+    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+                                             Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
+        for (int i = 0; i < numPlayers; i++) {
+            int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
+            PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            player2List.add(playerIA);
+            janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
+            //playerIA.adicionarListener();
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 20, 4); // Configure a rede neural conforme necessário
+            redesNeurais.add(redeNeural);
         }
-        System.out.println("Fim Ranking.");
     }
 
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                              RedeNeuralTeste2 melhorRede) {
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
-            PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
+            int posX = 50 + i * 20;
+            PlayerIA playerIA = new PlayerIA(posX, 300, 50, 50, "dinoIA andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
-            janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
+            janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 14, 20, 8);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 4);
+
+            // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
                 novaRede.copiarPesos2(melhorRede);
-            }
-            redesNeurais.add(novaRede);
-        }
+                melhorRede.aplicarMutacaoPopulacional(redesNeurais);
 
-        // Aplica mutação populacional após criar a nova geração
-        if (melhorRede != null) {
-            melhorRede.aplicarMutacaoPopulacional(redesNeurais);
+            }
+
+            redesNeurais.add(novaRede);
         }
     }
 
@@ -322,6 +376,76 @@ public class Main {
             } else {
                 inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
             }
+        } else {
+            // Depois de 3000, cria qualquer um dos três tipos de inimigo
+            int escolha = random.nextInt(3);
+            if (escolha == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else if (escolha == 1) {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            }
+        }
+
+        // Adiciona o inimigo à lista.
+        inimigos2.add(inimigo);
+
+        // Adiciona o inimigo à janela (para exibição)
+        janela.adicionarObjeto(inimigo);
+    }
+
+    private static void criarInimigos3(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
+        Random random = new Random();
+        Inimigo inimigo;
+
+        if (cronometro < 500) {
+            // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            }
+        } else if (cronometro > 500 && cronometro < 1000){
+            // Depois de 1000, cria um InimigoTerrestre ou InimigoEspinho
+            if (random.nextInt(2) == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                int novoValorX = random.nextInt(601) + 50; // Isso vai gerar números entre 50 e 650
+                velocidadeInimigos = (velocidadeInimigos/2)*-1;
+                inimigo = new InimigoMeteoro(novoValorX, 0, 70, 70, "Meteoro.png", 0, velocidadeInimigos, movimento, sensores, janela);
+            }
+
+        } else {
+            // Depois de 3000, cria qualquer um dos três tipos de inimigo
+            int escolha = random.nextInt(3);
+            if (escolha == 0) {
+                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else if (escolha == 1) {
+                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
+            } else {
+                int novoValorX = random.nextInt(601) + 50; // Isso vai gerar números entre 50 e 650
+                velocidadeInimigos = (velocidadeInimigos/2)*-1;
+                inimigo = new InimigoMeteoro(novoValorX, 0, 70, 70, "Meteoro.png", 0, velocidadeInimigos, movimento, sensores, janela);
+            }
+        }
+
+        // Adiciona o inimigo à lista
+        inimigos2.add(inimigo);
+
+        // Adiciona o inimigo à janela (para exibição)
+        janela.adicionarObjeto(inimigo);
+    }
+
+    private static void criarInimigos4(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
+        Random random = new Random();
+        Inimigo inimigo;
+
+        if (cronometro < 2500) {
+            // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
+            int novoValorX = random.nextInt(601) + 50; // Isso vai gerar números entre 50 e 650
+            velocidadeInimigos = (velocidadeInimigos/2)*-1;
+            inimigo = new InimigoMeteoro(novoValorX, 0, 70, 70, "Meteoro.png", 0, velocidadeInimigos, movimento, sensores, janela);
         } else {
             // Depois de 3000, cria qualquer um dos três tipos de inimigo
             int escolha = random.nextInt(3);
