@@ -107,25 +107,6 @@ public class Main {
                         if (Cronometro >= i * 50) {
                             inimigo.atualizar();
                         }
-
-//                        if (sensores.verificarColisao(player, inimigo)) {
-//                            janela.removerObjeto(inimigo);
-//                            inimigos.remove(i); // Remove o inimigo da lista
-//                            System.gc();
-//
-//                            System.out.println("Colisão detectada! Inimigo removido.");
-//                        } else if (inimigo.getRect().x < player.getRect().x) {
-//                            pontuacao++;
-//                            System.out.println("Pontuação: " + pontuacao);
-//                            pontuacaoLabel.setText("Pontuacao: " + pontuacao);
-//
-//                            if (inimigo.getRect().x < -inimigo.getRect().width) {
-//                                janela.removerObjeto(inimigo);
-//                                inimigos.remove(i); // Remove o inimigo da lista
-//                                System.gc();
-//                            }
-//                        }
-
                         // Interação com cada PlayerIA
                         for (int j = 0; j < player2List.size(); j++) {
                             PlayerIA playerIA = player2List.get(j);
@@ -138,79 +119,28 @@ public class Main {
                                 double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
                                 redeNeural.recebeEntradas(entradas);
-
-                                int tabelaVerdadeX, tabelaVerdadeY, tabelaVerdadeZ;
-                                if (inimigo.getY() >= 350){
-                                    tabelaVerdadeX = 0;
-                                } else {
-                                    tabelaVerdadeX = 1;
-                                }
-
-                                if (inimigo.getAltura() >= 70){
-                                    tabelaVerdadeY = 0;
-                                } else {
-                                    tabelaVerdadeY = 1;
-                                }
-
-                                if (inimigo.getX() >= playerIA.getX()){
-                                    tabelaVerdadeZ = 0;
-                                } else {
-                                    tabelaVerdadeZ = 1;
-                                }
-
-//                                0 0 = Meteoro
-//                                0 1 = Inimigo Terrestre // Pular
-//                                1 0 = Meteoro
-//                                1 1 = Voador
-
-//                                0 0 0 Meteoro //Esquerda
-//                                0 0 1 Meteoro //Direita
-//                                0 1 0 Terrestre
-//                                0 1 1 Terrestre
-//                                1 0 0 Meteoro //Esquerda
-//                                1 0 1 Meteoro //Direita
-//                                1 1 1 Voador
+                                int acaoEsperada = redeNeural.identificarInimigo(entradas);
 
 
-                                // Atualização do fatorCondicao com base nas possibilidades
-                                double fatorCondicao = -1; // Valor padrão caso nenhuma condição seja atendida
-                                int acao=-1;
-
-                                if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==0) {
-                                    fatorCondicao = -1;  // Meteoro - Esquerda
-                                    acao = 0;
-                                } else if (tabelaVerdadeX == 0 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = -1;  // Inimigo Terrestre // Pular
-                                    acao = 1;
-                                } else if (tabelaVerdadeY == 0 && tabelaVerdadeZ ==1) {
-                                    fatorCondicao = 1;  // Meteoro - Esquerda -- Direita
-                                    acao = 2;
-                                } else if (tabelaVerdadeX == 1 && tabelaVerdadeY == 1) {
-                                    fatorCondicao = 1;  // Voador
-                                    acao = 3;
-                                }
-
-                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+                                //redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
-                                double[] saidas = redeNeural.calcularSaida2(entradas);
-                                double[] saidasOrdenada = redeNeural.calcularSaida2(entradas);
+                                //double[] saidas = redeNeural.calcularSaida2(entradas);
 
-//                                for (int y = 0; i < saidas.length; i++) {
-//                                    System.out.println("Saida[" + i + "] = " + saidas[i]);
-//                                }
-                                // Ordena o array 'saidas' em ordem decrescente
-                                Arrays.sort(saidasOrdenada);
-
-                                // Verifica o maior valor de 'saidas' após a ordenação
-                                if (saidas[0] < 0) {
-                                    playerIA.apertarEspaco(); // Pular
-                                } else if (saidas[1] > 0) {
-                                    playerIA.apertarS(); // Abaixar
-                                } else if (saidas[2] < 0) {
-                                    playerIA.apertarEsquerda(); // Esquerda
-                                }else if (saidas[3] > 0) {
-                                    playerIA.apertarDireita(); // Esquerda
+                                // Executa a ação correspondente à maior saída
+                                switch (acaoEsperada) {
+                                    case 1:
+                                        playerIA.apertarEspaco(); // Pular
+                                        break;
+                                    case 2:
+                                        playerIA.apertarS(); // Abaixar
+                                        break;
+                                    case 3:
+                                        playerIA.apertarEsquerda(); // Esquerda
+                                        break;
+                                    case 4:
+                                        playerIA.apertarDireita(); // Direita
+                                        break;
                                 }
 
                                 // Incrementa a pontuação
@@ -310,7 +240,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 20, 4); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 20, 3); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -324,7 +254,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 4);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 3);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
