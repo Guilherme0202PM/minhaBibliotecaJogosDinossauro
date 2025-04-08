@@ -49,29 +49,26 @@ public class RedeNeuralTeste2 {
     }
 
     private void inicializarPesos() {
-        for (int i = 0; i < quantidadeNeuroniosEntrada; i++) {
-            for (int j = 0; j < quantidadeNeuroniosCamadaOculta1; j++) {
-                //pesosEntradaOculta[i][j] = random.nextDouble() * 1.0 - 0.5; // [-0.5, 0.5]
-                pesosEntradaOculta1[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-                //System.out.println("pesosEntradas: "+pesosEntradaOculta[i][j]);
+        // Inicializa os pesos da camada de entrada para a primeira camada oculta
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                pesosEntradaOculta1[i][j] = 1.0; // Todos os pesos são 1
             }
         }
-        for (int i = 0; i < quantidadeNeuroniosCamadaOculta1; i++) {
-            for (int j = 0; j < quantidadeNeuroniosSaida; j++) {
-                pesosOcultaSaida1[i][j] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-                //System.out.println("pesosOcultaSaida: "+pesosOcultaSaida[i][j]);
 
-            }
+        // Inicializa os bias da primeira camada oculta
+        for (int i = 0; i < 4; i++) {
+            biasOculta1[i] = 0.5; // Todos os bias são 0.5
         }
-        for (int i = 0; i < quantidadeNeuroniosCamadaOculta1; i++) {
-            biasOculta1[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-            //System.out.println("biasOculta: "+biasOculta[i]);
 
+        // Inicializa os bias da segunda camada oculta
+        for (int i = 0; i < 4; i++) {
+            biasOculta2[i] = 0.5; // Todos os bias são 0.5
         }
-        for (int i = 0; i < quantidadeNeuroniosSaida; i++) {
-            biasSaida[i] = random.nextDouble() * 2.0 - 1.0; // [-1, 1]
-            //System.out.println("biasSaida: "+biasSaida[i]);
 
+        // Inicializa os bias da camada de saída
+        for (int i = 0; i < 4; i++) {
+            biasSaida[i] = 0.5; // Todos os bias são 0.5
         }
     }
 
