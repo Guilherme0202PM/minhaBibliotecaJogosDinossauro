@@ -456,7 +456,6 @@ public class RedeNeuralTeste2 {
                         rede.pesosOcultaSaida2[i][j] += variacao;
                     }
                 }
-
                 // Mutação nos bias da camada de saída
                 for (int i = 0; i < quantidadeNeuroniosSaida; i++) {
                     double variacao = random.nextGaussian() * taxaMutacaoIndividual;

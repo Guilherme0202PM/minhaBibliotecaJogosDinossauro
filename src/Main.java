@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +92,7 @@ public class Main {
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
-                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos4(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -110,7 +109,7 @@ public class Main {
                         // Interação com cada PlayerIA
                         for (int j = 0; j < player2List.size(); j++) {
                             PlayerIA playerIA = player2List.get(j);
-                            playerIA.apertaF();
+                            playerIA.ativaFiltro();
                             playerIA.levantar();
 
 
@@ -130,10 +129,10 @@ public class Main {
                                 // Executa a ação correspondente à maior saída
                                 switch (acaoEsperada) {
                                     case 1:
-                                        playerIA.apertarEspaco(); // Pular
+                                        playerIA.apertarSaltar(); // Pular
                                         break;
                                     case 2:
-                                        playerIA.apertarS(); // Abaixar
+                                        playerIA.apertarAbaixar(); // Abaixar
                                         break;
                                     case 3:
                                         playerIA.apertarEsquerda(); // Esquerda
@@ -148,7 +147,7 @@ public class Main {
                                 redeNeural.incrementarPontuacao(1);
 
                                 // Verifica colisão com PlayerIA
-                                if (sensores.verificarColisao(playerIA, inimigo)) {
+                                if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
                                     //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
