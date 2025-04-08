@@ -222,8 +222,9 @@ public class RedeNeuralTeste2 {
         System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidasNeuronios);
     }
 
+
     public void ajustarPesosPorCondicao2(double[] entradas, double fator) {
-        Random random = new Random();
+        Random random = new Random(); // random para a exploração aleatória
         
         // Chance de exploração aleatória
         if (random.nextDouble() < taxaExploracao) {

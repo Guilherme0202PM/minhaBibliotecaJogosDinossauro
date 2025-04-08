@@ -127,6 +127,7 @@ public class Main {
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
                                 int acaoExecutada = -1;
+                                int acaoAlternativaValida = -1;
 
                                 // Executa a ação correspondente à maior saída
                                 if (saidas[0] == 1) {
@@ -139,17 +140,27 @@ public class Main {
                                     playerIA.apertarEsquerda(); // Esquerda
                                     acaoExecutada = 3;
 
-                                } else{
+                                }else if (saidas[3] == 1) {
+                                    playerIA.apertarEsquerda(); // Esquerda
+                                    acaoExecutada = 3;
+
+                                }else{
                                     playerIA.levantar();
                                 }
 
                                 // VALIDA a ação com o switch e aplica pontuação ou penalidade
                                 if (acaoExecutada == acaoEsperada) {
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-
-                                    double fatorCondicao = 0.5; // quanto mais alto, mais intenso o aprendizado
-                                    redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+                                    // Recompensa máxima - ação correta
+                                    playerIA.incrementarPontuacao(2);
+                                    redeNeural.incrementarPontuacao(2);
+                                } else if (acaoExecutada == acaoAlternativaValida) {
+                                    // Recompensa parcial - ação alternativa que também funcionaria
+                                    playerIA.incrementarPontuacao(0);
+                                    redeNeural.incrementarPontuacao(0);
+                                } else {
+                                    // Penalidade - ação incorreta
+                                    playerIA.incrementarPontuacao(-1);
+                                    redeNeural.incrementarPontuacao(-1);
                                 }
 
                                 // Verifica colisão com PlayerIA
