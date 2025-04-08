@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,7 @@ public class Main {
                 if (Cronometro >= (inimigosCriados + 1) * 100) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
-                    criarInimigos4(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -124,27 +125,32 @@ public class Main {
                                 //redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
 
                                 // Calcula as saídas da rede neural
-                                //double[] saidas = redeNeural.calcularSaida2(entradas);
+                                double[] saidas = redeNeural.calcularSaida2(entradas);
+                                int acaoExecutada = -1;
 
                                 // Executa a ação correspondente à maior saída
-                                switch (acaoEsperada) {
-                                    case 1:
-                                        playerIA.apertarSaltar(); // Pular
-                                        break;
-                                    case 2:
-                                        playerIA.apertarAbaixar(); // Abaixar
-                                        break;
-                                    case 3:
-                                        playerIA.apertarEsquerda(); // Esquerda
-                                        break;
-                                    case 4:
-                                        playerIA.apertarDireita(); // Direita
-                                        break;
+                                if (saidas[0] == 1) {
+                                    playerIA.apertarSaltar(); // Pular
+                                    acaoExecutada = 1;
+                                } else if (saidas[1] == 1) {
+                                    playerIA.apertarAbaixar(); // Abaixar
+                                    acaoExecutada = 2;
+                                }else if (saidas[2] == 1) {
+                                    playerIA.apertarEsquerda(); // Esquerda
+                                    acaoExecutada = 3;
+
+                                } else{
+                                    playerIA.levantar();
                                 }
 
-                                // Incrementa a pontuação
-                                playerIA.incrementarPontuacao(1);
-                                redeNeural.incrementarPontuacao(1);
+                                // VALIDA a ação com o switch e aplica pontuação ou penalidade
+                                if (acaoExecutada == acaoEsperada) {
+                                    playerIA.incrementarPontuacao(1);
+                                    redeNeural.incrementarPontuacao(1);
+
+                                    double fatorCondicao = 0.5; // quanto mais alto, mais intenso o aprendizado
+                                    redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+                                }
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
@@ -239,7 +245,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
             //playerIA.adicionarListener();
-            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 20, 3); // Configure a rede neural conforme necessário
+            RedeNeuralTeste2 redeNeural = new RedeNeuralTeste2(7, 14, 20, 4); // Configure a rede neural conforme necessário
             redesNeurais.add(redeNeural);
         }
     }
@@ -253,7 +259,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 3);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14, 20, 4);
 
             // Se houver uma melhor rede neural, inicializamos a nova rede com os pesos dela
             if (melhorRede != null) {
