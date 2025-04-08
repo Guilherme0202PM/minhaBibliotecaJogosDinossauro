@@ -7,6 +7,7 @@ public class RedeNeuralTeste2 {
 
     private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
     private double taxaMutacaoIndividual = 0.7;   // 30% de diferença entre indivíduos
+    private double taxaExploracao = 0.2; // 20% de chance de exploração aleatória
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
     private double[][] pesosEntradaOculta2;
@@ -222,9 +223,23 @@ public class RedeNeuralTeste2 {
     }
 
     public void ajustarPesosPorCondicao2(double[] entradas, double fator) {
-        for (int i = 0; i < numEntradasNeuronios; i++) {
-            for (int j = 0; j < numOcultos1Neuronios; j++) {
-                pesosEntradaOculta1[i][j] = fator * entradas[i];
+        Random random = new Random();
+        
+        // Chance de exploração aleatória
+        if (random.nextDouble() < taxaExploracao) {
+            // Exploração: ajusta os pesos de forma aleatória
+            for (int i = 0; i < numEntradasNeuronios; i++) {
+                for (int j = 0; j < numOcultos1Neuronios; j++) {
+                    double variacao = random.nextGaussian() * 0.1; // Pequena variação aleatória
+                    pesosEntradaOculta1[i][j] += variacao;
+                }
+            }
+        } else {
+            // Exploração: ajusta os pesos baseado nas entradas
+            for (int i = 0; i < numEntradasNeuronios; i++) {
+                for (int j = 0; j < numOcultos1Neuronios; j++) {
+                    pesosEntradaOculta1[i][j] = fator * entradas[i];
+                }
             }
         }
     }
