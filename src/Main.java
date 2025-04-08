@@ -36,6 +36,7 @@ public class Main {
 
         int limiteProximidade = 80; // Defina um limite adequado para a proximidade
         RedeNeuralTeste2 melhorRede = null;
+        boolean modoSupervisionado = true; // Flag para controle do treinamento supervisionado
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
 
 //        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
@@ -121,13 +122,16 @@ public class Main {
                                 redeNeural.recebeEntradas(entradas);
                                 int acaoEsperada = redeNeural.identificarInimigo(entradas);
 
-
-                                //redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+                                // Cria o vetor de saída esperada
+                                double[] saidasEsperadas = new double[4];
+                                for (int s = 0; s < 4; s++) saidasEsperadas[s] = 0;
+                                if (acaoEsperada >= 1 && acaoEsperada <= 4) {
+                                    saidasEsperadas[acaoEsperada - 1] = 1;
+                                }
 
                                 // Calcula as saídas da rede neural
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
                                 int acaoExecutada = -1;
-                                int acaoAlternativaValida = -1;
 
                                 // Executa a ação correspondente à maior saída
                                 if (saidas[0] == 1) {
@@ -139,11 +143,9 @@ public class Main {
                                 }else if (saidas[2] == 1) {
                                     playerIA.apertarEsquerda(); // Esquerda
                                     acaoExecutada = 3;
-
                                 }else if (saidas[3] == 1) {
                                     playerIA.apertarEsquerda(); // Esquerda
                                     acaoExecutada = 3;
-
                                 }else{
                                     playerIA.levantar();
                                 }
@@ -153,14 +155,15 @@ public class Main {
                                     // Recompensa máxima - ação correta
                                     playerIA.incrementarPontuacao(2);
                                     redeNeural.incrementarPontuacao(2);
-                                } else if (acaoExecutada == acaoAlternativaValida) {
-                                    // Recompensa parcial - ação alternativa que também funcionaria
-                                    playerIA.incrementarPontuacao(0);
-                                    redeNeural.incrementarPontuacao(0);
                                 } else {
                                     // Penalidade - ação incorreta
                                     playerIA.incrementarPontuacao(-1);
                                     redeNeural.incrementarPontuacao(-1);
+                                }
+
+                                // Treinamento supervisionado
+                                if (modoSupervisionado) {
+                                    redeNeural.treinar(entradas, saidasEsperadas, 0.05);
                                 }
 
                                 // Verifica colisão com PlayerIA
