@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class PlayerIA extends CriaObjeto {
     private Movimento movimento;
@@ -14,6 +16,10 @@ public class PlayerIA extends CriaObjeto {
     private boolean saltando = false;
     private Color corContorno = Color.BLUE; // Cor padrão do contorno
     private boolean filtroAplicado = false; // Variável de controle
+
+
+
+
 
     public PlayerIA(int x, int y, int largura, int altura, String nomeImagem, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
         super(x, y, largura, altura, nomeImagem);
@@ -95,15 +101,22 @@ public class PlayerIA extends CriaObjeto {
     }
 
     // Metodo para simular o pressionamento da tecla "Espaço" (pulo)
-    public void apertarSaltar() {
+    public void apertarEspaco() {
         altura = alturaOriginal; // Reduz a altura pela metade (agachado)
         movimento.iniciarSalto(PlayerIA.this); // Inicia o salto do PlayerIA
         //sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
         agaichado = false;
     }
 
+//    public void apertarEspaco() {
+//        altura = alturaOriginal; // Reduz a altura pela metade (agachado)
+//        movimento.movimentoY(PlayerIA.this, 50); // Inicia o salto do PlayerIA
+//        sprite.iniciarAnimacao("dinoIA andandoo_andando_", 5, 100); // Animação de pulo
+//        agaichado = false;
+//    }
+
     // Metodo para simular o pressionamento da tecla "S" (agachar)
-    public void apertarAbaixar() {
+    public void apertarS() {
         movimento.movimentoY(PlayerIA.this, 20); // Ajuste de movimento para abaixar
         altura = metadealtura; // Reduz a altura pela metade (agachado)
         agaichado = true;
@@ -116,6 +129,11 @@ public class PlayerIA extends CriaObjeto {
 
         System.out.println("O Player está tocando na borda da tela!");
         som.tocarSom();
+
+        Point novaPosicao = sensores.corrigirPosicao(PlayerIA.this);
+        PlayerIA.this.setX(novaPosicao.x);
+        PlayerIA.this.setY(novaPosicao.y);
+
     }
 
     public  void apertarEsquerda(){
@@ -125,6 +143,10 @@ public class PlayerIA extends CriaObjeto {
 
         System.out.println("O Player está tocando na borda da tela!");
         som.tocarSom();
+
+        Point novaPosicao = sensores.corrigirPosicao(PlayerIA.this);
+        PlayerIA.this.setX(novaPosicao.x);
+        PlayerIA.this.setY(novaPosicao.y);
     }
 
     public void levantar() {
@@ -135,7 +157,7 @@ public class PlayerIA extends CriaObjeto {
     private boolean agaichado;
 
 
-    public void ativaFiltro() {
+    public void apertaF() {
         if (!filtroAplicado) { // Verifica se o filtro já foi aplicado
             sprite.aplicarFiltroColorido(); // Aplica o filtro
             filtroAplicado = true; // Marca o filtro como aplicado
