@@ -138,7 +138,11 @@ public class Main {
                                 }
 
                                 if (saidas[1] == fatorCondicaoX) {
-                                    playerIA.apertarEsquerda(); // Pular
+                                    if (inimigo.getX() >= playerIA.getX()){
+                                        playerIA.apertarEsquerda();
+                                    }else{
+                                    playerIA.apertarDireita();
+                                }
                                     playerIA.incrementarPontuacao(1);
                                     redeNeural.incrementarPontuacao(1);
                                 } else {
@@ -147,7 +151,7 @@ public class Main {
                                 }
 
                                 // Verifica colisão com PlayerIA
-                                if (sensores.verificarColisao(playerIA, inimigo)) {
+                                if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
                                     //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
@@ -248,7 +252,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 4,4, 2);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 4,4, 2);
             if (melhorRede != null) {
                 novaRede.copiarPesos2(melhorRede);
             }

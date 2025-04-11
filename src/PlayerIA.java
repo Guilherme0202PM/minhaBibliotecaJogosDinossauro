@@ -120,11 +120,6 @@ public class PlayerIA extends CriaObjeto {
 
         System.out.println("O Player está tocando na borda da tela!");
         som.tocarSom();
-
-        Point novaPosicao = sensores.corrigirPosicao(PlayerIA.this);
-        PlayerIA.this.setX(novaPosicao.x);
-        PlayerIA.this.setY(novaPosicao.y);
-
     }
 
     public  void apertarEsquerda(){
@@ -134,10 +129,6 @@ public class PlayerIA extends CriaObjeto {
 
         System.out.println("O Player está tocando na borda da tela!");
         som.tocarSom();
-
-        Point novaPosicao = sensores.corrigirPosicao(PlayerIA.this);
-        PlayerIA.this.setX(novaPosicao.x);
-        PlayerIA.this.setY(novaPosicao.y);
     }
 
     public void levantar() {
