@@ -106,7 +106,7 @@ public class Main {
                         // Interação com cada PlayerIA
                         for (int j = 0; j < player2List.size(); j++) {
                             PlayerIA playerIA = player2List.get(j);
-                            playerIA.apertaF();
+                            playerIA.aplicarFiltro();
                             playerIA.levantar();
 
 
@@ -118,21 +118,34 @@ public class Main {
                                 // Ajusta os pesos da rede neural dependendo do inimigo
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicao = (inimigo.getY() >= 350) ? 0 : 1;
-                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+                                double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
+                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicaoY);
 
-                                // Calcula as saídas da rede neural
+                                double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
+                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicaoX);
+
+                                redeNeural.ajustarPesosPorCondicoesSeparadas(entradas, fatorCondicaoY, fatorCondicaoX);
+
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
-                                if (saidas[0] > saidas[1]) {
-                                    playerIA.apertarEspaco(); // Pular
+                                if (saidas[0] == fatorCondicaoY) {
+                                    playerIA.apertarSaltar(); // Pular
                                     playerIA.incrementarPontuacao(1);
                                     redeNeural.incrementarPontuacao(1);
                                 } else {
-                                    playerIA.apertarS(); // Abaixar
+                                    playerIA.apertarAbaixar(); // Abaixar
                                     playerIA.incrementarPontuacao(1);
                                     redeNeural.incrementarPontuacao(1);
-
                                 }
+
+                                if (saidas[1] == fatorCondicaoX) {
+                                    playerIA.apertarEsquerda(); // Pular
+                                    playerIA.incrementarPontuacao(1);
+                                    redeNeural.incrementarPontuacao(1);
+                                } else {
+                                    playerIA.incrementarPontuacao(1);
+                                    redeNeural.incrementarPontuacao(1);
+                                }
+
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo)) {
                                     coleta.add(playerIA);
