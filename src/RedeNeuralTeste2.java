@@ -367,6 +367,64 @@ public class RedeNeuralTeste2 {
         }
     }
 
+    public void aplicarCrossoverComMelhor(RedeNeuralTeste2 melhor, List<RedeNeuralTeste2> populacao) {
+        for (int i = 0; i < populacao.size(); i++) {
+            RedeNeuralTeste2 filho = populacao.get(i);
+
+            // Crossover: Pesos da entrada para a camada oculta 1
+            for (int j = 0; j < numEntradasNeuronios; j++) {
+                for (int k = 0; k < numOcultos1Neuronios; k++) {
+                    filho.pesosEntradaOculta1[j][k] =
+                            (melhor.pesosEntradaOculta1[j][k] + filho.pesosEntradaOculta1[j][k]) / 2.0;
+                }
+            }
+
+            // Crossover: Bias da camada oculta 1
+            for (int j = 0; j < numOcultos1Neuronios; j++) {
+                filho.biasOculta1[j] = (melhor.biasOculta1[j] + filho.biasOculta1[j]) / 2.0;
+            }
+
+            // Se a rede tem duas camadas ocultas, aplica crossover também na segunda camada
+            if (melhor.pesosEntradaOculta2 != null && filho.pesosEntradaOculta2 != null) {
+                // Crossover: Pesos da camada oculta 1 para oculta 2
+                for (int j = 0; j < numOcultos1Neuronios; j++) {
+                    for (int k = 0; k < numOcultos2Neuronios; k++) {
+                        filho.pesosEntradaOculta2[j][k] =
+                                (melhor.pesosEntradaOculta2[j][k] + filho.pesosEntradaOculta2[j][k]) / 2.0;
+                    }
+                }
+
+                // Crossover: Bias da camada oculta 2
+                for (int j = 0; j < numOcultos2Neuronios; j++) {
+                    filho.biasOculta2[j] = (melhor.biasOculta2[j] + filho.biasOculta2[j]) / 2.0;
+                }
+
+                // Crossover: Pesos da camada oculta 2 para saída
+                for (int j = 0; j < numOcultos2Neuronios; j++) {
+                    for (int k = 0; k < numSaidasNeuronios; k++) {
+                        filho.pesosOcultaSaida2[j][k] =
+                                (melhor.pesosOcultaSaida2[j][k] + filho.pesosOcultaSaida2[j][k]) / 2.0;
+                    }
+                }
+            } else {
+                // Caso tenha só uma camada oculta: Pesos da camada oculta 1 para saída
+                for (int j = 0; j < numOcultos1Neuronios; j++) {
+                    for (int k = 0; k < numSaidasNeuronios; k++) {
+                        filho.pesosOcultaSaida1[j][k] =
+                                (melhor.pesosOcultaSaida1[j][k] + filho.pesosOcultaSaida1[j][k]) / 2.0;
+                    }
+                }
+            }
+
+            // Crossover: Bias da camada de saída (em ambos os casos)
+            for (int j = 0; j < numSaidasNeuronios; j++) {
+                filho.biasSaida[j] = (melhor.biasSaida[j] + filho.biasSaida[j]) / 2.0;
+            }
+        }
+    }
+
+
+
     public void salvarParaArquivo(String caminho) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(caminho))) {
             oos.writeObject(this);

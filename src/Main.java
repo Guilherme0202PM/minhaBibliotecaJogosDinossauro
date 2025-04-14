@@ -85,7 +85,7 @@ public class Main {
             for (int i = 0; i < maxInimigos; i++) {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
-                if (Cronometro >= (inimigosCriados + 1) * 100) {
+                if (Cronometro >= (inimigosCriados + 1) * 50) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
@@ -246,14 +246,26 @@ public class Main {
 
             RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 4,4, 2);
             if (melhorRede != null) {
-                novaRede.copiarPesos2(melhorRede);
+                if (i < 2) {
+                    // Elitismo: mantém os 2 melhores intactos
+                    novaRede.copiarPesos2(melhorRede);
+                } else {
+                    // Inicializa normalmente — vamos cruzar depois
+                    // ou pode copiar do melhor para ter uma base antes de cruzar
+                    novaRede.copiarPesos2(melhorRede);
+                }
             }
+
             redesNeurais.add(novaRede);
         }
 
-        // Aplica mutação populacional após criar a nova geração
+        // Aplica crossover do melhor com todos, exceto os 2 primeiros (elitismo)
         if (melhorRede != null) {
-            melhorRede.aplicarMutacaoPopulacional(redesNeurais);
+            List<RedeNeuralTeste2> descendentes = redesNeurais.subList(2, redesNeurais.size());
+            melhorRede.aplicarCrossoverComMelhor(melhorRede, descendentes);
+
+            // Aplica mutação nos descendentes
+            melhorRede.aplicarMutacaoPopulacional(descendentes);
         }
     }
 
