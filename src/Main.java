@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 20;
+        int totalGeracao = 100;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -119,36 +119,28 @@ public class Main {
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
                                 double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
-                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicaoY);
 
                                 double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
-                                redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicaoX);
-
-                                redeNeural.ajustarPesosPorCondicoesSeparadas(entradas, fatorCondicaoY, fatorCondicaoX);
 
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
-                                if (saidas[0] == fatorCondicaoY) {
+
+                                if (saidas[0] > 0.5) {
                                     playerIA.apertarSaltar(); // Pular
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
                                 } else {
                                     playerIA.apertarAbaixar(); // Abaixar
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
                                 }
 
-                                if (saidas[1] == fatorCondicaoX) {
-                                    if (inimigo.getX() >= playerIA.getX()){
+                                if (saidas[1] > 0.5) {
+                                    if (inimigo.getX() >= playerIA.getX()) {
                                         playerIA.apertarEsquerda();
-                                    }else{
-                                    playerIA.apertarDireita();
+                                    } else {
+                                        playerIA.apertarDireita();
+                                    }
                                 }
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-                                } else {
-                                    playerIA.incrementarPontuacao(1);
-                                    redeNeural.incrementarPontuacao(1);
-                                }
+
+                                playerIA.incrementarPontuacao(1);
+                                redeNeural.incrementarPontuacao(1);
+
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
@@ -268,7 +260,6 @@ public class Main {
 
     private static int aumentaVelocidade(int Cronometro){
         int velocidadeInimigos = 0;
-        int controleVelocidade = -5;
 
         // Calcular a fórmula com arredondamento para cima
         double resultado = (((Cronometro / 500.0) * 3) + 5) * -1;
@@ -277,50 +268,6 @@ public class Main {
         velocidadeInimigos = (int) Math.ceil(resultado);
 
         return velocidadeInimigos;
-    }
-
-    private static void criarInimigos2(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
-        Random random = new Random();
-        Inimigo inimigo;
-
-        if (cronometro < 500) {
-            // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
-            if (random.nextInt(2) == 0) {
-                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            } else {
-                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            }
-        } else if (cronometro > 500 && cronometro < 1000){
-            // Depois de 1000, cria um InimigoTerrestre ou InimigoEspinho
-            if (random.nextInt(2) == 0) {
-                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            } else {
-                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            }
-        } else if (cronometro > 1000 && cronometro < 1500) {
-            // Entre 1500 e 2000, cria um InimigoVoador ou InimigoEspinho
-            if (random.nextInt(2) == 0) {
-                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            } else {
-                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            }
-        } else {
-            // Depois de 3000, cria qualquer um dos três tipos de inimigo
-            int escolha = random.nextInt(3);
-            if (escolha == 0) {
-                inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            } else if (escolha == 1) {
-                inimigo = new InimigoVoador(600, 320, 70, 50, "pterodáctilo_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            } else {
-                inimigo = new InimigoEspinho(600, 355, 70, 50, "estegossauro.png", velocidadeInimigos, 0, movimento, sensores, janela);
-            }
-        }
-
-        // Adiciona o inimigo à lista.
-        inimigos2.add(inimigo);
-
-        // Adiciona o inimigo à janela (para exibição)
-        janela.adicionarObjeto(inimigo);
     }
 
     private static void criarInimigos3(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {

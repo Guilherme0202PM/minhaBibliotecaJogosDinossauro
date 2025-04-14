@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.Random;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -6,7 +7,7 @@ import java.util.List;
 public class RedeNeuralTeste2 {
     private int numEntradasNeuronios, numOcultos1Neuronios, numOcultos2Neuronios,  numSaidasNeuronios;
     private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
-    private double taxaMutacaoIndividual = 0.8;   // 30% de diferença entre indivíduos
+    private double taxaMutacaoIndividual = 0.1;   // 30% de diferença entre indivíduos
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
     private double[][] pesosEntradaOculta2;
@@ -160,6 +161,8 @@ public class RedeNeuralTeste2 {
     }
 
     public double[] calcularSaida2(double[] entradas) {
+        double[] entradasNormalizadas = normalizarEntradas(entradas);
+
         double[] saidaOculta1 = new double[numOcultos1Neuronios];
         double[] saidaOculta2 = new double[numOcultos2Neuronios];
         double[] saidaFinal = new double[numSaidasNeuronios];
@@ -167,7 +170,7 @@ public class RedeNeuralTeste2 {
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             double soma = biasOculta1[i];
             for (int j = 0; j < numEntradasNeuronios; j++) {
-                soma += entradas[j] * pesosEntradaOculta1[j][i];
+                soma += entradasNormalizadas[j] * pesosEntradaOculta1[j][i];
             }
             saidaOculta1[i] = relu(soma);
         }
@@ -186,11 +189,25 @@ public class RedeNeuralTeste2 {
                 soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
             }
             saidaFinal[i] = sigmoid(soma);
-            System.out.println("Saida: " +saidaFinal[i]);
         }
 
         return saidaFinal;
     }
+
+    private double[] normalizarEntradas(double[] entradas) {
+        double[] norm = new double[entradas.length];
+
+        norm[0] = entradas[0] / 600.0; // x Player
+        norm[1] = entradas[1] / 400.0; // y Player
+        norm[2] = entradas[2] / 600.0; // x Inimigo
+        norm[3] = entradas[3] / 400.0; // y Inimigo
+        norm[4] = entradas[4] / 200.0; // altura Inimigo
+        norm[5] = entradas[5] / 200.0; // largura Inimigo
+        norm[6] = entradas[6] / 10.0;  // velocidade
+
+        return norm;
+    }
+
 
     public void copiarPesos2(RedeNeuralTeste2 outraRede) {
         for (int i = 0; i < numEntradasNeuronios; i++) {
@@ -206,34 +223,6 @@ public class RedeNeuralTeste2 {
         System.arraycopy(outraRede.biasOculta2, 0, this.biasOculta2, 0, numOcultos2Neuronios);
         System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidasNeuronios);
     }
-
-    public void ajustarPesosPorCondicao2(double[] entradas, double fator) {
-        for (int i = 0; i < numEntradasNeuronios; i++) {
-            for (int j = 0; j < numOcultos1Neuronios; j++) {
-                pesosEntradaOculta1[i][j] = fator * entradas[i];
-            }
-        }
-    }
-
-    public void ajustarPesosPorCondicoesSeparadas(double[] entradas, double fatorY, double fatorX) {
-        for (int i = 0; i < numEntradasNeuronios; i++) {
-            for (int j = 0; j < numOcultos1Neuronios; j++) {
-                double fator = 0;
-
-                // Exemplo: entradas 0 = X do player, 1 = Y do player, 2 = X do inimigo, 3 = Y do inimigo
-                if (i == 1 || i == 3 || i == 4) { // Dados mais relevantes para altura
-                    fator = fatorY;
-                } else if (i == 0 || i == 2 || i == 5) { // Dados mais relevantes para posição X ou largura
-                    fator = fatorX;
-                } else {
-                    fator = 1; // Para velocidade ou neutros
-                }
-
-                pesosEntradaOculta1[i][j] = fator * entradas[i];
-            }
-        }
-    }
-
 
     // Função de arredondamento para 4 casas decimais
     private double arredondar(double valor) {
@@ -375,6 +364,18 @@ public class RedeNeuralTeste2 {
                     rede.biasSaida[i] += variacao;
                 }
             }
+        }
+    }
+
+    public void salvarParaArquivo(String caminho) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(caminho))) {
+            oos.writeObject(this);
+        }
+    }
+
+    public static RedeNeuralTeste2 carregarDeArquivo(String caminho) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(caminho))) {
+            return (RedeNeuralTeste2) ois.readObject();
         }
     }
 
