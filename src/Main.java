@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,13 +116,6 @@ public class Main {
                                 double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
                                 RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
 
-                                // Ajusta os pesos da rede neural dependendo do inimigo
-                                //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
-                                //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
-
-                                double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
-
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
 
                                 if (saidas[0] > 0.5) {
@@ -183,12 +177,19 @@ public class Main {
                 geracaoAtual++;
                 System.out.println("Geração " + geracaoAtual + " concluída.");
 
-                // Seleciona os melhores players com base na pontuação
-                //System.out.println("coleta tamanho: " + coleta.size());
-                //System.out.println("redesNeurais tamanho: " + redesNeurais.size());
+                /// 🔽 Aqui é o ponto ideal:
+                for (RedeNeuralTeste2 individuo : redesNeuraisArmazenadas) {
+                    //double fitness = avaliarFitness(individuo, /* quantas partidas quiser */);
+                    double fitness = avaliarFitness(individuo, 1, movimento,sensores,som,janela);
+                    individuo.setFitness(fitness);
+                }
+
+                // 🔁 Depois disso você faz a SELEÇÃO com base no fitness:
+                redesNeuraisArmazenadas.sort(Comparator.comparingDouble(RedeNeuralTeste2::getFitness).reversed());
+                redesNeuraisArmazenadas2 = redesNeuraisArmazenadas.subList(0, numPlayers);
 
                 coleta = selecaoPopulacao(coleta, numPlayers);
-                redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
+                //redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
 
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
@@ -376,4 +377,63 @@ public class Main {
 
         return redesNeurais.get(0);
     }
+
+    // Adicione esse metodo na classe Main, fora do metodo main()
+    public static double avaliarFitness(RedeNeuralTeste2 rede, int partidas, Movimento movimento, Sensores sensores, Som som, GameWindow janela) {
+        int somaPontuacoes = 0;
+
+        for (int i = 0; i < partidas; i++) {
+            // Inicializa uma simulação com a mesma rede neural
+            PlayerIA player = new PlayerIA(50, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+            janela.adicionarObjeto(player);
+
+            int pontuacao = 0;
+            int cronometro = 0;
+            List<Inimigo> inimigos = new ArrayList<>();
+            boolean vivo = true;
+
+            while (vivo && cronometro < 1000) { // Limita o tempo da partida
+                if (cronometro % 100 == 0) {
+                    int velocidade = aumentaVelocidade(cronometro);
+                    criarInimigos3(inimigos, movimento, sensores, janela, cronometro, velocidade);
+                }
+
+                for (Inimigo inimigo : new ArrayList<>(inimigos)) {
+                    inimigo.atualizar();
+
+                    if (sensores.analisarProximidade(player, inimigo, 80)) {
+                        double[] entradas = {player.getX(), player.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), 5};
+                        double[] saidas = rede.calcularSaida2(entradas);
+
+                        if (saidas[0] > 0.5) player.apertarSaltar();
+                        else player.apertarAbaixar();
+
+                        if (saidas[1] > 0.5) {
+                            if (inimigo.getX() >= player.getX()) player.apertarEsquerda();
+                            else player.apertarDireita();
+                        }
+
+                        if (sensores.verificarColisao(player, inimigo) || sensores.tocandoBorda(player)) {
+                            vivo = false;
+                        }
+                    }
+                }
+
+                movimento.atualizarFisica(player, new Chao(0, 400, 600, 200));
+                movimento.controlarSalto(player);
+
+                pontuacao++;
+                cronometro++;
+            }
+
+            janela.removerObjeto(player);
+            for (Inimigo inimigo : inimigos) janela.removerObjeto(inimigo);
+            inimigos.clear();
+
+            somaPontuacoes += pontuacao;
+        }
+
+        return somaPontuacoes / (double) partidas;
+    }
+
 }
