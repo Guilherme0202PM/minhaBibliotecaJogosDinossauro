@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 100;
+        int totalGeracao = 40;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -238,33 +238,27 @@ public class Main {
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                              RedeNeuralTeste2 melhorRede) {
+        int numElite = 2;
+
         for (int i = 0; i < numPlayers; i++) {
             int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 4,4, 2);
-            if (melhorRede != null) {
-                if (i < 2) {
-                    // Elitismo: mantém os 2 melhores intactos
-                    novaRede.copiarPesos2(melhorRede);
-                } else {
-                    // Inicializa normalmente — vamos cruzar depois
-                    // ou pode copiar do melhor para ter uma base antes de cruzar
-                    novaRede.copiarPesos2(melhorRede);
-                }
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 32,32, 2);
+            if (melhorRede != null && i < numElite) {
+                // Elitismo puro: sem mudanças
+                novaRede.copiarPesos2(melhorRede);
             }
 
             redesNeurais.add(novaRede);
         }
 
-        // Aplica crossover do melhor com todos, exceto os 2 primeiros (elitismo)
+        // Se temos uma melhor rede, cruzamos com os descendentes
         if (melhorRede != null) {
-            List<RedeNeuralTeste2> descendentes = redesNeurais.subList(2, redesNeurais.size());
+            List<RedeNeuralTeste2> descendentes = redesNeurais.subList(numElite, redesNeurais.size());
             melhorRede.aplicarCrossoverComMelhor(melhorRede, descendentes);
-
-            // Aplica mutação nos descendentes
             melhorRede.aplicarMutacaoPopulacional(descendentes);
         }
     }
