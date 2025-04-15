@@ -128,6 +128,7 @@ public class RedeNeuralTeste2 {
         biasOculta1 = new double[numOcultos1Neuronios];
         pesosEntradaOculta2 = new double[numOcultos1Neuronios][numOcultos2Neuronios];
         biasOculta2 = new double[numOcultos2Neuronios];
+        pesosOcultaSaida1 = new double[numOcultos1Neuronios][numSaidasNeuronios];
         pesosOcultaSaida2 = new double[numOcultos2Neuronios][numSaidasNeuronios];
         biasSaida = new double[numSaidasNeuronios];
 
@@ -140,6 +141,13 @@ public class RedeNeuralTeste2 {
                 pesosEntradaOculta1[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
             }
         }
+
+        for (int i = 0; i < numOcultos1Neuronios; i++) {
+            for (int j = 0; j < numSaidasNeuronios; j++) {
+                pesosOcultaSaida1[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
+            }
+        }
+
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             for (int j = 0; j < numOcultos2Neuronios; j++) {
                 pesosEntradaOculta2[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
@@ -168,6 +176,7 @@ public class RedeNeuralTeste2 {
         double[] saidaOculta2 = new double[numOcultos2Neuronios];
         double[] saidaFinal = new double[numSaidasNeuronios];
 
+        // Camada oculta 1
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             double soma = biasOculta1[i];
             for (int j = 0; j < numEntradasNeuronios; j++) {
@@ -176,6 +185,7 @@ public class RedeNeuralTeste2 {
             saidaOculta1[i] = relu(soma);
         }
 
+        // Camada oculta 2
         for (int i = 0; i < numOcultos2Neuronios; i++) {
             double soma = biasOculta2[i];
             for (int j = 0; j < numOcultos1Neuronios; j++) {
@@ -184,16 +194,26 @@ public class RedeNeuralTeste2 {
             saidaOculta2[i] = relu(soma);
         }
 
+        // Camada de saída (usa saída da camada oculta 2 + atalho da oculta 1)
         for (int i = 0; i < numSaidasNeuronios; i++) {
             double soma = biasSaida[i];
+
+            // Contribuição da camada oculta 2
             for (int j = 0; j < numOcultos2Neuronios; j++) {
                 soma += saidaOculta2[j] * pesosOcultaSaida2[j][i];
             }
+
+            // Contribuição direta da camada oculta 1 (skip connection)
+            for (int j = 0; j < numOcultos1Neuronios; j++) {
+                soma += saidaOculta1[j] * pesosOcultaSaida1[j][i];
+            }
+
             saidaFinal[i] = sigmoid(soma);
         }
 
         return saidaFinal;
     }
+
 
     private double[] normalizarEntradas(double[] entradas) {
         double[] norm = new double[entradas.length];

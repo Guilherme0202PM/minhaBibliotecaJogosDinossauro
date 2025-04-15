@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 5;
+        int totalGeracao = 30;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -260,7 +260,7 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 2,2, 2);
+            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14,14, 2);
             if (melhorRede != null && i < numElite) {
                 // Elitismo puro: sem mudanças
                 novaRede.copiarPesos2(melhorRede);
