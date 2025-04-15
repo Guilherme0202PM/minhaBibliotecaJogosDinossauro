@@ -244,30 +244,25 @@ public class RedeNeuralTeste2 {
         System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidasNeuronios);
     }
 
-    // Função de arredondamento para 4 casas decimais
-    private double arredondar(double valor) {
-        return new BigDecimal(valor).setScale(2, RoundingMode.HALF_UP).doubleValue();
-    }
-
     // Função de ativação ReLU
     private double relu(double x) {
-        return arredondar(Math.max(0, x));
+        return (Math.max(0, x));
     }
 
     // Função de ativação Sigmóide
     private double sigmoid(double x) {
-        return arredondar(1 / (1 + Math.exp(-x)));
+        return (1 / (1 + Math.exp(-x)));
     }
 
     // Função de ativação Tangente Hiperbólica
     private double tanh(double x) {
-        return arredondar(Math.tanh(x));
+        return (Math.tanh(x));
     }
 
     // Derivada da função de ativação Tangente Hiperbólica
     private double tanhDerivada(double x) {
         double th = Math.tanh(x);
-        return arredondar(1 - (th * th)); // 1 - tanh^2(x)
+        return (1 - (th * th)); // 1 - tanh^2(x)
     }
 
     public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
