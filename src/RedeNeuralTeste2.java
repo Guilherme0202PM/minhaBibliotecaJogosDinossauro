@@ -1,13 +1,11 @@
 import java.io.*;
 import java.util.Random;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 public class RedeNeuralTeste2 {
     private int numEntradasNeuronios, numOcultos1Neuronios, numOcultos2Neuronios, numSaidasNeuronios;
-    private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
-    private double taxaMutacaoIndividual = 0.1; // 30% de diferença entre indivíduos
+    private double taxaMutacaoPopulacional = 0.4; // 50% de chance de mutação na população
+    private double taxaMutacaoIndividual = 0.15; // 30% de diferença entre indivíduos
     private static final Random globalRandom = new Random();
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
@@ -132,7 +130,9 @@ public class RedeNeuralTeste2 {
         pesosOcultaSaida2 = new double[numOcultos2Neuronios][numSaidasNeuronios];
         biasSaida = new double[numSaidasNeuronios];
 
-        inicializarPesos2();
+        //inicializarPesos2();
+        carregarPesosFixos(); // Substitui inicializarPesos2()
+
     }
 
     private void inicializarPesos2() {
@@ -546,4 +546,40 @@ public class RedeNeuralTeste2 {
             System.out.println("null");
         }
     }
+
+    private void carregarPesosFixos() {
+        pesosEntradaOculta1 = new double[][] {
+                new double[] {-0.09112705381093217, 0.2492120675558795, /* ... */ },
+                new double[] {0.156818817525064, -0.3755937076684291, /* ... */ },
+                // Adicione o restante aqui...
+        };
+
+        pesosEntradaOculta2 = new double[][] {
+                new double[] {-0.3954983070597937, 0.4309633968809345, /* ... */ },
+                // ...
+        };
+
+        biasOculta1 = new double[] {
+                0.252173774984518, 0.2579568301531664, /* ... */
+        };
+
+        biasOculta2 = new double[] {
+                0.07875519133053571, -0.007147160543324579, /* ... */
+        };
+
+        pesosOcultaSaida1 = new double[][] {
+                new double[] {-0.5237722410703678, -0.5126454547599704},
+                // ...
+        };
+
+        pesosOcultaSaida2 = new double[][] {
+                new double[] {-0.08239699742658346, -0.27076322820712095},
+                // ...
+        };
+
+        biasSaida = new double[] {
+                0.4354275440472779, -0.041560663850673196
+        };
+    }
+
 }
