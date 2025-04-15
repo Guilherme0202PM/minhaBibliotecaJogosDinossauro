@@ -448,4 +448,40 @@ public class RedeNeuralTeste2 {
         }
     }
 
+    public int getNumEntradasNeuronios() {
+        return numEntradasNeuronios;
+    }
+
+    public int getNumOcultos1Neuronios() {
+        return numOcultos1Neuronios;
+    }
+
+    public int getNumOcultos2Neuronios() {
+        return numOcultos2Neuronios;
+    }
+
+    public int getNumSaidasNeuronios() {
+        return numSaidasNeuronios;
+    }
+
+
+
+
+    public double distanciaPara(RedeNeuralTeste2 outra) {
+        double soma = 0;
+
+        for (int i = 0; i < pesosEntradaOculta1.length; i++) {
+            for (int j = 0; j < pesosEntradaOculta1[i].length; j++) {
+                soma += Math.pow(pesosEntradaOculta1[i][j] - outra.pesosEntradaOculta1[i][j], 2);
+            }
+        }
+
+        // Repita para os demais pesos (oculta2 e saida)
+        // ...
+
+        return Math.sqrt(soma); // distância euclidiana
+    }
+
+
+
 }
