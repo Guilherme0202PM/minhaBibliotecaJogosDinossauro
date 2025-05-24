@@ -4,8 +4,8 @@ import java.util.List;
 
 public class RedeNeuralTeste2 {
     private int numEntradasNeuronios, numOcultos1Neuronios, numOcultos2Neuronios, numSaidasNeuronios;
-    private double taxaMutacaoPopulacional = 0.4; // 50% de chance de mutação na população
-    private double taxaMutacaoIndividual = 0.15; // 30% de diferença entre indivíduos
+    private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
+    private double taxaMutacaoIndividual = 0.1; // 30% de diferença entre indivíduos
     private static final Random globalRandom = new Random();
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
@@ -130,8 +130,8 @@ public class RedeNeuralTeste2 {
         pesosOcultaSaida2 = new double[numOcultos2Neuronios][numSaidasNeuronios];
         biasSaida = new double[numSaidasNeuronios];
 
-        //inicializarPesos2();
-        carregarPesosFixos(); // Substitui inicializarPesos2()
+        inicializarPesos2();
+        //carregarPesosFixos(); // Substitui inicializarPesos2()
 
     }
 

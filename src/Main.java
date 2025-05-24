@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 30;
+        int totalGeracao = 20;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -242,40 +242,45 @@ public class Main {
         System.out.println("Colata das informações de cada rede " + totalGeracao + " gerações.");
         for (int i = 0; i < LogMelhoresRedes.size(); i++) {
             System.out.println((i + 1) + "ª melhor rede:");
-            LogMelhoresRedes.get(i).imprimirTodos();
+            //LogMelhoresRedes.get(i).imprimirTodos();
             System.out.println("");
         }
 
         System.out.println("Fim Ranking.");
     }
 
+    // Dentro da sua funcao inicializarPopulacao, aplique essa lógica para respeitar o elitismo absoluto:
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                              RedeNeuralTeste2 melhorRede) {
         int numElite = 3;
 
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com um espaçamento entre si
+            int posX = 50 + i * 20; // Posicione-os com espaçamento entre si
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
-            janela.adicionarObjeto(playerIA); // Adiciona o PlayerIA à janela
+            janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(7, 14,14, 2);
+            RedeNeuralTeste2 novaRede;
             if (melhorRede != null && i < numElite) {
-                // Elitismo puro: sem mudanças
-                novaRede.copiarPesos2(melhorRede);
+                novaRede = new RedeNeuralTeste2(melhorRede.getNumEntradasNeuronios(), melhorRede.getNumOcultos1Neuronios(),
+                        melhorRede.getNumOcultos2Neuronios(), melhorRede.getNumSaidasNeuronios());
+                novaRede.copiarPesos2(melhorRede); // Cópia exata
+            } else {
+                novaRede = new RedeNeuralTeste2(7, 14, 14, 2); // Criar nova rede com valores aleatórios
             }
 
             redesNeurais.add(novaRede);
         }
 
-        // Se temos uma melhor rede, cruzamos com os descendentes
+        // Aplicar crossover e mutação só nos descendentes (a partir do índice numElite)
         if (melhorRede != null) {
             List<RedeNeuralTeste2> descendentes = redesNeurais.subList(numElite, redesNeurais.size());
             melhorRede.aplicarCrossoverComMelhor(melhorRede, descendentes);
             melhorRede.aplicarMutacaoPopulacional(descendentes);
         }
     }
+
 
 
     private static int aumentaVelocidade(int Cronometro){
