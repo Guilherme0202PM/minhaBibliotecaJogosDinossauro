@@ -126,6 +126,10 @@ public class Main {
 
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
 
+                                for (int p = 0; p < saidas.length; p++) {
+                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
+                                }
+
                                 if (saidas[0] > 0.5) {
                                     playerIA.apertarSaltar(); // Pular
                                 } else {
