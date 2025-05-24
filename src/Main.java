@@ -20,7 +20,7 @@ public class Main {
         int Cronometro = 0;
         int velocidadeInimigos = 0;
 
-        // Variáveis de controle de geração
+        // Variaveis de controle de geracao
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
@@ -30,28 +30,9 @@ public class Main {
         int maxInimigos = 100;
         int inimigosCriados = 0;
 
-        int limiteProximidade = 80; // Defina um limite adequado para a proximidade
+        // Defina um limite adequado para a proximidade, essa eh a area do "radar"
+        int limiteProximidade = 80;
         RedeNeuralTeste2 melhorRede = null;
-        //--------------------------- VARIÁVEIS DE CONTROLE FIM
-
-//        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
-//        janela.adicionarObjeto(player);
-//        player.adicionarListener();
-
-        // Criação de um vetor para armazenar múltiplos PlayerIA
-        List<PlayerIA> player2List = new ArrayList<>();
-        List<PlayerIA> coleta = new ArrayList<>(); //Coleta pontuações de PlayerIA
-        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
-        List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
-        List<RedeNeuralTeste2> LogMelhoresRedes = new ArrayList<>();
-
-
-        List<Inimigo> inimigos = new ArrayList<>(); //Armazena inimigos
-
-        // Inicializa os PlayerIA e redes neurais
-        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
@@ -63,6 +44,46 @@ public class Main {
             chaoBlocos[i] = new Chao(i * larguraChao, 400, larguraChao, alturaChao); // Posição inicial dos blocos
             janela.adicionarObjeto(chaoBlocos[i]);
         }
+
+        double taxaDeAcerto, taxaDeErro, fitness, taxaInimigoTerrestre, taxaInimigoVoador, taxaInimigoMeteoro;
+        //Vou usar para identificar se o dinossauro executou a ação correta, com base nos 3 inimigos/desafio
+        boolean desafioTerrestre = false;
+        boolean desafioVoador = false;
+        boolean desafioMeteoro = false;
+
+        //--------------------------- VARIÁVEIS DE CONTROLE FIM
+
+        //------------------------------------------------------
+
+        //--------------------------- LISTAS DE CONTROLE
+
+        // Criacao de um vetor para armazenar multiplos PlayerIA ou agentes
+        List<PlayerIA> player2List = new ArrayList<>();
+        // Lista que coleta os PlayerIA apos uma geracao, geralmente para ordena-los por pontuacao ou comparar desempenho
+        List<PlayerIA> coleta = new ArrayList<>(); //Coleta pontuacoes de PlayerIA
+        // Lista com todas as redes neurais ativas da geracao atual (cada PlayerIA tem uma rede neural)
+        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
+        // Lista para armazenar redes neurais de geracoes anteriores ou as melhores da geracao anterior
+        List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
+        // Outra lista de backup das redes anteriores (usada para comparacoes ou fallback)
+        List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
+        // Lista com as redes neurais de melhor desempenho ao longo das geracoes (especie de hall da fama)
+        List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
+        // Log das melhores redes ja encontradas, para fins de visualizacao ou reexecucao
+        List<RedeNeuralTeste2> LogMelhoresRedes = new ArrayList<>();
+
+        //Armazena inimigos
+        List<Inimigo> inimigos = new ArrayList<>();
+
+        // Inicializa os PlayerIA e redes neurais
+        inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
+
+
+        //--------------------------- FIM LISTAS DE CONTROLE
+
+        //------------------------------------------------------
+
+        //--------------------------- TEXTO GRAFICO
 
         JLabel geracaoLabel = new JLabel("Geração: 1");
         geracaoLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -82,7 +103,12 @@ public class Main {
         cronometoLabel.setBounds(30, 90, 200, 30);
         janela.addComponentToGamePanel(cronometoLabel);
 
+        //        Player player = new Player(30, 50, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+        //        janela.adicionarObjeto(player);
+        //        player.adicionarListener();
 
+
+        //Loop que controla todo o jogo
         while (geracaoAtual < totalGeracao) {
             for (int i = 0; i < maxInimigos; i++) {
 
