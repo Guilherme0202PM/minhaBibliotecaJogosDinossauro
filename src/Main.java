@@ -214,7 +214,7 @@ public class Main {
 
                                 switch (indentificadorInimigo) {
                                     case 1: // Terrestre
-                                        if (desafioTerrestre = true) {
+                                        if (desafioTerrestre == true) {
                                             taxaInimigoTerrestre++;
                                             acertou = true;
                                         }else {
@@ -222,7 +222,7 @@ public class Main {
                                         }
                                         break;
                                     case 2: // Voador
-                                        if (desafioVoador = true) {
+                                        if (desafioVoador == true) {
                                             taxaInimigoVoador++;
                                             acertou = true;
                                         }else {
@@ -230,7 +230,7 @@ public class Main {
                                         }
                                         break;
                                     case 3: // Meteoro
-                                        if (desafioMeteoro = true) {
+                                        if (desafioMeteoro == true) {
                                             taxaInimigoMeteoro++;
                                             acertou = true;
                                         }else {
