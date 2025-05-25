@@ -45,11 +45,24 @@ public class Main {
             janela.adicionarObjeto(chaoBlocos[i]);
         }
 
-        double taxaDeAcerto, taxaDeErro, fitness, taxaInimigoTerrestre, taxaInimigoVoador, taxaInimigoMeteoro;
+
+        //Taxas de controle e Acertos
+        double taxaDeAcerto = 0;
+        double taxaDeErro = 0;
+        double fitness = 0;
+
+        double taxaInimigoTerrestre = 0;
+        double taxaInimigoVoador = 0;
+        double taxaInimigoMeteoro = 0;
+
         //Vou usar para identificar se o dinossauro executou a ação correta, com base nos 3 inimigos/desafio
         boolean desafioTerrestre = false;
         boolean desafioVoador = false;
         boolean desafioMeteoro = false;
+        boolean acertou = false;
+
+        int indentificadorInimigo = 0;
+
 
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
 
@@ -147,19 +160,41 @@ public class Main {
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
                                 double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
-
                                 double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
+                                indentificadorInimigo = 0;
+                                desafioMeteoro = false;
+                                desafioVoador = false;
+                                desafioTerrestre = false;
+
+//                                0 0 Voa
+//                                0 1 Tere
+//                                1 0 Mete
+//                                1 1 Voa
+//
+//                                Terra 350 70 50
+//                                Voa 320 70 50
+//                                Mete 0 70 70
+
+                                if (fatorCondicaoY >= 1 && fatorCondicaoY == fatorCondicaoX){
+                                    indentificadorInimigo = 2; //InimigoVoador
+                                } else if(fatorCondicaoY == 0 && fatorCondicaoX == 1){
+                                    indentificadorInimigo = 1; //InimigoTerrestre
+                                } else{
+                                    indentificadorInimigo = 3; //InimigoMeteoro
+                                }
 
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
 
-                                for (int p = 0; p < saidas.length; p++) {
-                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
-                                }
+//                                for (int p = 0; p < saidas.length; p++) {
+//                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
+//                                }
 
                                 if (saidas[0] > 0.5) {
                                     playerIA.apertarSaltar(); // Pular
+                                    desafioTerrestre = true;
                                 } else {
                                     playerIA.apertarAbaixar(); // Abaixar
+                                    desafioVoador = true;
                                 }
 
                                 if (saidas[1] > 0.5) {
@@ -168,11 +203,51 @@ public class Main {
                                     } else {
                                         playerIA.apertarDireita();
                                     }
+                                    desafioMeteoro = true;
                                 }
 
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
 
+
+                                acertou = false;
+
+                                switch (indentificadorInimigo) {
+                                    case 1: // Terrestre
+                                        if (desafioTerrestre = true) {
+                                            taxaInimigoTerrestre++;
+                                            acertou = true;
+                                        }else {
+                                            acertou = false;
+                                        }
+                                        break;
+                                    case 2: // Voador
+                                        if (desafioVoador = true) {
+                                            taxaInimigoVoador++;
+                                            acertou = true;
+                                        }else {
+                                            acertou = false;
+                                        }
+                                        break;
+                                    case 3: // Meteoro
+                                        if (desafioMeteoro = true) {
+                                            taxaInimigoMeteoro++;
+                                            acertou = true;
+                                        }else {
+                                            acertou = false;
+                                        }
+                                        break;
+                                }
+
+                                // Atualiza taxas
+                                if (acertou) {
+                                    taxaDeAcerto++;
+                                } else {
+                                    taxaDeErro++;
+                                }
+
+                                // Atualiza fitness com pesos
+                                fitness = taxaDeAcerto * 10 - taxaDeErro * 15;
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
