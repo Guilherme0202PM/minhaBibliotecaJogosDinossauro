@@ -246,8 +246,10 @@ public class Main {
                                     taxaDeErro++;
                                 }
 
+                                
                                 // Atualiza fitness com pesos
                                 fitness = taxaDeAcerto * 10 - taxaDeErro * 15;
+                                redeNeural.setFitness(fitness);
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {

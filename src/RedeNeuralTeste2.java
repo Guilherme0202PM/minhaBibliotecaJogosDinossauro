@@ -17,6 +17,9 @@ public class RedeNeuralTeste2 {
     private double[] biasSaida; // Bias para a camada de saída
     private Random random;
 
+    private int pontuacao;
+    private double fitness; // Novo campo para armazenar o fitness
+
     public RedeNeuralTeste2(int numEntradasNeuronios, int numOcultos1Neuronios, int numSaidasNeuronios) {
         this.numEntradasNeuronios = numEntradasNeuronios;
         this.numOcultos1Neuronios = numOcultos1Neuronios;
@@ -321,14 +324,25 @@ public class RedeNeuralTeste2 {
         }
     }
 
-    private int pontuacao;
-
     public void incrementarPontuacao(int valor) {
         pontuacao += valor;
     }
 
     public int getPontuacao() {
         return pontuacao;
+    }
+
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    public double getFitness() {
+        return fitness;
+    }
+
+    @Override
+    public String toString() {
+        return "Rede Neural | Pontuação: " + pontuacao + " | Fitness: " + fitness;
     }
 
     public void aplicarMutacaoPopulacional(List<RedeNeuralTeste2> populacao) {
