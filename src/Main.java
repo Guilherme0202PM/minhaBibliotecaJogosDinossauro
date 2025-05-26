@@ -84,6 +84,8 @@ public class Main {
         List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
         // Log das melhores redes ja encontradas, para fins de visualizacao ou reexecucao
         List<RedeNeuralTeste2> LogMelhoresRedes = new ArrayList<>();
+        // Lista para armazenar os fitness de todos os dinossauros que morreram
+        List<Double> fitnessHistorico = new ArrayList<>();
 
         //Armazena inimigos
         List<Inimigo> inimigos = new ArrayList<>();
@@ -246,7 +248,7 @@ public class Main {
                                     taxaDeErro++;
                                 }
 
-                                
+
                                 // Atualiza fitness com pesos
                                 fitness = taxaDeAcerto * 10 - taxaDeErro * 15;
                                 redeNeural.setFitness(fitness);
@@ -256,6 +258,8 @@ public class Main {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
                                     //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
+                                    // Armazena o fitness antes de remover o dinossauro
+                                    fitnessHistorico.add(redeNeural.getFitness());
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
@@ -291,6 +295,19 @@ public class Main {
             if (quantidadeVivos <= 0) {
                 geracaoAtual++;
                 System.out.println("Geração " + geracaoAtual + " concluída.");
+
+                // Imprime o histórico de fitness da geração
+                System.out.println("\nHistórico de Fitness da Geração " + geracaoAtual + ":");
+                for (int i = 0; i < fitnessHistorico.size(); i++) {
+                    System.out.println("Dinossauro " + (i + 1) + ": " + fitnessHistorico.get(i));
+                }
+                System.out.println("Média de Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).average().orElse(0.0)));
+                System.out.println("Maior Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
+                System.out.println("Menor Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
+                System.out.println();
+
+                // Limpa o histórico de fitness para a próxima geração
+                fitnessHistorico.clear();
 
                 // Seleciona os melhores players com base na pontuação
                 //System.out.println("coleta tamanho: " + coleta.size());
