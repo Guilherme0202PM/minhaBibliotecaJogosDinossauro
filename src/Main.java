@@ -298,6 +298,8 @@ public class Main {
 
                 // Imprime o histórico de fitness da geração
                 imprimeHistoricoFitness(fitnessHistorico, geracaoAtual);
+                fitnessHistorico.clear(); // Limpa a lista após imprimir
+
 
                 // Seleciona os melhores players com base na pontuação
                 //System.out.println("coleta tamanho: " + coleta.size());
@@ -520,8 +522,5 @@ public class Main {
         System.out.println("Maior Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
         System.out.println("Menor Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
         System.out.println();
-
-        // Limpa o histórico de fitness para a próxima geração
-        fitnessHistorico.clear();
     }
 }
