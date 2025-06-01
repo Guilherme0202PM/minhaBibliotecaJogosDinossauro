@@ -131,7 +131,7 @@ public class Main {
                 if (Cronometro >= (inimigosCriados + 1) * 50) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
-                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -297,17 +297,7 @@ public class Main {
                 System.out.println("Geração " + geracaoAtual + " concluída.");
 
                 // Imprime o histórico de fitness da geração
-                System.out.println("\nHistórico de Fitness da Geração " + geracaoAtual + ":");
-                for (int i = 0; i < fitnessHistorico.size(); i++) {
-                    System.out.println("Dinossauro " + (i + 1) + ": " + fitnessHistorico.get(i));
-                }
-                System.out.println("Média de Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).average().orElse(0.0)));
-                System.out.println("Maior Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
-                System.out.println("Menor Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
-                System.out.println();
-
-                // Limpa o histórico de fitness para a próxima geração
-                fitnessHistorico.clear();
+                imprimeHistoricoFitness(fitnessHistorico, geracaoAtual);
 
                 // Seleciona os melhores players com base na pontuação
                 //System.out.println("coleta tamanho: " + coleta.size());
@@ -419,7 +409,7 @@ public class Main {
         return velocidadeInimigos;
     }
 
-    private static void criarInimigos3(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
+    private static void criarInimigos(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
         Random random = new Random();
         Inimigo inimigo;
 
@@ -503,7 +493,7 @@ public class Main {
         // Exibe o ranqueamento no console
         System.out.println("Ranking da População:");
         for (int i = 0; i < copiaPopulacaoRede.size(); i++) {
-            System.out.println((i + 1) + "º - " + copiaPopulacaoRede.get(i) + " | Pontuação: " + copiaPopulacaoRede.get(i).getPontuacao());
+            System.out.println((i + 1) + "º - " + copiaPopulacaoRede.get(i));
         }
         System.out.println("Fim Ranking:");
 
@@ -518,5 +508,20 @@ public class Main {
         }
 
         return redesNeurais.get(0);
+    }
+
+    private static void imprimeHistoricoFitness(List<Double> fitnessHistorico, int geracaoAtual) {
+        // Imprime o histórico de fitness da geração
+        System.out.println("\nHistórico de Fitness da Geração " + geracaoAtual + ":");
+        for (int i = 0; i < fitnessHistorico.size(); i++) {
+            System.out.println("Dinossauro " + (i + 1) + ": " + fitnessHistorico.get(i));
+        }
+        System.out.println("Média de Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).average().orElse(0.0)));
+        System.out.println("Maior Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
+        System.out.println("Menor Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
+        System.out.println();
+
+        // Limpa o histórico de fitness para a próxima geração
+        fitnessHistorico.clear();
     }
 }
