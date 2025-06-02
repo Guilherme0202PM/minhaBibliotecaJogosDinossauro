@@ -239,6 +239,11 @@ public class RedeNeuralTeste2 {
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             System.arraycopy(outraRede.pesosEntradaOculta2[i], 0, this.pesosEntradaOculta2[i], 0, numOcultos2Neuronios);
         }
+
+        for (int i = 0; i < numOcultos1Neuronios; i++) {
+            System.arraycopy(outraRede.pesosOcultaSaida1[i], 0, this.pesosOcultaSaida1[i], 0, numSaidasNeuronios);
+        }
+
         for (int i = 0; i < numOcultos2Neuronios; i++) {
             System.arraycopy(outraRede.pesosOcultaSaida2[i], 0, this.pesosOcultaSaida2[i], 0, numSaidasNeuronios);
         }
