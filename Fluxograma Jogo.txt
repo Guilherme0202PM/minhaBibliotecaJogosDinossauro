@@ -1,0 +1,37 @@
+Fluxo Principal do Código:
+Inicialização:
+Cria a janela do jogo, sensores, movimento e outras configurações
+Inicializa a primeira população de dinossauros (PlayerIA) e suas redes neurais
+Define variáveis de controle (número de players, gerações, etc.)
+Loop Principal (Enquanto não atingir total de gerações):
+Gera inimigos a cada 50 pontos do cronômetro
+Para cada inimigo gerado:
+Itera sobre a população de dinossauros vivos
+Aplica filtro e verifica proximidade com inimigo
+Se detectar inimigo próximo:
+Coleta informações (posições, velocidades)
+Rede neural processa as entradas e gera saídas
+Verifica se a ação tomada foi correta para o tipo de inimigo
+Ajusta fitness baseado no acerto/erro
+Se houver colisão ou tocar borda:
+Adiciona o dinossauro à lista coleta
+Adiciona sua rede neural à lista redesNeuraisArmazenadas
+Armazena o fitness no fitnessHistorico
+Remove o dinossauro da população atual
+Quando todos morrem (quantidadeVivos <= 0):
+Incrementa o contador de gerações
+Imprime histórico de fitness da geração
+Seleciona a população usando selecaoPopulacao(coleta, numPlayers)
+Seleciona as redes neurais usando selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers)
+Seleciona a melhor rede neural usando selecaoMelhorRede(redesNeuraisArmazenadas2)
+Armazena a melhor rede no histórico de desempenho
+Limpa as listas e reinicializa a população usando inicializarPopulacao
+Este método agora usa a seleção por roleta para escolher os pais
+Mantém os melhores indivíduos (elitismo)
+Aplica crossover e mutação nos descendentes
+Nova Geração:
+Cria nova população com base nos selecionados
+Mantém os melhores indivíduos (elitismo)
+Aplica crossover e mutação nos descendentes
+Reinicia o cronômetro e contadores
+Limpa a lista de inimigos
