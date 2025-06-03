@@ -87,6 +87,8 @@ public class Main {
         // Lista para armazenar os fitness de todos os dinossauros que morreram
         List<Double> fitnessHistorico = new ArrayList<>();
 
+
+
         //Armazena inimigos
         List<Inimigo> inimigos = new ArrayList<>();
 
@@ -305,12 +307,26 @@ public class Main {
                 //System.out.println("coleta tamanho: " + coleta.size());
                 //System.out.println("redesNeurais tamanho: " + redesNeurais.size());
 
+
                 coleta = selecaoPopulacao(coleta, numPlayers);
                 redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
+
+                /*
+                redesNeuraisArmazenadas2 = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
+
+                // Impressão das redes selecionadas
+                System.out.println("Redes selecionadas pela roleta:");
+                for (int i = 0; i < redesNeuraisArmazenadas2.size(); i++) {
+                    System.out.println((i + 1) + "º - " + redesNeuraisArmazenadas2.get(i));
+                }
+                System.out.println("Fim da seleção por roleta.\n");
+
+                 */
 
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
                     //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
+                    //melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
 
@@ -523,4 +539,55 @@ public class Main {
         System.out.println("Menor Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
         System.out.println();
     }
+
+    //Recebe uma populacao (lista de redes neurais)
+    //Recebe um número quantidadeSelecionados que define quantos indivíduos retornar
+    public static List<RedeNeuralTeste2> selecaoRoleta(List<RedeNeuralTeste2> populacao, int quantidadeSelecionados) {
+        //Cria uma nova lista para guardar os indivíduos selecionados da roleta.
+        List<RedeNeuralTeste2> selecionados = new ArrayList<>();
+
+        // Soma total dos fitness
+        /*
+         Aqui, percorro toda a população:
+         Pego o fitness de cada indivíduo.
+         Somo apenas valores positivos (fitness negativos são ignorados, pois não podem fazer parte da “roleta”).
+         Essa soma é a base da distribuição de probabilidade. Indivíduos com fitness maior terão uma "fatia maior da roleta".
+         */
+        double somaFitness = 0.0;
+        for (RedeNeuralTeste2 individuo : populacao) {
+            double fitness = individuo.getFitness();
+            somaFitness += (fitness > 0) ? fitness : 0; // Garante que negativos não bagunçam a roleta
+        }
+
+        Random rand = new Random();
+
+        //Esse loop repete o processo para escolher vários indivíduos.
+        for (int i = 0; i < quantidadeSelecionados; i++) {
+            //Gera um número entre 0 e somaFitness, representando um ponto aleatório da roleta.
+            double ponto = rand.nextDouble() * somaFitness;
+            double acumulado = 0.0;
+
+            /*
+            Parte mais importante da roleta:
+            acumulado vai somando os fitness dos indivíduos um por um.
+            Quando acumulado >= ponto, quer dizer que o ponto caiu dentro da “fatia” daquele indivíduo, então ele é selecionado.
+            Usamos clonar() para gerar uma cópia independente da rede (sem isso, modificações afetariam o original).
+             */
+
+            for (RedeNeuralTeste2 individuo : populacao) {
+                double fitness = individuo.getFitness();
+                if (fitness > 0) {
+                    acumulado += fitness;
+                    if (acumulado >= ponto) {
+                        selecionados.add(individuo.clonar()); // clone() deve ser implementado
+                        break;
+                    }
+                }
+            }
+        }
+
+        //Após quantidadeSelecionados rodadas da roleta, devolve a nova lista com os escolhidos.
+        return selecionados;
+    }
+
 }

@@ -252,6 +252,25 @@ public class RedeNeuralTeste2 {
         System.arraycopy(outraRede.biasSaida, 0, this.biasSaida, 0, numSaidasNeuronios);
     }
 
+    public RedeNeuralTeste2 clonar() {
+        RedeNeuralTeste2 clone = new RedeNeuralTeste2(
+                numEntradasNeuronios,
+                numOcultos1Neuronios,
+                numOcultos2Neuronios,
+                numSaidasNeuronios
+        );
+
+        // Copia os pesos e biases
+        clone.copiarPesos2(this);
+
+        // Copia a pontuação e o fitness
+        clone.pontuacao = this.pontuacao;
+        clone.fitness = this.fitness;
+
+        return clone;
+    }
+
+
     // Função de ativação ReLU
     private double relu(double x) {
         return (Math.max(0, x));
@@ -273,61 +292,6 @@ public class RedeNeuralTeste2 {
         return (1 - (th * th)); // 1 - tanh^2(x)
     }
 
-    public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
-        // Forward pass
-        double[] camadaOculta = new double[numOcultos1Neuronios];
-        for (int j = 0; j < numOcultos1Neuronios; j++) {
-            camadaOculta[j] = biasOculta1[j];
-            for (int i = 0; i < numEntradasNeuronios; i++) {
-                camadaOculta[j] += entradas[i] * pesosEntradaOculta1[i][j];
-            }
-            camadaOculta[j] = tanh(camadaOculta[j]); // Mudamos para tanh;
-        }
-
-        double[] saidas = new double[numSaidasNeuronios];
-        for (int j = 0; j < numSaidasNeuronios; j++) {
-            saidas[j] = biasSaida[j];
-            for (int i = 0; i < numOcultos1Neuronios; i++) {
-                saidas[j] += camadaOculta[i] * pesosOcultaSaida1[i][j];
-            }
-            saidas[j] = sigmoid(saidas[j]);
-        }
-
-        // Backward pass (calcular erro e atualizar pesos)
-        double[] erroSaida = new double[numSaidasNeuronios];
-        for (int j = 0; j < numSaidasNeuronios; j++) {
-            erroSaida[j] = saidasEsperadas[j] - saidas[j];
-        }
-
-        double[] erroOculto = new double[numOcultos1Neuronios];
-        for (int j = 0; j < numOcultos1Neuronios; j++) {
-            for (int k = 0; k < numSaidasNeuronios; k++) {
-                erroOculto[j] += erroSaida[k] * pesosOcultaSaida1[j][k];
-            }
-            // erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
-            erroOculto[j] *= tanhDerivada(camadaOculta[j]); // Usando derivada do tanh
-        }
-
-        for (int i = 0; i < numEntradasNeuronios; i++) {
-            for (int j = 0; j < numOcultos1Neuronios; j++) {
-                pesosEntradaOculta1[i][j] += taxaAprendizagem * erroOculto[j] * entradas[i];
-            }
-        }
-
-        for (int j = 0; j < numOcultos1Neuronios; j++) {
-            biasOculta1[j] += taxaAprendizagem * erroOculto[j];
-        }
-
-        for (int j = 0; j < numOcultos1Neuronios; j++) {
-            for (int k = 0; k < numSaidasNeuronios; k++) {
-                pesosOcultaSaida1[j][k] += taxaAprendizagem * erroSaida[k] * camadaOculta[j];
-            }
-        }
-
-        for (int k = 0; k < numSaidasNeuronios; k++) {
-            biasSaida[k] += taxaAprendizagem * erroSaida[k];
-        }
-    }
 
     public void incrementarPontuacao(int valor) {
         pontuacao += valor;
@@ -397,6 +361,104 @@ public class RedeNeuralTeste2 {
                     rede.biasSaida[i] += variacao;
                 }
             }
+        }
+    }
+
+    public static RedeNeuralTeste2 crossover(RedeNeuralTeste2 pai1, RedeNeuralTeste2 pai2) {
+        RedeNeuralTeste2 filho = new RedeNeuralTeste2(
+                pai1.numEntradasNeuronios,
+                pai1.numOcultos1Neuronios,
+                pai1.numOcultos2Neuronios,
+                pai1.numSaidasNeuronios
+        );
+
+        // Crossover dos pesos da primeira camada
+        for (int i = 0; i < pai1.numEntradasNeuronios; i++) {
+            for (int j = 0; j < pai1.numOcultos1Neuronios; j++) {
+                filho.pesosEntradaOculta1[i][j] = (pai1.pesosEntradaOculta1[i][j] + pai2.pesosEntradaOculta1[i][j]) / 2.0;
+            }
+        }
+
+        // Crossover dos pesos da segunda camada
+        for (int i = 0; i < pai1.numOcultos1Neuronios; i++) {
+            for (int j = 0; j < pai1.numOcultos2Neuronios; j++) {
+                filho.pesosEntradaOculta2[i][j] = (pai1.pesosEntradaOculta2[i][j] + pai2.pesosEntradaOculta2[i][j]) / 2.0;
+            }
+        }
+
+        // Crossover dos pesos de skip connection
+        for (int i = 0; i < pai1.numOcultos1Neuronios; i++) {
+            for (int j = 0; j < pai1.numSaidasNeuronios; j++) {
+                filho.pesosOcultaSaida1[i][j] = (pai1.pesosOcultaSaida1[i][j] + pai2.pesosOcultaSaida1[i][j]) / 2.0;
+            }
+        }
+
+        // Crossover dos pesos da camada de saída
+        for (int i = 0; i < pai1.numOcultos2Neuronios; i++) {
+            for (int j = 0; j < pai1.numSaidasNeuronios; j++) {
+                filho.pesosOcultaSaida2[i][j] = (pai1.pesosOcultaSaida2[i][j] + pai2.pesosOcultaSaida2[i][j]) / 2.0;
+            }
+        }
+
+        // Crossover dos bias
+        for (int i = 0; i < pai1.numOcultos1Neuronios; i++) {
+            filho.biasOculta1[i] = (pai1.biasOculta1[i] + pai2.biasOculta1[i]) / 2.0;
+        }
+        for (int i = 0; i < pai1.numOcultos2Neuronios; i++) {
+            filho.biasOculta2[i] = (pai1.biasOculta2[i] + pai2.biasOculta2[i]) / 2.0;
+        }
+        for (int i = 0; i < pai1.numSaidasNeuronios; i++) {
+            filho.biasSaida[i] = (pai1.biasSaida[i] + pai2.biasSaida[i]) / 2.0;
+        }
+
+        // Normalização dos pesos para evitar saturação
+        filho.normalizarPesos();
+
+        return filho;
+    }
+
+    private void normalizarPesos() {
+        // Limita os pesos entre -1 e 1 para evitar saturação
+        double maxPeso = 1.0;
+        double minPeso = -1.0;
+
+        // Normaliza pesos da primeira camada
+        for (int i = 0; i < numEntradasNeuronios; i++) {
+            for (int j = 0; j < numOcultos1Neuronios; j++) {
+                pesosEntradaOculta1[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosEntradaOculta1[i][j]));
+            }
+        }
+
+        // Normaliza pesos da segunda camada
+        for (int i = 0; i < numOcultos1Neuronios; i++) {
+            for (int j = 0; j < numOcultos2Neuronios; j++) {
+                pesosEntradaOculta2[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosEntradaOculta2[i][j]));
+            }
+        }
+
+        // Normaliza pesos de skip connection
+        for (int i = 0; i < numOcultos1Neuronios; i++) {
+            for (int j = 0; j < numSaidasNeuronios; j++) {
+                pesosOcultaSaida1[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosOcultaSaida1[i][j]));
+            }
+        }
+
+        // Normaliza pesos da camada de saída
+        for (int i = 0; i < numOcultos2Neuronios; i++) {
+            for (int j = 0; j < numSaidasNeuronios; j++) {
+                pesosOcultaSaida2[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosOcultaSaida2[i][j]));
+            }
+        }
+
+        // Normaliza bias
+        for (int i = 0; i < numOcultos1Neuronios; i++) {
+            biasOculta1[i] = Math.max(minPeso, Math.min(maxPeso, biasOculta1[i]));
+        }
+        for (int i = 0; i < numOcultos2Neuronios; i++) {
+            biasOculta2[i] = Math.max(minPeso, Math.min(maxPeso, biasOculta2[i]));
+        }
+        for (int i = 0; i < numSaidasNeuronios; i++) {
+            biasSaida[i] = Math.max(minPeso, Math.min(maxPeso, biasSaida[i]));
         }
     }
 
@@ -563,6 +625,62 @@ public class RedeNeuralTeste2 {
             }
         } else {
             System.out.println("null");
+        }
+    }
+
+    public void treinar(double[] entradas, double[] saidasEsperadas, double taxaAprendizagem) {
+        // Forward pass
+        double[] camadaOculta = new double[numOcultos1Neuronios];
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            camadaOculta[j] = biasOculta1[j];
+            for (int i = 0; i < numEntradasNeuronios; i++) {
+                camadaOculta[j] += entradas[i] * pesosEntradaOculta1[i][j];
+            }
+            camadaOculta[j] = tanh(camadaOculta[j]); // Mudamos para tanh;
+        }
+
+        double[] saidas = new double[numSaidasNeuronios];
+        for (int j = 0; j < numSaidasNeuronios; j++) {
+            saidas[j] = biasSaida[j];
+            for (int i = 0; i < numOcultos1Neuronios; i++) {
+                saidas[j] += camadaOculta[i] * pesosOcultaSaida1[i][j];
+            }
+            saidas[j] = sigmoid(saidas[j]);
+        }
+
+        // Backward pass (calcular erro e atualizar pesos)
+        double[] erroSaida = new double[numSaidasNeuronios];
+        for (int j = 0; j < numSaidasNeuronios; j++) {
+            erroSaida[j] = saidasEsperadas[j] - saidas[j];
+        }
+
+        double[] erroOculto = new double[numOcultos1Neuronios];
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            for (int k = 0; k < numSaidasNeuronios; k++) {
+                erroOculto[j] += erroSaida[k] * pesosOcultaSaida1[j][k];
+            }
+            // erroOculto[j] *= (camadaOculta[j] > 0 ? 1 : 0); // Derivada da ReLU
+            erroOculto[j] *= tanhDerivada(camadaOculta[j]); // Usando derivada do tanh
+        }
+
+        for (int i = 0; i < numEntradasNeuronios; i++) {
+            for (int j = 0; j < numOcultos1Neuronios; j++) {
+                pesosEntradaOculta1[i][j] += taxaAprendizagem * erroOculto[j] * entradas[i];
+            }
+        }
+
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            biasOculta1[j] += taxaAprendizagem * erroOculto[j];
+        }
+
+        for (int j = 0; j < numOcultos1Neuronios; j++) {
+            for (int k = 0; k < numSaidasNeuronios; k++) {
+                pesosOcultaSaida1[j][k] += taxaAprendizagem * erroSaida[k] * camadaOculta[j];
+            }
+        }
+
+        for (int k = 0; k < numSaidasNeuronios; k++) {
+            biasSaida[k] += taxaAprendizagem * erroSaida[k];
         }
     }
 
