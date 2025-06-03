@@ -309,9 +309,9 @@ public class Main {
 
 
                 coleta = selecaoPopulacao(coleta, numPlayers);
-                redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
+                //redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
 
-                /*
+
                 redesNeuraisArmazenadas2 = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
 
                 // Impressão das redes selecionadas
@@ -321,7 +321,7 @@ public class Main {
                 }
                 System.out.println("Fim da seleção por roleta.\n");
 
-                 */
+
 
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
@@ -546,6 +546,12 @@ public class Main {
         //Cria uma nova lista para guardar os indivíduos selecionados da roleta.
         List<RedeNeuralTeste2> selecionados = new ArrayList<>();
 
+        //verifica se a população está vazia
+        if (populacao == null || populacao.isEmpty()) {
+            System.out.println("AVISO: População vazia na seleção por roleta!");
+            return selecionados;
+        }
+
         // Soma total dos fitness
         /*
          Aqui, percorro toda a população:
@@ -585,6 +591,13 @@ public class Main {
                 }
             }
         }
+
+        // Exibe o ranqueamento no console
+        System.out.println("Ranking da População (Seleção por Roleta):");
+        for (int i = 0; i < selecionados.size(); i++) {
+            System.out.println((i + 1) + "º - " + selecionados.get(i));
+        }
+        System.out.println("Fim Ranking Roleta:");
 
         //Após quantidadeSelecionados rodadas da roleta, devolve a nova lista com os escolhidos.
         return selecionados;
