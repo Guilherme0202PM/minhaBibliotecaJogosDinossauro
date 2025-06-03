@@ -314,12 +314,15 @@ public class Main {
 
                 redesNeuraisArmazenadas2 = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
 
+                /*
                 // Impressão das redes selecionadas
                 System.out.println("Redes selecionadas pela roleta:");
                 for (int i = 0; i < redesNeuraisArmazenadas2.size(); i++) {
                     System.out.println((i + 1) + "º - " + redesNeuraisArmazenadas2.get(i));
                 }
                 System.out.println("Fim da seleção por roleta.\n");
+
+                 */
 
 
 
@@ -543,63 +546,59 @@ public class Main {
     //Recebe uma populacao (lista de redes neurais)
     //Recebe um número quantidadeSelecionados que define quantos indivíduos retornar
     public static List<RedeNeuralTeste2> selecaoRoleta(List<RedeNeuralTeste2> populacao, int quantidadeSelecionados) {
-        //Cria uma nova lista para guardar os indivíduos selecionados da roleta.
         List<RedeNeuralTeste2> selecionados = new ArrayList<>();
 
-        //verifica se a população está vazia
         if (populacao == null || populacao.isEmpty()) {
             System.out.println("AVISO: População vazia na seleção por roleta!");
             return selecionados;
         }
 
-        // Soma total dos fitness
-        /*
-         Aqui, percorro toda a população:
-         Pego o fitness de cada indivíduo.
-         Somo apenas valores positivos (fitness negativos são ignorados, pois não podem fazer parte da “roleta”).
-         Essa soma é a base da distribuição de probabilidade. Indivíduos com fitness maior terão uma "fatia maior da roleta".
-         */
+        // Soma total dos fitness e debug
         double somaFitness = 0.0;
+        System.out.println("\nFitness dos indivíduos na população:");
         for (RedeNeuralTeste2 individuo : populacao) {
             double fitness = individuo.getFitness();
-            somaFitness += (fitness > 0) ? fitness : 0; // Garante que negativos não bagunçam a roleta
+            System.out.println("Fitness: " + fitness);
+            somaFitness += (fitness > 0) ? fitness : 0;
         }
+        System.out.println("Soma total do fitness: " + somaFitness);
 
-        Random rand = new Random();
+        // Se a soma do fitness for muito baixa, usa seleção aleatória
+        if (somaFitness < 0.0001) {
+            System.out.println("AVISO: Fitness total muito baixo, usando seleção aleatória!");
+            for (int i = 0; i < quantidadeSelecionados && i < populacao.size(); i++) {
+                selecionados.add(populacao.get(i).clonar());
+            }
+        } else {
+            Random rand = new Random();
+            for (int i = 0; i < quantidadeSelecionados; i++) {
+                double ponto = rand.nextDouble() * somaFitness;
+                double acumulado = 0.0;
 
-        //Esse loop repete o processo para escolher vários indivíduos.
-        for (int i = 0; i < quantidadeSelecionados; i++) {
-            //Gera um número entre 0 e somaFitness, representando um ponto aleatório da roleta.
-            double ponto = rand.nextDouble() * somaFitness;
-            double acumulado = 0.0;
-
-            /*
-            Parte mais importante da roleta:
-            acumulado vai somando os fitness dos indivíduos um por um.
-            Quando acumulado >= ponto, quer dizer que o ponto caiu dentro da “fatia” daquele indivíduo, então ele é selecionado.
-            Usamos clonar() para gerar uma cópia independente da rede (sem isso, modificações afetariam o original).
-             */
-
-            for (RedeNeuralTeste2 individuo : populacao) {
-                double fitness = individuo.getFitness();
-                if (fitness > 0) {
-                    acumulado += fitness;
-                    if (acumulado >= ponto) {
-                        selecionados.add(individuo.clonar()); // clone() deve ser implementado
-                        break;
+                for (RedeNeuralTeste2 individuo : populacao) {
+                    double fitness = individuo.getFitness();
+                    if (fitness > 0) {
+                        acumulado += fitness;
+                        if (acumulado >= ponto) {
+                            selecionados.add(individuo.clonar());
+                            break;
+                        }
                     }
                 }
             }
         }
 
         // Exibe o ranqueamento no console
-        System.out.println("Ranking da População (Seleção por Roleta):");
-        for (int i = 0; i < selecionados.size(); i++) {
-            System.out.println((i + 1) + "º - " + selecionados.get(i));
+        System.out.println("\nRanking da População (Seleção por Roleta):");
+        if (selecionados.isEmpty()) {
+            System.out.println("AVISO: Nenhum indivíduo foi selecionado!");
+        } else {
+            for (int i = 0; i < selecionados.size(); i++) {
+                System.out.println((i + 1) + "º - " + selecionados.get(i));
+            }
         }
-        System.out.println("Fim Ranking Roleta:");
+        System.out.println("Fim Ranking Roleta:\n");
 
-        //Após quantidadeSelecionados rodadas da roleta, devolve a nova lista com os escolhidos.
         return selecionados;
     }
 
