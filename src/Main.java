@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 5;
+        int totalGeracao = 30;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -254,7 +254,7 @@ public class Main {
                                 System.out.println("Debugando desafio Inimigo Terra "+ desafioTerrestre);
                                 System.out.println("Debugando desafio Inimigo voa "+ desafioVoador);
                                 System.out.println("Debugando desafio Inimigo mete "+ desafioMeteoro);
-                                
+
                                  */
 
                                 // Atualiza taxas
@@ -365,7 +365,8 @@ public class Main {
                     Cronometro = 0;
                     inimigosCriados = 0;
 
-                    inicializarPopulacao(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, melhorRede);
+                    // Usa o novo método com as redes selecionadas por roleta
+                    inicializarPopulacaoRoleta(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
 
                     quantidadeVivos = numPlayers;
                     // Limpeza dos inimigos da lista inimigos
@@ -402,7 +403,7 @@ public class Main {
     private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                              RedeNeuralTeste2 melhorRede) {
-        int numElite = 3;
+        int numElite = numPlayers/5;
 
         for (int i = 0; i < numPlayers; i++) {
             int posX = 50 + i * 20; // Posicione-os com espaçamento entre si
@@ -430,7 +431,44 @@ public class Main {
         }
     }
 
+    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+                                                   Movimento movimento, Sensores sensores, Som som, GameWindow janela,
+                                                   List<RedeNeuralTeste2> redesSelecionadasRoleta) {
+        int numElite = 3; // Mantém os 3 melhores intactos
 
+        // Verifica se temos redes selecionadas suficientes
+        if (redesSelecionadasRoleta == null || redesSelecionadasRoleta.isEmpty()) {
+            System.out.println("AVISO: Lista de redes selecionadas vazia! Inicializando com redes aleatórias.");
+            // Inicializa com redes aleatórias se não houver seleção
+            for (int i = 0; i < numPlayers; i++) {
+                int posX = 50 + i * 20;
+                PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+                player2List.add(playerIA);
+                janela.adicionarObjeto(playerIA);
+                redesNeurais.add(new RedeNeuralTeste2(7, 14, 14, 2));
+            }
+            return;
+        }
+
+        // Cria os dinossauros e suas redes neurais
+        for (int i = 0; i < numPlayers; i++) {
+            int posX = 50 + i * 20;
+            PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
+            player2List.add(playerIA);
+            janela.adicionarObjeto(playerIA);
+
+            // Seleciona uma rede da lista de selecionadas (usando módulo para circular na lista)
+            RedeNeuralTeste2 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
+            RedeNeuralTeste2 novaRede = redeBase.clonar();
+
+            // Aplica mutação apenas nos não-elite
+            if (i >= numElite) {
+                novaRede.aplicarMutacaoPopulacional(List.of(novaRede));
+            }
+
+            redesNeurais.add(novaRede);
+        }
+    }
 
     private static int aumentaVelocidade(int Cronometro){
         int velocidadeInimigos = 0;
