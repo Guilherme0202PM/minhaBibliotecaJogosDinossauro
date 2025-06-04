@@ -62,6 +62,7 @@ public class Main {
         boolean acertou = false;
 
         int indentificadorInimigo = 0;
+        int totalDecisoes = 0; // Novo contador para total de decisões
 
 
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
@@ -79,7 +80,7 @@ public class Main {
         // Lista para armazenar redes neurais de geracoes anteriores ou as melhores da geracao anterior
         List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
         // Outra lista de backup das redes anteriores (usada para comparacoes ou fallback)
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
+        List<RedeNeuralTeste2> redesNeuraisArmazenadas2SelecaoRolete = new ArrayList<>();
         // Lista com as redes neurais de melhor desempenho ao longo das geracoes (especie de hall da fama)
         List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
         // Log das melhores redes ja encontradas, para fins de visualizacao ou reexecucao
@@ -249,25 +250,42 @@ public class Main {
                                 } else {
                                     taxaDeErro++;
                                 }
+                                totalDecisoes++;
 
+                                // Atualiza fitness com pesos e normalização
+                                if (totalDecisoes > 0) {
+                                    // Calcula a taxa de acerto como porcentagem
+                                    double taxaAcertoPercentual = (taxaDeAcerto / totalDecisoes) * 100;
+                                    double taxaErroPercentual = (taxaDeErro / totalDecisoes) * 100;
 
-                                // Atualiza fitness com pesos
-                                fitness = taxaDeAcerto * 10 - taxaDeErro * 15;
+                                    // Fitness baseado em porcentagens, limitado a 100
+                                    fitness = Math.min(100, taxaAcertoPercentual - (taxaErroPercentual * 0.5));
+
+                                    // Bônus por tempo de vida (máximo 50 pontos)
+                                    double bonusTempo = Math.min(50, Cronometro / 100.0);
+
+                                    // Fitness final
+                                    fitness = Math.min(150, fitness + bonusTempo);
+                                }
+
                                 redeNeural.setFitness(fitness);
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
+                                    // Reset das taxas para o próximo dinossauro
+                                    taxaDeAcerto = 0;
+                                    taxaDeErro = 0;
+                                    totalDecisoes = 0;
+                                    fitness = 0;
+
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
-                                    //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
-                                    // Armazena o fitness antes de remover o dinossauro
                                     fitnessHistorico.add(redeNeural.getFitness());
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
                                     quantidadeVivos--;
-                                    //System.out.println("Quantidade de vivos"+ quantidadeVivos);
-                                    j--; // Ajusta o índice após remoção
+                                    j--;
                                     System.gc();
                                 }
                             }
@@ -309,16 +327,16 @@ public class Main {
 
 
                 coleta = selecaoPopulacao(coleta, numPlayers);
-                //redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
+                //redesNeuraisArmazenadas2SelecaoRolete = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
 
 
-                redesNeuraisArmazenadas2 = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
+                redesNeuraisArmazenadas2SelecaoRolete = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
 
                 /*
                 // Impressão das redes selecionadas
                 System.out.println("Redes selecionadas pela roleta:");
-                for (int i = 0; i < redesNeuraisArmazenadas2.size(); i++) {
-                    System.out.println((i + 1) + "º - " + redesNeuraisArmazenadas2.get(i));
+                for (int i = 0; i < redesNeuraisArmazenadas2SelecaoRolete.size(); i++) {
+                    System.out.println((i + 1) + "º - " + redesNeuraisArmazenadas2SelecaoRolete.get(i));
                 }
                 System.out.println("Fim da seleção por roleta.\n");
 
@@ -329,8 +347,8 @@ public class Main {
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
                     //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
-                    //melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
-                    melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
+                    //melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2SelecaoRolete);
+                    melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2SelecaoRolete);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
 
                     // Adicionando a rede neural com o cronômetro
