@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 20;
+        int totalGeracao = 5;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -45,6 +45,25 @@ public class Main {
             janela.adicionarObjeto(chaoBlocos[i]);
         }
 
+
+        //Taxas de controle e Acertos
+        double taxaDeAcerto = 0;
+        double taxaDeErro = 0;
+        double fitness = 0;
+
+        double taxaInimigoTerrestre = 0;
+        double taxaInimigoVoador = 0;
+        double taxaInimigoMeteoro = 0;
+
+        //Vou usar para identificar se o dinossauro executou a ação correta, com base nos 3 inimigos/desafio
+        boolean desafioTerrestre = false;
+        boolean desafioVoador = false;
+        boolean desafioMeteoro = false;
+        boolean acertou = false;
+
+        int indentificadorInimigo = 0;
+
+
         //--------------------------- VARIÁVEIS DE CONTROLE FIM
 
         //------------------------------------------------------
@@ -60,11 +79,15 @@ public class Main {
         // Lista para armazenar redes neurais de geracoes anteriores ou as melhores da geracao anterior
         List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
         // Outra lista de backup das redes anteriores (usada para comparacoes ou fallback)
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas2 = new ArrayList<>();
+        List<RedeNeuralTeste2> redesNeuraisSelecionadaRoleta = new ArrayList<>();
         // Lista com as redes neurais de melhor desempenho ao longo das geracoes (especie de hall da fama)
         List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
         // Log das melhores redes ja encontradas, para fins de visualizacao ou reexecucao
         List<RedeNeuralTeste2> LogMelhoresRedes = new ArrayList<>();
+        // Lista para armazenar os fitness de todos os dinossauros que morreram
+        List<Double> fitnessHistorico = new ArrayList<>();
+
+
 
         //Armazena inimigos
         List<Inimigo> inimigos = new ArrayList<>();
@@ -110,7 +133,7 @@ public class Main {
                 if (Cronometro >= (inimigosCriados + 1) * 50) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
-                    criarInimigos3(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
+                    criarInimigos(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
 
                     inimigosCriados++; // Incrementa o contador de inimigos criados
                 }
@@ -141,19 +164,41 @@ public class Main {
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
                                 //Era entre -1 e 1 mas mudei para 0 e 1
                                 double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
-
                                 double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
+                                indentificadorInimigo = 0;
+                                desafioMeteoro = false;
+                                desafioVoador = false;
+                                desafioTerrestre = false;
+
+//                                0 0 Voa
+//                                0 1 Tere
+//                                1 0 Mete
+//                                1 1 Voa
+//
+//                                Terra 350 70 50
+//                                Voa 320 70 50
+//                                Mete 0 70 70
+
+                                if (fatorCondicaoY >= 1 && fatorCondicaoY == fatorCondicaoX){
+                                    indentificadorInimigo = 2; //InimigoVoador
+                                } else if(fatorCondicaoY == 0 && fatorCondicaoX == 1){
+                                    indentificadorInimigo = 1; //InimigoTerrestre
+                                } else{
+                                    indentificadorInimigo = 3; //InimigoMeteoro
+                                }
 
                                 double[] saidas = redeNeural.calcularSaida2(entradas);
 
-                                for (int p = 0; p < saidas.length; p++) {
-                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
-                                }
+//                                for (int p = 0; p < saidas.length; p++) {
+//                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
+//                                }
 
                                 if (saidas[0] > 0.5) {
                                     playerIA.apertarSaltar(); // Pular
+                                    desafioTerrestre = true;
                                 } else {
                                     playerIA.apertarAbaixar(); // Abaixar
+                                    desafioVoador = true;
                                 }
 
                                 if (saidas[1] > 0.5) {
@@ -162,17 +207,75 @@ public class Main {
                                     } else {
                                         playerIA.apertarDireita();
                                     }
+                                    desafioMeteoro = true;
                                 }
 
                                 playerIA.incrementarPontuacao(1);
                                 redeNeural.incrementarPontuacao(1);
 
+                                /*
+                                System.out.println("Debugando identificador Inimigo "+ indentificadorInimigo);
+                                System.out.println("Debugando desafio Inimigo Terra "+ desafioTerrestre);
+                                System.out.println("Debugando desafio Inimigo voa "+ desafioVoador);
+                                System.out.println("Debugando desafio Inimigo mete "+ desafioMeteoro);
+                                 */
+
+                                acertou = false;
+
+                                switch (indentificadorInimigo) {
+                                    case 1: // Terrestre
+                                        if (desafioTerrestre == true) {
+                                            taxaInimigoTerrestre++;
+                                            acertou = true;
+                                        }else {
+                                            acertou = false;
+                                        }
+                                        break;
+                                    case 2: // Voador
+                                        if (desafioVoador == true) {
+                                            taxaInimigoVoador++;
+                                            acertou = true;
+                                        }else {
+                                            acertou = false;
+                                        }
+                                        break;
+                                    case 3: // Meteoro
+                                        if (desafioMeteoro == true) {
+                                            taxaInimigoMeteoro++;
+                                            acertou = true;
+                                        }else {
+                                            acertou = false;
+                                        }
+                                        break;
+                                }
+
+                                /*
+                                System.out.println("Debugando Acertou? "+ acertou);
+                                System.out.println("Debugando desafio Inimigo Terra "+ desafioTerrestre);
+                                System.out.println("Debugando desafio Inimigo voa "+ desafioVoador);
+                                System.out.println("Debugando desafio Inimigo mete "+ desafioMeteoro);
+
+                                 */
+
+                                // Atualiza taxas
+                                if (acertou == true) {
+                                    taxaDeAcerto++;
+                                } else {
+                                    taxaDeErro++;
+                                }
+
+
+                                // Atualiza fitness com pesos
+                                fitness = taxaDeAcerto * 10 - taxaDeErro * 15;
+                                redeNeural.setFitness(fitness);
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
                                     //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
+                                    // Armazena o fitness antes de remover o dinossauro
+                                    fitnessHistorico.add(redeNeural.getFitness());
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
@@ -209,17 +312,39 @@ public class Main {
                 geracaoAtual++;
                 System.out.println("Geração " + geracaoAtual + " concluída.");
 
+                // Imprime o histórico de fitness da geração
+                imprimeHistoricoFitness(fitnessHistorico, geracaoAtual);
+                fitnessHistorico.clear(); // Limpa a lista após imprimir
+
+
                 // Seleciona os melhores players com base na pontuação
                 //System.out.println("coleta tamanho: " + coleta.size());
                 //System.out.println("redesNeurais tamanho: " + redesNeurais.size());
 
+
                 coleta = selecaoPopulacao(coleta, numPlayers);
-                redesNeuraisArmazenadas2 = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
+                //redesNeuraisSelecionadaRoleta = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
+
+
+                redesNeuraisSelecionadaRoleta = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
+
+                /*
+                // Impressão das redes selecionadas
+                System.out.println("Redes selecionadas pela roleta:");
+                for (int i = 0; i < redesNeuraisSelecionadaRoleta.size(); i++) {
+                    System.out.println((i + 1) + "º - " + redesNeuraisSelecionadaRoleta.get(i));
+                }
+                System.out.println("Fim da seleção por roleta.\n");
+
+                 */
+
+
 
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
                     //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
-                    melhorRede = selecaoMelhorRede(redesNeuraisArmazenadas2);
+                    //melhorRede = selecaoMelhorRede(redesNeuraisSelecionadaRoleta);
+                    melhorRede = selecaoMelhorRede(redesNeuraisSelecionadaRoleta);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
 
                     // Adicionando a rede neural com o cronômetro
@@ -319,7 +444,7 @@ public class Main {
         return velocidadeInimigos;
     }
 
-    private static void criarInimigos3(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
+    private static void criarInimigos(List<Inimigo> inimigos2, Movimento movimento, Sensores sensores, GameWindow janela, int cronometro, int velocidadeInimigos) {
         Random random = new Random();
         Inimigo inimigo;
 
@@ -403,7 +528,7 @@ public class Main {
         // Exibe o ranqueamento no console
         System.out.println("Ranking da População:");
         for (int i = 0; i < copiaPopulacaoRede.size(); i++) {
-            System.out.println((i + 1) + "º - " + copiaPopulacaoRede.get(i) + " | Pontuação: " + copiaPopulacaoRede.get(i).getPontuacao());
+            System.out.println((i + 1) + "º - " + copiaPopulacaoRede.get(i));
         }
         System.out.println("Fim Ranking:");
 
@@ -419,4 +544,90 @@ public class Main {
 
         return redesNeurais.get(0);
     }
+
+    private static void imprimeHistoricoFitness(List<Double> fitnessHistorico, int geracaoAtual) {
+        // Imprime o histórico de fitness da geração
+        System.out.println("\nHistórico de Fitness da Geração " + geracaoAtual + ":");
+        for (int i = 0; i < fitnessHistorico.size(); i++) {
+            System.out.println("Dinossauro " + (i + 1) + ": " + fitnessHistorico.get(i));
+        }
+        System.out.println("Média de Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).average().orElse(0.0)));
+        System.out.println("Maior Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
+        System.out.println("Menor Fitness: " + (fitnessHistorico.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
+        System.out.println();
+    }
+
+    //Recebe uma populacao (lista de redes neurais)
+    //Recebe um número quantidadeSelecionados que define quantos indivíduos retornar
+    public static List<RedeNeuralTeste2> selecaoRoleta(List<RedeNeuralTeste2> populacao, int quantidadeSelecionados) {
+        //Cria uma nova lista para guardar os indivíduos selecionados da roleta.
+        List<RedeNeuralTeste2> selecionados = new ArrayList<>();
+
+        //verifica se a população está vazia
+        if (populacao == null || populacao.isEmpty()) {
+            System.out.println("AVISO: População vazia na seleção por roleta!");
+            return selecionados;
+        }
+
+        // Cálculo da soma total dos valores de fitness (apenas positivos)
+        // Isso representa o "tamanho total da roleta". Cada indivíduo terá uma "fatia" proporcional ao seu fitness.
+        double somaFitness = 0.0;
+        System.out.println("\nFitness dos indivíduos na população:");
+        for (RedeNeuralTeste2 individuo : populacao) {
+            double fitness = individuo.getFitness();
+            System.out.println("Fitness: " + fitness);
+
+            // Fitness negativos são ignorados — não contribuem para a chance de serem selecionados
+            somaFitness += (fitness > 0) ? fitness : 0;
+        }
+        System.out.println("Soma total do fitness: " + somaFitness);
+
+        // Caso especial: se o fitness total for muito baixo (ou todos forem negativos/zero)
+        // Executa fallback usando seleção direta dos primeiros indivíduos da população
+        // Isso evita divisões por zero ou sorteios inválidos
+        if (somaFitness < 0.0001) {
+            System.out.println("AVISO: Fitness total muito baixo, usando seleção aleatória!");
+            for (int i = 0; i < quantidadeSelecionados && i < populacao.size(); i++) {
+                selecionados.add(populacao.get(i).clonar()); // importante usar clone para evitar referência direta
+            }
+
+        } else {
+            // Processo principal da seleção por roleta
+            Random rand = new Random();
+            for (int i = 0; i < quantidadeSelecionados; i++) {
+                // Gera um valor aleatório entre 0 e somaFitness, representando um "ponto" na roleta
+
+                double ponto = rand.nextDouble() * somaFitness;
+                double acumulado = 0.0;
+
+                // Percorre os indivíduos da população somando seus fitness até passar do "ponto"
+                // O indivíduo correspondente à posição onde o acumulado ultrapassa o ponto é selecionado
+                for (RedeNeuralTeste2 individuo : populacao) {
+                    double fitness = individuo.getFitness();
+                    if (fitness > 0) {
+                        acumulado += fitness;
+                        // Quando o acumulado passa do ponto, selecionamos o indivíduo
+                        if (acumulado >= ponto) {
+                            selecionados.add(individuo.clonar()); // necessário clonar para evitar efeitos colaterais
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Exibe o ranqueamento no console
+        System.out.println("\nRanking da População (Seleção por Roleta):");
+        if (selecionados.isEmpty()) {
+            System.out.println("AVISO: Nenhum indivíduo foi selecionado!");
+        } else {
+            for (int i = 0; i < selecionados.size(); i++) {
+                System.out.println((i + 1) + "º - " + selecionados.get(i));
+            }
+        }
+        System.out.println("Fim Ranking Roleta:\n");
+
+        return selecionados;
+    }
+
 }
