@@ -200,19 +200,19 @@ public class Main {
                                 }
 
                                 // Saída 1: Se > 0.5, abaixa
-                                if (saidas[1] > 0.5) {
+                                if (saidas[1] > 0) {
                                     playerIA.apertarAbaixar(); // Abaixar
                                     desafioVoador = true;
                                 }
 
                                 // Saída 2: Se > 0.5, vai para direita
-                                if (saidas[2] > 0.5) {
+                                if (saidas[2] > 0) {
                                     playerIA.apertarDireita();
                                     desafioMeteoro = true;
                                 }
 
                                 // Saída 3: Se > 0.5, vai para esquerda
-                                if (saidas[3] > 0.5) {
+                                if (saidas[3] > 0) {
                                     playerIA.apertarEsquerda();
                                     desafioMeteoro = true;
                                 }
