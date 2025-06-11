@@ -199,19 +199,19 @@ public class Main {
                                     desafioTerrestre = true;
                                 }
 
-                                // Saída 1: Se > 0.5, abaixa
+                                // Saída 1: Se > 0, abaixa; senão, não faz nada
                                 if (saidas[1] > 0) {
                                     playerIA.apertarAbaixar(); // Abaixar
                                     desafioVoador = true;
                                 }
 
-                                // Saída 2: Se > 0.5, vai para direita
+                                // Saída 2: Se > 0, vai para direita; senão, não faz nada
                                 if (saidas[2] > 0) {
                                     playerIA.apertarDireita();
                                     desafioMeteoro = true;
                                 }
 
-                                // Saída 3: Se > 0.5, vai para esquerda
+                                // Saída 3: Se > 0, vai para esquerda; senão, não faz nada
                                 if (saidas[3] > 0) {
                                     playerIA.apertarEsquerda();
                                     desafioMeteoro = true;

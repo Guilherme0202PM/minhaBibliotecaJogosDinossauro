@@ -86,8 +86,8 @@ public class RedeNeuralTeste2 {
                 soma += saidaOculta[j] * pesosOcultaSaida1[j][i];
                 // System.out.println("Cálculo da camada de saída soma depois: "+soma);
             }
-            saidaFinal[i] = sigmoid(soma);
-            // System.out.println("Cálculo da camada oculta sigmoid: "+saidaFinal[i]);
+            saidaFinal[i] = relu(soma);
+            // System.out.println("Cálculo da camada oculta relu: "+saidaFinal[i]);
 
         }
         return saidaFinal;
@@ -141,40 +141,40 @@ public class RedeNeuralTeste2 {
     private void inicializarPesos2() {
         for (int i = 0; i < numEntradasNeuronios; i++) {
             for (int j = 0; j < numOcultos1Neuronios; j++) {
-                pesosEntradaOculta1[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
+                // Gera número inteiro de 0 a 20000, divide por 10.0 e subtrai 1000.0
+                // Resultado: valores de -1000.0 a +1000.0 com precisão de 1 casa decimal
+                pesosEntradaOculta1[i][j] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
             }
         }
 
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             for (int j = 0; j < numSaidasNeuronios; j++) {
-                pesosOcultaSaida1[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
+                pesosOcultaSaida1[i][j] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
             }
         }
 
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             for (int j = 0; j < numOcultos2Neuronios; j++) {
-                pesosEntradaOculta2[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
+                pesosEntradaOculta2[i][j] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
             }
         }
         for (int i = 0; i < numOcultos2Neuronios; i++) {
             for (int j = 0; j < numSaidasNeuronios; j++) {
-                pesosOcultaSaida2[i][j] = globalRandom.nextDouble() * 2.0 - 1.0;
+                pesosOcultaSaida2[i][j] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
             }
         }
         for (int i = 0; i < numOcultos1Neuronios; i++) {
-            biasOculta1[i] = globalRandom.nextDouble() * 2.0 - 1.0;
+            biasOculta1[i] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
         }
         for (int i = 0; i < numOcultos2Neuronios; i++) {
-            biasOculta2[i] = globalRandom.nextDouble() * 2.0 - 1.0;
+            biasOculta2[i] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
         }
         for (int i = 0; i < numSaidasNeuronios; i++) {
-            biasSaida[i] = globalRandom.nextDouble() * 2.0 - 1.0;
+            biasSaida[i] = (globalRandom.nextInt(20001) / 10.0) - 1000.0;
         }
     }
 
     public double[] calcularSaida2(double[] entradas) {
-        double[] entradasNormalizadas = normalizarEntradas(entradas);
-
         double[] saidaOculta1 = new double[numOcultos1Neuronios];
         double[] saidaOculta2 = new double[numOcultos2Neuronios];
         double[] saidaFinal = new double[numSaidasNeuronios];
@@ -183,7 +183,7 @@ public class RedeNeuralTeste2 {
         for (int i = 0; i < numOcultos1Neuronios; i++) {
             double soma = biasOculta1[i];
             for (int j = 0; j < numEntradasNeuronios; j++) {
-                soma += entradasNormalizadas[j] * pesosEntradaOculta1[j][i];
+                soma += entradas[j] * pesosEntradaOculta1[j][i];
             }
             saidaOculta1[i] = relu(soma);
         }
@@ -211,25 +211,10 @@ public class RedeNeuralTeste2 {
                 soma += saidaOculta1[j] * pesosOcultaSaida1[j][i];
             }
 
-            saidaFinal[i] = sigmoid(soma);
+            saidaFinal[i] = relu(soma);
         }
 
         return saidaFinal;
-    }
-
-
-    private double[] normalizarEntradas(double[] entradas) {
-        double[] norm = new double[entradas.length];
-
-        norm[0] = entradas[0] / 600.0; // x Player
-        norm[1] = entradas[1] / 400.0; // y Player
-        norm[2] = entradas[2] / 600.0; // x Inimigo
-        norm[3] = entradas[3] / 400.0; // y Inimigo
-        norm[4] = entradas[4] / 200.0; // altura Inimigo
-        norm[5] = entradas[5] / 200.0; // largura Inimigo
-        norm[6] = entradas[6] / 10.0; // velocidade
-
-        return norm;
     }
 
     public void copiarPesos2(RedeNeuralTeste2 outraRede) {
@@ -645,7 +630,7 @@ public class RedeNeuralTeste2 {
             for (int i = 0; i < numOcultos1Neuronios; i++) {
                 saidas[j] += camadaOculta[i] * pesosOcultaSaida1[i][j];
             }
-            saidas[j] = sigmoid(saidas[j]);
+            saidas[j] = relu(saidas[j]);
         }
 
         // Backward pass (calcular erro e atualizar pesos)
