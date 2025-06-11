@@ -193,20 +193,27 @@ public class Main {
 //                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
 //                                }
 
-                                if (saidas[0] > 0.5) {
+                                // Saída 0: Se > 0, pula; senão, não faz nada
+                                if (saidas[0] > 0) {
                                     playerIA.apertarSaltar(); // Pular
                                     desafioTerrestre = true;
-                                } else {
+                                }
+
+                                // Saída 1: Se > 0.5, abaixa
+                                if (saidas[1] > 0.5) {
                                     playerIA.apertarAbaixar(); // Abaixar
                                     desafioVoador = true;
                                 }
 
-                                if (saidas[1] > 0.5) {
-                                    if (inimigo.getX() >= playerIA.getX()) {
-                                        playerIA.apertarEsquerda();
-                                    } else {
-                                        playerIA.apertarDireita();
-                                    }
+                                // Saída 2: Se > 0.5, vai para direita
+                                if (saidas[2] > 0.5) {
+                                    playerIA.apertarDireita();
+                                    desafioMeteoro = true;
+                                }
+
+                                // Saída 3: Se > 0.5, vai para esquerda
+                                if (saidas[3] > 0.5) {
+                                    playerIA.apertarEsquerda();
                                     desafioMeteoro = true;
                                 }
 
@@ -266,7 +273,7 @@ public class Main {
 
 
                                 // Atualiza fitness com pesos
-                                fitness = taxaDeAcerto * 10 - taxaDeErro * 15;
+                                fitness = taxaDeAcerto * 10 - taxaDeErro * 2;
                                 redeNeural.setFitness(fitness);
 
                                 // Verifica colisão com PlayerIA
@@ -417,7 +424,7 @@ public class Main {
                         melhorRede.getNumOcultos2Neuronios(), melhorRede.getNumSaidasNeuronios());
                 novaRede.copiarPesos2(melhorRede); // Cópia exata
             } else {
-                novaRede = new RedeNeuralTeste2(7, 14, 14, 2); // Criar nova rede com valores aleatórios
+                novaRede = new RedeNeuralTeste2(7, 14, 14, 4); // Criar nova rede com valores aleatórios
             }
 
             redesNeurais.add(novaRede);
