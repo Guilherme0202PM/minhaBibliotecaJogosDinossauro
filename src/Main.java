@@ -196,29 +196,34 @@ public class Main {
                                 // Saída 0: Se > 0, pula; senão, não faz nada
                                 if (saidas[0] > 0) {
                                     playerIA.apertarSaltar(); // Pular
+                                    playerIA.incrementarPontuacao(2); // 2 pontos para pular
+                                    redeNeural.incrementarPontuacao(2);
                                     desafioTerrestre = true;
                                 }
 
                                 // Saída 1: Se > 0, abaixa; senão, não faz nada
                                 if (saidas[1] > 0) {
                                     playerIA.apertarAbaixar(); // Abaixar
+                                    playerIA.incrementarPontuacao(2); // 2 pontos para abaixar
+                                    redeNeural.incrementarPontuacao(2);
                                     desafioVoador = true;
                                 }
 
                                 // Saída 2: Se > 0, vai para direita; senão, não faz nada
                                 if (saidas[2] > 0) {
                                     playerIA.apertarDireita();
+                                    playerIA.incrementarPontuacao(1); // 1 ponto para direita
+                                    redeNeural.incrementarPontuacao(1);
                                     desafioMeteoro = true;
                                 }
 
                                 // Saída 3: Se > 0, vai para esquerda; senão, não faz nada
                                 if (saidas[3] > 0) {
                                     playerIA.apertarEsquerda();
+                                    playerIA.incrementarPontuacao(1); // 1 ponto para esquerda
+                                    redeNeural.incrementarPontuacao(1);
                                     desafioMeteoro = true;
                                 }
-
-                                playerIA.incrementarPontuacao(1);
-                                redeNeural.incrementarPontuacao(1);
 
                                 /*
                                 System.out.println("Debugando identificador Inimigo "+ indentificadorInimigo);
@@ -627,39 +632,30 @@ public class Main {
         }
         System.out.println("Soma total do fitness: " + somaFitness);
 
-        // Caso especial: se o fitness total for muito baixo (ou todos forem negativos/zero)
-        // Executa fallback usando seleção direta dos primeiros indivíduos da população
-        // Isso evita divisões por zero ou sorteios inválidos
-        if (somaFitness < 0.0001) {
-            System.out.println("AVISO: Fitness total muito baixo, usando seleção aleatória!");
-            for (int i = 0; i < quantidadeSelecionados && i < populacao.size(); i++) {
-                selecionados.add(populacao.get(i).clonar()); // importante usar clone para evitar referência direta
-            }
 
-        } else {
-            // Processo principal da seleção por roleta
-            Random rand = new Random();
-            for (int i = 0; i < quantidadeSelecionados; i++) {
-                // Gera um valor aleatório entre 0 e somaFitness, representando um "ponto" na roleta
+        // Processo principal da seleção por roleta
+        Random rand = new Random();
+        for (int i = 0; i < quantidadeSelecionados; i++) {
+            // Gera um valor aleatório entre 0 e somaFitness, representando um "ponto" na roleta
 
-                double ponto = rand.nextDouble() * somaFitness;
-                double acumulado = 0.0;
+            double ponto = rand.nextDouble() * somaFitness;
+            double acumulado = 0.0;
 
-                // Percorre os indivíduos da população somando seus fitness até passar do "ponto"
-                // O indivíduo correspondente à posição onde o acumulado ultrapassa o ponto é selecionado
-                for (RedeNeuralTeste2 individuo : populacao) {
-                    double fitness = individuo.getFitness();
-                    if (fitness > 0) {
-                        acumulado += fitness;
-                        // Quando o acumulado passa do ponto, selecionamos o indivíduo
-                        if (acumulado >= ponto) {
-                            selecionados.add(individuo.clonar()); // necessário clonar para evitar efeitos colaterais
-                            break;
-                        }
+            // Percorre os indivíduos da população somando seus fitness até passar do "ponto"
+            // O indivíduo correspondente à posição onde o acumulado ultrapassa o ponto é selecionado
+            for (RedeNeuralTeste2 individuo : populacao) {
+                double fitness = individuo.getFitness();
+                if (fitness > 0) {
+                    acumulado += fitness;
+                    // Quando o acumulado passa do ponto, selecionamos o indivíduo
+                    if (acumulado >= ponto) {
+                        selecionados.add(individuo.clonar()); // necessário clonar para evitar efeitos colaterais
+                        break;
                     }
                 }
             }
         }
+
 
         // Exibe o ranqueamento no console
         System.out.println("\nRanking da População (Seleção por Roleta):");
