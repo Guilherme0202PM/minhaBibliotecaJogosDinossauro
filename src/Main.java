@@ -130,7 +130,7 @@ public class Main {
             for (int i = 0; i < maxInimigos; i++) {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
-                if (Cronometro >= (inimigosCriados + 1) * 150) {
+                if (Cronometro >= (inimigosCriados + 1) * 100) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     criarInimigos(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
@@ -209,6 +209,7 @@ public class Main {
                                     desafioVoador = true;
                                 }
 
+                                /*
                                 // Saída 2: Se > 0, vai para direita; senão, não faz nada
                                 if (saidas[2] > 0) {
                                     playerIA.apertarDireita();
@@ -224,6 +225,8 @@ public class Main {
                                     redeNeural.incrementarPontuacao(1);
                                     desafioMeteoro = true;
                                 }
+
+                                 */
 
                                 /*
                                 System.out.println("Debugando identificador Inimigo "+ indentificadorInimigo);
@@ -446,7 +449,7 @@ public class Main {
     private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
                                                    Movimento movimento, Sensores sensores, Som som, GameWindow janela,
                                                    List<RedeNeuralTeste2> redesSelecionadasRoleta) {
-        int numElite = 3; // Mantém os 3 melhores intactos
+        int numElite = numPlayers/5; // Mantém os 3 melhores intactos
 
         // Verifica se temos redes selecionadas suficientes
         if (redesSelecionadasRoleta == null || redesSelecionadasRoleta.isEmpty()) {
@@ -457,7 +460,7 @@ public class Main {
                 PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
                 player2List.add(playerIA);
                 janela.adicionarObjeto(playerIA);
-                redesNeurais.add(new RedeNeuralTeste2(7, 14, 14, 2));
+                redesNeurais.add(new RedeNeuralTeste2(7, 14, 14, 4));
             }
             return;
         }
@@ -469,17 +472,43 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            // Seleciona uma rede da lista de selecionadas (usando módulo para circular na lista)
-            RedeNeuralTeste2 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
-            RedeNeuralTeste2 novaRede = redeBase.clonar();
+            RedeNeuralTeste2 novaRede;
 
-            // Aplica mutação apenas nos não-elite
-            if (i >= numElite) {
-                novaRede.aplicarMutacaoPopulacional(List.of(novaRede));
+            if (i < numElite) {
+                // ELITISMO: Mantém os melhores indivíduos intactos
+                RedeNeuralTeste2 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
+                novaRede = redeBase.clonar();
+                System.out.println("Indivíduo " + (i + 1) + ": ELITE (cópia exata)");
+            } else {
+                // CROSSOVER: Cria novos indivíduos através de crossover
+                // Seleciona dois pais aleatórios da lista de selecionados
+                Random random = new Random();
+                int indicePai1 = random.nextInt(redesSelecionadasRoleta.size());
+                int indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
+
+                // Garante que os pais sejam diferentes
+                while (indicePai2 == indicePai1 && redesSelecionadasRoleta.size() > 1) {
+                    indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
+                }
+
+                RedeNeuralTeste2 pai1 = redesSelecionadasRoleta.get(indicePai1);
+                RedeNeuralTeste2 pai2 = redesSelecionadasRoleta.get(indicePai2);
+
+                // Realiza crossover entre os dois pais
+                novaRede = RedeNeuralTeste2.crossover(pai1, pai2);
+
+                // Aplica mutação no indivíduo criado pelo crossover
+                List<RedeNeuralTeste2> listaParaMutacao = new ArrayList<>();
+                listaParaMutacao.add(novaRede);
+                novaRede.aplicarMutacaoPopulacional(listaParaMutacao);
+
+                System.out.println("Indivíduo " + (i + 1) + ": CROSSOVER entre pais " + (indicePai1 + 1) + " e " + (indicePai2 + 1) + " + MUTAÇÃO");
             }
 
             redesNeurais.add(novaRede);
         }
+
+        System.out.println("População inicializada: " + numElite + " elite + " + (numPlayers - numElite) + " crossover");
     }
 
     private static int aumentaVelocidade(int Cronometro){

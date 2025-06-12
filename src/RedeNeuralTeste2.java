@@ -4,8 +4,8 @@ import java.util.List;
 
 public class RedeNeuralTeste2 {
     private int numEntradasNeuronios, numOcultos1Neuronios, numOcultos2Neuronios, numSaidasNeuronios;
-    private double taxaMutacaoPopulacional = 0.5; // 50% de chance de mutação na população
-    private double taxaMutacaoIndividual = 0.1; // 30% de diferença entre indivíduos
+    private double taxaMutacaoPopulacional = 0.2; // 50% de chance de mutação na população
+    private double taxaMutacaoIndividual = 0.5; // 30% de diferença entre indivíduos
     private static final Random globalRandom = new Random();
 
     private double[][] pesosEntradaOculta1; // Pesos da camada de entrada para a camada oculta
@@ -423,55 +423,11 @@ public class RedeNeuralTeste2 {
         // NORMALIZAÇÃO DOS PESOS PARA EVITAR SATURAÇÃO
         // Limita os pesos entre -1 e 1 para evitar que fiquem muito grandes
         // e causem problemas de saturação na rede neural
-        filho.normalizarPesos();
 
         return filho;
     }
 
-    private void normalizarPesos() {
-        // Limita os pesos entre -1 e 1 para evitar saturação
-        double maxPeso = 1.0;
-        double minPeso = -1.0;
 
-        // Normaliza pesos da primeira camada
-        for (int i = 0; i < numEntradasNeuronios; i++) {
-            for (int j = 0; j < numOcultos1Neuronios; j++) {
-                pesosEntradaOculta1[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosEntradaOculta1[i][j]));
-            }
-        }
-
-        // Normaliza pesos da segunda camada
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            for (int j = 0; j < numOcultos2Neuronios; j++) {
-                pesosEntradaOculta2[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosEntradaOculta2[i][j]));
-            }
-        }
-
-        // Normaliza pesos de skip connection
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            for (int j = 0; j < numSaidasNeuronios; j++) {
-                pesosOcultaSaida1[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosOcultaSaida1[i][j]));
-            }
-        }
-
-        // Normaliza pesos da camada de saída
-        for (int i = 0; i < numOcultos2Neuronios; i++) {
-            for (int j = 0; j < numSaidasNeuronios; j++) {
-                pesosOcultaSaida2[i][j] = Math.max(minPeso, Math.min(maxPeso, pesosOcultaSaida2[i][j]));
-            }
-        }
-
-        // Normaliza bias
-        for (int i = 0; i < numOcultos1Neuronios; i++) {
-            biasOculta1[i] = Math.max(minPeso, Math.min(maxPeso, biasOculta1[i]));
-        }
-        for (int i = 0; i < numOcultos2Neuronios; i++) {
-            biasOculta2[i] = Math.max(minPeso, Math.min(maxPeso, biasOculta2[i]));
-        }
-        for (int i = 0; i < numSaidasNeuronios; i++) {
-            biasSaida[i] = Math.max(minPeso, Math.min(maxPeso, biasSaida[i]));
-        }
-    }
 
     public void aplicarCrossoverComMelhor(RedeNeuralTeste2 melhor, List<RedeNeuralTeste2> populacao) {
         for (int i = 0; i < populacao.size(); i++) {
