@@ -209,7 +209,6 @@ public class Main {
                                     desafioVoador = true;
                                 }
 
-                                /*
                                 // Saída 2: Se > 0, vai para direita; senão, não faz nada
                                 if (saidas[2] > 0) {
                                     playerIA.apertarDireita();
@@ -225,8 +224,6 @@ public class Main {
                                     redeNeural.incrementarPontuacao(1);
                                     desafioMeteoro = true;
                                 }
-
-                                 */
 
                                 /*
                                 System.out.println("Debugando identificador Inimigo "+ indentificadorInimigo);
