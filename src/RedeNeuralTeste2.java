@@ -349,7 +349,19 @@ public class RedeNeuralTeste2 {
         }
     }
 
+    /**
+     * REALIZA CROSSOVER (REPRODUÇÃO) ENTRE DUAS REDES NEURAIS
+     *
+     * O crossover é um operador genético que combina características de dois "pais"
+     * para criar um "filho" com características de ambos. Neste caso, usa-se
+     * crossover aritmético (média dos pesos dos pais).
+     *
+     * @param pai1 Primeira rede neural (pai)
+     * @param pai2 Segunda rede neural (pai)
+     * @return Nova rede neural (filho) com pesos combinados dos pais
+     */
     public static RedeNeuralTeste2 crossover(RedeNeuralTeste2 pai1, RedeNeuralTeste2 pai2) {
+        // Cria uma nova rede neural (filho) com a mesma arquitetura dos pais
         RedeNeuralTeste2 filho = new RedeNeuralTeste2(
                 pai1.numEntradasNeuronios,
                 pai1.numOcultos1Neuronios,
@@ -357,46 +369,60 @@ public class RedeNeuralTeste2 {
                 pai1.numSaidasNeuronios
         );
 
-        // Crossover dos pesos da primeira camada
+        // CROSSOVER DOS PESOS DA PRIMEIRA CAMADA (Entrada → Oculta1)
+        // Para cada conexão entre neurônios de entrada e primeira camada oculta
         for (int i = 0; i < pai1.numEntradasNeuronios; i++) {
             for (int j = 0; j < pai1.numOcultos1Neuronios; j++) {
+                // Calcula a média aritmética dos pesos dos dois pais
+                // Isso combina características de ambos os pais
                 filho.pesosEntradaOculta1[i][j] = (pai1.pesosEntradaOculta1[i][j] + pai2.pesosEntradaOculta1[i][j]) / 2.0;
             }
         }
 
-        // Crossover dos pesos da segunda camada
+        // CROSSOVER DOS PESOS DA SEGUNDA CAMADA (Oculta1 → Oculta2)
+        // Para cada conexão entre primeira e segunda camada oculta
         for (int i = 0; i < pai1.numOcultos1Neuronios; i++) {
             for (int j = 0; j < pai1.numOcultos2Neuronios; j++) {
+                // Média aritmética dos pesos dos pais
                 filho.pesosEntradaOculta2[i][j] = (pai1.pesosEntradaOculta2[i][j] + pai2.pesosEntradaOculta2[i][j]) / 2.0;
             }
         }
 
-        // Crossover dos pesos de skip connection
+        // CROSSOVER DOS PESOS DE SKIP CONNECTION (Oculta1 → Saída)
+        // Conexões diretas da primeira camada oculta para a saída (atalhos)
         for (int i = 0; i < pai1.numOcultos1Neuronios; i++) {
             for (int j = 0; j < pai1.numSaidasNeuronios; j++) {
+                // Média aritmética dos pesos dos pais
                 filho.pesosOcultaSaida1[i][j] = (pai1.pesosOcultaSaida1[i][j] + pai2.pesosOcultaSaida1[i][j]) / 2.0;
             }
         }
 
-        // Crossover dos pesos da camada de saída
+        // CROSSOVER DOS PESOS DA CAMADA DE SAÍDA (Oculta2 → Saída)
+        // Para cada conexão entre segunda camada oculta e saída
         for (int i = 0; i < pai1.numOcultos2Neuronios; i++) {
             for (int j = 0; j < pai1.numSaidasNeuronios; j++) {
+                // Média aritmética dos pesos dos pais
                 filho.pesosOcultaSaida2[i][j] = (pai1.pesosOcultaSaida2[i][j] + pai2.pesosOcultaSaida2[i][j]) / 2.0;
             }
         }
 
-        // Crossover dos bias
+        // CROSSOVER DOS BIASES (VIÉSES)
+        // Bias da primeira camada oculta
         for (int i = 0; i < pai1.numOcultos1Neuronios; i++) {
             filho.biasOculta1[i] = (pai1.biasOculta1[i] + pai2.biasOculta1[i]) / 2.0;
         }
+        // Bias da segunda camada oculta
         for (int i = 0; i < pai1.numOcultos2Neuronios; i++) {
             filho.biasOculta2[i] = (pai1.biasOculta2[i] + pai2.biasOculta2[i]) / 2.0;
         }
+        // Bias da camada de saída
         for (int i = 0; i < pai1.numSaidasNeuronios; i++) {
             filho.biasSaida[i] = (pai1.biasSaida[i] + pai2.biasSaida[i]) / 2.0;
         }
 
-        // Normalização dos pesos para evitar saturação
+        // NORMALIZAÇÃO DOS PESOS PARA EVITAR SATURAÇÃO
+        // Limita os pesos entre -1 e 1 para evitar que fiquem muito grandes
+        // e causem problemas de saturação na rede neural
         filho.normalizarPesos();
 
         return filho;

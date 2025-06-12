@@ -130,7 +130,7 @@ public class Main {
             for (int i = 0; i < maxInimigos; i++) {
 
                 // Criar inimigos a cada 200 unidades do cronômetro, sem depender de 'i'
-                if (Cronometro >= (inimigosCriados + 1) * 50) {
+                if (Cronometro >= (inimigosCriados + 1) * 150) {
 
                     velocidadeInimigos = aumentaVelocidade(Cronometro);
                     criarInimigos(inimigos, movimento, sensores, janela, Cronometro, velocidadeInimigos);
