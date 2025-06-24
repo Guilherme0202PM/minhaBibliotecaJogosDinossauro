@@ -1,0 +1,115 @@
+================================================================================
+                    CONFIGURAÇÃO DA REDE NEURAL - GUIA DE ALTERNAÇÃO
+================================================================================
+
+Este arquivo contém todas as informações necessárias para alternar entre
+configurações de uma camada oculta e duas camadas ocultas na rede neural.
+
+================================================================================
+                           UMA CAMADA OCULTA
+================================================================================
+
+Configuração: 4 entradas → 4 neurônios ocultos → 2 saídas
+
+LINHAS A ALTERAR NO ARQUIVO src/Main.java:
+
+1. Linha 273 - Construtor da rede neural:
+   RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 4, 2);
+
+2. Linha 274 - Método de copiar pesos:
+   novaRede.copiarPesos(melhorRede);
+
+3. Linha 151 - Método de ajustar pesos:
+   redeNeural.ajustarPesosPorCondicao(entradas, fatorCondicao);
+
+4. Linha 154 - Método de calcular saída:
+   double[] saidas = redeNeural.calcularSaida(entradas);
+
+================================================================================
+                          DUAS CAMADAS OCULTAS
+================================================================================
+
+Configuração: 4 entradas → 14 neurônios ocultos1 → 20 neurônios ocultos2 → 8 saídas
+
+LINHAS A ALTERAR NO ARQUIVO src/Main.java:
+
+1. Linha 273 - Construtor da rede neural:
+   RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 14, 20, 8);
+
+2. Linha 274 - Método de copiar pesos:
+   novaRede.copiarPesos2(melhorRede);
+
+3. Linha 151 - Método de ajustar pesos:
+   redeNeural.ajustarPesosPorCondicao2(entradas, fatorCondicao);
+
+4. Linha 154 - Método de calcular saída:
+   double[] saidas = redeNeural.calcularSaida2(entradas);
+
+================================================================================
+                           RESUMO DAS MUDANÇAS
+================================================================================
+
+| Linha | Uma Camada | Duas Camadas |
+|-------|------------|--------------|
+| 273   | new RedeNeuralTeste2(4, 4, 2) | new RedeNeuralTeste2(4, 14, 20, 8) |
+| 274   | copiarPesos(melhorRede) | copiarPesos2(melhorRede) |
+| 151   | ajustarPesosPorCondicao | ajustarPesosPorCondicao2 |
+| 154   | calcularSaida(entradas) | calcularSaida2(entradas) |
+
+================================================================================
+                           DICA DE IMPLEMENTAÇÃO
+================================================================================
+
+Para facilitar a alternância, você pode adicionar comentários no código:
+
+// === CONFIGURAÇÃO DA REDE NEURAL ===
+// Para uma camada oculta: (4, 4, 2)
+// Para duas camadas ocultas: (4, 14, 20, 8)
+RedeNeuralTeste2 novaRede = new RedeNeuralTeste2(4, 4, 2);
+
+// Para uma camada: copiarPesos, ajustarPesosPorCondicao, calcularSaida
+// Para duas camadas: copiarPesos2, ajustarPesosPorCondicao2, calcularSaida2
+
+================================================================================
+                           MÉTODOS DISPONÍVEIS
+================================================================================
+
+UMA CAMADA OCULTA:
+- calcularSaida(double[] entradas)
+- copiarPesos(RedeNeuralTeste2 outraRede)
+- ajustarPesosPorCondicao(double[] entradas, double fator)
+- aplicarMutacaoPopulacional(List<RedeNeuralTeste2> populacao)
+
+DUAS CAMADAS OCULTAS:
+- calcularSaida2(double[] entradas)
+- copiarPesos2(RedeNeuralTeste2 outraRede)
+- ajustarPesosPorCondicao2(double[] entradas, double fator)
+- aplicarMutacaoPopulacional2(List<RedeNeuralTeste2> populacao)
+
+================================================================================
+                           NOTAS IMPORTANTES
+================================================================================
+
+1. Sempre altere TODAS as 4 linhas quando trocar de configuração
+2. Os métodos com "2" no final são específicos para duas camadas ocultas
+3. Os métodos sem "2" são específicos para uma camada oculta
+4. A rede neural com duas camadas ocultas tem mais parâmetros e pode ser mais complexa
+5. A rede neural com uma camada oculta é mais simples e pode ser mais rápida
+
+================================================================================
+                           EXEMPLO DE USO
+================================================================================
+
+Para testar com uma camada oculta:
+1. Altere a linha 273 para: new RedeNeuralTeste2(4, 4, 2)
+2. Altere a linha 274 para: copiarPesos(melhorRede)
+3. Altere a linha 151 para: ajustarPesosPorCondicao
+4. Altere a linha 154 para: calcularSaida(entradas)
+
+Para testar com duas camadas ocultas:
+1. Altere a linha 273 para: new RedeNeuralTeste2(4, 14, 20, 8)
+2. Altere a linha 274 para: copiarPesos2(melhorRede)
+3. Altere a linha 151 para: ajustarPesosPorCondicao2
+4. Altere a linha 154 para: calcularSaida2(entradas)
+
+================================================================================ 
