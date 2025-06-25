@@ -1,15 +1,15 @@
 public class RedeNeuralDesempenho {
-    private RedeNeuralTeste2 redeNeural;
+    private RedeNeuralTeste3 redeNeural;
     private double pontuacao;
     private int cronometro;
 
-    public RedeNeuralDesempenho(RedeNeuralTeste2 redeNeural, int cronometro) {
+    public RedeNeuralDesempenho(RedeNeuralTeste3 redeNeural, int cronometro) {
         this.redeNeural = redeNeural;
         this.pontuacao = redeNeural.getPontuacao();
         this.cronometro = cronometro;
     }
 
-    public RedeNeuralTeste2 getRedeNeural() {
+    public RedeNeuralTeste3 getRedeNeural() {
         return redeNeural;
     }
 

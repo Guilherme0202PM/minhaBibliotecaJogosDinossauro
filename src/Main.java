@@ -7,7 +7,6 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-
         GameWindow janela = new GameWindow();
         Som som = new Som("Meow.wav");
 
@@ -33,7 +32,7 @@ public class Main {
 
         // Defina um limite adequado para a proximidade, essa eh a area do "radar"
         int limiteProximidade = 80;
-        RedeNeuralTeste2 melhorRede = null;
+        RedeNeuralTeste3 melhorRede = null;
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
@@ -76,15 +75,15 @@ public class Main {
         // Lista que coleta os PlayerIA apos uma geracao, geralmente para ordena-los por pontuacao ou comparar desempenho
         List<PlayerIA> coleta = new ArrayList<>(); //Coleta pontuacoes de PlayerIA
         // Lista com todas as redes neurais ativas da geracao atual (cada PlayerIA tem uma rede neural)
-        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
+        List<RedeNeuralTeste3> redesNeurais = new ArrayList<>();
         // Lista para armazenar redes neurais de geracoes anteriores ou as melhores da geracao anterior
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
+        List<RedeNeuralTeste3> redesNeuraisArmazenadas = new ArrayList<>();
         // Outra lista de backup das redes anteriores (usada para comparacoes ou fallback)
-        List<RedeNeuralTeste2> redesNeuraisSelecionadaRoleta = new ArrayList<>();
+        List<RedeNeuralTeste3> redesNeuraisSelecionadaRoleta = new ArrayList<>();
         // Lista com as redes neurais de melhor desempenho ao longo das geracoes (especie de hall da fama)
         List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
         // Log das melhores redes ja encontradas, para fins de visualizacao ou reexecucao
-        List<RedeNeuralTeste2> LogMelhoresRedes = new ArrayList<>();
+        List<RedeNeuralTeste3> LogMelhoresRedes = new ArrayList<>();
         // Lista para armazenar os fitness de todos os dinossauros que morreram
         List<Double> fitnessHistorico = new ArrayList<>();
 
@@ -159,7 +158,7 @@ public class Main {
                             // Analisar proximidade e usar rede neural
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
                                 double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
-                                RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
+                                RedeNeuralTeste3 redeNeural = redesNeurais.get(j);
 
                                 // Ajusta os pesos da rede neural dependendo do inimigo
                                 //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
@@ -188,7 +187,7 @@ public class Main {
                                     indentificadorInimigo = 3; //InimigoMeteoro
                                 }
 
-                                double[] saidas = redeNeural.calcularSaida2(entradas);
+                                double[] saidas = redeNeural.calcularSaida(entradas);
 
 //                                for (int p = 0; p < saidas.length; p++) {
 //                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
@@ -286,7 +285,6 @@ public class Main {
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
                                     coleta.add(playerIA);
                                     redesNeuraisArmazenadas.add(redesNeurais.get(j));
-                                    //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
                                     // Armazena o fitness antes de remover o dinossauro
                                     fitnessHistorico.add(redeNeural.getFitness());
                                     janela.removerObjeto(playerIA);
@@ -413,9 +411,9 @@ public class Main {
     }
 
     // Dentro da sua funcao inicializarPopulacao, aplique essa lógica para respeitar o elitismo absoluto:
-    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
-                                             RedeNeuralTeste2 melhorRede) {
+                                             RedeNeuralTeste3 melhorRede) {
         int numElite = numPlayers/5;
 
         for (int i = 0; i < numPlayers; i++) {
@@ -424,13 +422,13 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede;
+            RedeNeuralTeste3 novaRede;
             if (melhorRede != null && i < numElite) {
-                novaRede = new RedeNeuralTeste2(melhorRede.getNumEntradasNeuronios(), melhorRede.getNumOcultos1Neuronios(),
+                novaRede = new RedeNeuralTeste3(melhorRede.getNumEntradasNeuronios(), melhorRede.getNumOcultos1Neuronios(),
                         melhorRede.getNumOcultos2Neuronios(), melhorRede.getNumSaidasNeuronios());
                 novaRede.copiarPesos2(melhorRede); // Cópia exata
             } else {
-                novaRede = new RedeNeuralTeste2(7, 14, 14, 4); // Criar nova rede com valores aleatórios
+                novaRede = new RedeNeuralTeste3(7, 14, 14, 4); // Criar nova rede com valores aleatórios
             }
 
             redesNeurais.add(novaRede);
@@ -438,15 +436,15 @@ public class Main {
 
         // Aplicar crossover e mutação só nos descendentes (a partir do índice numElite)
         if (melhorRede != null) {
-            List<RedeNeuralTeste2> descendentes = redesNeurais.subList(numElite, redesNeurais.size());
+            List<RedeNeuralTeste3> descendentes = redesNeurais.subList(numElite, redesNeurais.size());
             melhorRede.aplicarCrossoverComMelhor(melhorRede, descendentes);
             melhorRede.aplicarMutacaoPopulacional(descendentes);
         }
     }
 
-    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
                                                    Movimento movimento, Sensores sensores, Som som, GameWindow janela,
-                                                   List<RedeNeuralTeste2> redesSelecionadasRoleta) {
+                                                   List<RedeNeuralTeste3> redesSelecionadasRoleta) {
         int numElite = numPlayers/5; // Mantém os 3 melhores intactos
 
         // Verifica se temos redes selecionadas suficientes
@@ -458,7 +456,7 @@ public class Main {
                 PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
                 player2List.add(playerIA);
                 janela.adicionarObjeto(playerIA);
-                redesNeurais.add(new RedeNeuralTeste2(7, 14, 14, 4));
+                redesNeurais.add(new RedeNeuralTeste3(7, 14, 14, 4));
             }
             return;
         }
@@ -470,11 +468,11 @@ public class Main {
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede;
+            RedeNeuralTeste3 novaRede;
 
             if (i < numElite) {
                 // ELITISMO: Mantém os melhores indivíduos intactos
-                RedeNeuralTeste2 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
+                RedeNeuralTeste3 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
                 novaRede = redeBase.clonar();
                 System.out.println("Indivíduo " + (i + 1) + ": ELITE (cópia exata)");
             } else {
@@ -489,14 +487,14 @@ public class Main {
                     indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
                 }
 
-                RedeNeuralTeste2 pai1 = redesSelecionadasRoleta.get(indicePai1);
-                RedeNeuralTeste2 pai2 = redesSelecionadasRoleta.get(indicePai2);
+                RedeNeuralTeste3 pai1 = redesSelecionadasRoleta.get(indicePai1);
+                RedeNeuralTeste3 pai2 = redesSelecionadasRoleta.get(indicePai2);
 
                 // Realiza crossover entre os dois pais
-                novaRede = RedeNeuralTeste2.crossover(pai1, pai2);
+                novaRede = RedeNeuralTeste3.crossover(pai1, pai2);
 
                 // Aplica mutação no indivíduo criado pelo crossover
-                List<RedeNeuralTeste2> listaParaMutacao = new ArrayList<>();
+                List<RedeNeuralTeste3> listaParaMutacao = new ArrayList<>();
                 listaParaMutacao.add(novaRede);
                 novaRede.aplicarMutacaoPopulacional(listaParaMutacao);
 
@@ -586,7 +584,7 @@ public class Main {
         return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
     }
 
-    public static ArrayList<RedeNeuralTeste2> selecaoRedeNeural(List<RedeNeuralTeste2> redesNeurais, int numSelecionados) {
+    public static ArrayList<RedeNeuralTeste3> selecaoRedeNeural(List<RedeNeuralTeste3> redesNeurais, int numSelecionados) {
         // Verifica se a população está vazia
         if (redesNeurais == null || redesNeurais.isEmpty()) {
             System.out.println("A população está vazia.");
@@ -594,7 +592,7 @@ public class Main {
         }
 
         // Copia a população para evitar modificar a lista original
-        List<RedeNeuralTeste2> copiaPopulacaoRede = new ArrayList<>(redesNeurais);
+        List<RedeNeuralTeste3> copiaPopulacaoRede = new ArrayList<>(redesNeurais);
 
         // Ordena a cópia com base na pontuação (do maior para o menor)
         copiaPopulacaoRede.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
@@ -614,7 +612,7 @@ public class Main {
     }
 
 
-    public static RedeNeuralTeste2 selecaoMelhorRede(List<RedeNeuralTeste2> redesNeurais) {
+    public static RedeNeuralTeste3 selecaoMelhorRede(List<RedeNeuralTeste3> redesNeurais) {
         if (redesNeurais.isEmpty()) {
             return null;
         }
@@ -636,9 +634,9 @@ public class Main {
 
     //Recebe uma populacao (lista de redes neurais)
     //Recebe um número quantidadeSelecionados que define quantos indivíduos retornar
-    public static List<RedeNeuralTeste2> selecaoRoleta(List<RedeNeuralTeste2> populacao, int quantidadeSelecionados) {
+    public static List<RedeNeuralTeste3> selecaoRoleta(List<RedeNeuralTeste3> populacao, int quantidadeSelecionados) {
         //Cria uma nova lista para guardar os indivíduos selecionados da roleta.
-        List<RedeNeuralTeste2> selecionados = new ArrayList<>();
+        List<RedeNeuralTeste3> selecionados = new ArrayList<>();
 
         //verifica se a população está vazia
         if (populacao == null || populacao.isEmpty()) {
@@ -650,7 +648,7 @@ public class Main {
         // Isso representa o "tamanho total da roleta". Cada indivíduo terá uma "fatia" proporcional ao seu fitness.
         double somaFitness = 0.0;
         System.out.println("\nFitness dos indivíduos na população:");
-        for (RedeNeuralTeste2 individuo : populacao) {
+        for (RedeNeuralTeste3 individuo : populacao) {
             double fitness = individuo.getFitness();
             System.out.println("Fitness: " + fitness);
 
@@ -670,7 +668,7 @@ public class Main {
 
             // Percorre os indivíduos da população somando seus fitness até passar do "ponto"
             // O indivíduo correspondente à posição onde o acumulado ultrapassa o ponto é selecionado
-            for (RedeNeuralTeste2 individuo : populacao) {
+            for (RedeNeuralTeste3 individuo : populacao) {
                 double fitness = individuo.getFitness();
                 if (fitness > 0) {
                     acumulado += fitness;
