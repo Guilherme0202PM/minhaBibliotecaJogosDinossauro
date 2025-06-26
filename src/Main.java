@@ -26,7 +26,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 5;
+        int totalGeracao = 30;
 
         //Controle Inimigos
         int maxInimigos = 100;
@@ -433,7 +433,7 @@ public class Main {
                         melhorRede.getNumOcultos2Neuronios(), melhorRede.getNumSaidasNeuronios());
                 novaRede.copiarPesos2(melhorRede); // Cópia exata
             } else {
-                novaRede = new RedeNeuralTeste3(7, 14, 14, 4); // Criar nova rede com valores aleatórios
+                novaRede = new RedeNeuralTeste3(7, 4, 14, 14); // Criar nova rede com valores aleatórios
             }
 
             redesNeurais.add(novaRede);
@@ -728,7 +728,7 @@ public class Main {
                 writer.println("Tipo de Seleção: Roleta");
                 writer.println("Elitismo: 20% da população (melhores indivíduos preservados)");
                 writer.println("Crossover: Média aritmética dos pesos dos pais");
-                writer.println("Arquitetura da Rede Neural: 7→[14, 4]→14");
+                writer.println("Arquitetura da Rede Neural: 7→[14, 14]→4");
                 writer.println();
 
                 writer.println("=== RANKING DAS MELHORES REDES POR GERAÇÃO ===");
