@@ -3,6 +3,8 @@ import java.awt.*;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
+import java.nio.file.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -400,6 +402,9 @@ public class Main {
             System.out.println((i + 1) + "º - " + redesNeuraisMelhorDesempenho.get(i));
         }
 
+        // Salva os resultados em arquivo
+        salvarResultadosEmArquivo(redesNeuraisMelhorDesempenho, totalGeracao);
+
         System.out.println("Colata das informações de cada rede " + totalGeracao + " gerações.");
         for (int i = 0; i < LogMelhoresRedes.size(); i++) {
             System.out.println((i + 1) + "ª melhor rede:");
@@ -694,6 +699,67 @@ public class Main {
         System.out.println("Fim Ranking Roleta:\n");
 
         return selecionados;
+    }
+
+    // Método para salvar resultados em arquivo com renomeação automática
+    private static void salvarResultadosEmArquivo(List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho, int totalGeracao) {
+        try {
+            // Nome base do arquivo
+            String nomeBase = "Resultados";
+            String extensao = ".txt";
+            String nomeArquivo = nomeBase + extensao;
+
+            // Verifica se o arquivo já existe e renomeia se necessário
+            int contador = 1;
+            while (Files.exists(Paths.get(nomeArquivo))) {
+                nomeArquivo = nomeBase + contador + extensao;
+                contador++;
+            }
+
+            // Cria o arquivo e escreve os resultados
+            try (PrintWriter writer = new PrintWriter(new FileWriter(nomeArquivo))) {
+                writer.println("=== RESULTADOS DA SIMULAÇÃO DE REDES NEURAIS ===");
+                writer.println("Data/Hora: " + java.time.LocalDateTime.now());
+                writer.println("Simulação concluída após " + totalGeracao + " gerações.");
+                writer.println();
+
+                writer.println("=== RANKING DAS MELHORES REDES POR GERAÇÃO ===");
+                for (int i = 0; i < redesNeuraisMelhorDesempenho.size(); i++) {
+                    writer.println((i + 1) + "º - " + redesNeuraisMelhorDesempenho.get(i));
+                }
+
+                writer.println();
+                writer.println("=== RESUMO ESTATÍSTICO ===");
+
+                // Calcula estatísticas
+                double maiorFitness = redesNeuraisMelhorDesempenho.stream()
+                        .mapToDouble(RedeNeuralDesempenho::getFitness)
+                        .max()
+                        .orElse(0.0);
+
+                double menorFitness = redesNeuraisMelhorDesempenho.stream()
+                        .mapToDouble(RedeNeuralDesempenho::getFitness)
+                        .min()
+                        .orElse(0.0);
+
+                double mediaFitness = redesNeuraisMelhorDesempenho.stream()
+                        .mapToDouble(RedeNeuralDesempenho::getFitness)
+                        .average()
+                        .orElse(0.0);
+
+                writer.println("Maior Fitness: " + maiorFitness);
+                writer.println("Menor Fitness: " + menorFitness);
+                writer.println("Média de Fitness: " + String.format("%.2f", mediaFitness));
+
+                writer.println();
+                writer.println("=== FIM DOS RESULTADOS ===");
+            }
+
+            System.out.println("Resultados salvos em: " + nomeArquivo);
+
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar arquivo: " + e.getMessage());
+        }
     }
 
 }

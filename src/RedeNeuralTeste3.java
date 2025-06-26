@@ -168,12 +168,7 @@ public class RedeNeuralTeste3 {
         pontuacao += valor;
     }
 
-    // Método toString para debug
-    @Override
-    public String toString() {
-        return "RedeNeuralTeste3 | Pontuação: " + pontuacao + " | Fitness: " + fitness +
-                " | Arquitetura: " + numEntradas + "→" + Arrays.toString(numOcultos) + "→" + numSaidas;
-    }
+
 
     // Métodos para obter informações da arquitetura
     public int getNumEntradas() {
