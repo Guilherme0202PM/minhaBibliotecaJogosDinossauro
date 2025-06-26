@@ -701,7 +701,7 @@ public class Main {
         return selecionados;
     }
 
-    // Método para salvar resultados em arquivo com renomeação automática
+    // Metodo para salvar resultados em arquivo com renomeação automática
     private static void salvarResultadosEmArquivo(List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho, int totalGeracao) {
         try {
             // Nome base do arquivo
@@ -721,6 +721,14 @@ public class Main {
                 writer.println("=== RESULTADOS DA SIMULAÇÃO DE REDES NEURAIS ===");
                 writer.println("Data/Hora: " + java.time.LocalDateTime.now());
                 writer.println("Simulação concluída após " + totalGeracao + " gerações.");
+                writer.println();
+
+                writer.println("=== CONFIGURAÇÕES DO ALGORITMO GENÉTICO ===");
+                writer.println("Taxa de Mutação: 10% (0.1)");
+                writer.println("Tipo de Seleção: Roleta");
+                writer.println("Elitismo: 20% da população (melhores indivíduos preservados)");
+                writer.println("Crossover: Média aritmética dos pesos dos pais");
+                writer.println("Arquitetura da Rede Neural: 7→[14, 4]→14");
                 writer.println();
 
                 writer.println("=== RANKING DAS MELHORES REDES POR GERAÇÃO ===");
@@ -752,6 +760,13 @@ public class Main {
                 writer.println("Média de Fitness: " + String.format("%.2f", mediaFitness));
 
                 writer.println();
+                writer.println("=== ANÁLISE DA EVOLUÇÃO ===");
+                writer.println("A mutação foi aplicada em 80% da população a cada geração.");
+                writer.println("Cada peso da rede neural tinha 10% de chance de ser mutado.");
+                writer.println("A mutação adicionava um valor aleatório seguindo distribuição normal (Gaussiana).");
+                writer.println("Os 20% melhores indivíduos (elite) foram preservados sem mutação.");
+                writer.println();
+
                 writer.println("=== FIM DOS RESULTADOS ===");
             }
 
