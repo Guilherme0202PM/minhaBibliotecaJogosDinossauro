@@ -760,12 +760,6 @@ public class Main {
                 writer.println("Média de Fitness: " + String.format("%.2f", mediaFitness));
 
                 writer.println();
-                writer.println("=== ANÁLISE DA EVOLUÇÃO ===");
-                writer.println("A mutação foi aplicada em 80% da população a cada geração.");
-                writer.println("Cada peso da rede neural tinha 10% de chance de ser mutado.");
-                writer.println("A mutação adicionava um valor aleatório seguindo distribuição normal (Gaussiana).");
-                writer.println("Os 20% melhores indivíduos (elite) foram preservados sem mutação.");
-                writer.println();
 
                 writer.println("=== FIM DOS RESULTADOS ===");
             }
