@@ -10,9 +10,11 @@ public class RedeNeuralTeste3 {
     private static final Random random = new Random();
     public double taxaMutacao = 0.1;
 
-    // Novos campos para fitness e pontuação
+    // Novos campos para fitness, pontuação, taxa de acerto e erro
     private double fitness;
     private int pontuacao;
+    private double taxaDeAcerto;
+    private double taxaDeErro;
 
     public RedeNeuralTeste3(int numEntradas, int numSaidas, int... numOcultos) {
         // Validação básica
@@ -33,6 +35,8 @@ public class RedeNeuralTeste3 {
         this.numOcultos = numOcultos;
         this.fitness = 0.0;
         this.pontuacao = 0;
+        this.taxaDeAcerto = 0.0;
+        this.taxaDeErro = 0.0;
 
         inicializarEstruturas();
         inicializarPesosAleatorios();
@@ -151,7 +155,7 @@ public class RedeNeuralTeste3 {
         setDNAFromVector(outro.getDNAAsVector());
     }
 
-    // Métodos de fitness e pontuação
+    // Métodos de fitness, pontuação, taxa de acerto e erro
     public double getFitness() {
         return fitness;
     }
@@ -168,7 +172,23 @@ public class RedeNeuralTeste3 {
         pontuacao += valor;
     }
 
-
+    // Métodos para taxa de acerto e erro
+    public void incrementarAcerto() {
+        taxaDeAcerto++;
+    }
+    public void incrementarErro() {
+        taxaDeErro++;
+    }
+    public double getTaxaDeAcerto() {
+        return taxaDeAcerto;
+    }
+    public double getTaxaDeErro() {
+        return taxaDeErro;
+    }
+    public void resetarTaxas() {
+        taxaDeAcerto = 0.0;
+        taxaDeErro = 0.0;
+    }
 
     // Métodos para obter informações da arquitetura
     public int getNumEntradas() {
@@ -213,6 +233,8 @@ public class RedeNeuralTeste3 {
         clone.copiarPesos(this);
         clone.fitness = this.fitness;
         clone.pontuacao = this.pontuacao;
+        clone.taxaDeAcerto = this.taxaDeAcerto;
+        clone.taxaDeErro = this.taxaDeErro;
         return clone;
     }
 

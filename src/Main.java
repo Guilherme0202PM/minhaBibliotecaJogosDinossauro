@@ -49,8 +49,6 @@ public class Main {
 
 
         //Taxas de controle e Acertos
-        double taxaDeAcerto = 0;
-        double taxaDeErro = 0;
         double fitness = 0;
 
         double taxaInimigoTerrestre = 0;
@@ -273,22 +271,23 @@ public class Main {
 
                                 // Atualiza taxas
                                 if (acertou == true) {
-                                    taxaDeAcerto++;
+                                    redeNeural.incrementarAcerto();
                                 } else {
-                                    taxaDeErro++;
+                                    redeNeural.incrementarErro();
                                 }
 
-
                                 // Atualiza fitness com pesos
-                                fitness = taxaDeAcerto * 10 - taxaDeErro * 2;
+                                fitness = redeNeural.getTaxaDeAcerto() * 10 - redeNeural.getTaxaDeErro() * 2;
                                 redeNeural.setFitness(fitness);
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
                                     coleta.add(playerIA);
-                                    redesNeuraisArmazenadas.add(redesNeurais.get(j));
+                                    redesNeuraisArmazenadas.add(redeNeural);
                                     // Armazena o fitness antes de remover o dinossauro
                                     fitnessHistorico.add(redeNeural.getFitness());
+                                    // Salva ou imprime taxa de acerto e erro ao eliminar
+                                    System.out.println("Dinossauro eliminado: Fitness=" + redeNeural.getFitness() + ", Acertos=" + redeNeural.getTaxaDeAcerto() + ", Erros=" + redeNeural.getTaxaDeErro());
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
@@ -387,6 +386,11 @@ public class Main {
                         janela.removerObjeto(inimigo);
                     }
                     inimigos.clear();  // Limpa a lista de inimigos
+
+                    // Resetar taxas de acerto/erro das redes selecionadas para nova geração
+                    for (RedeNeuralTeste3 rede : redesNeuraisSelecionadaRoleta) {
+                        rede.resetarTaxas();
+                    }
                 }
             }
             try {
@@ -461,7 +465,7 @@ public class Main {
                 PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
                 player2List.add(playerIA);
                 janela.adicionarObjeto(playerIA);
-                redesNeurais.add(new RedeNeuralTeste3(7, 14, 14, 4));
+                redesNeurais.add(new RedeNeuralTeste3(7, 4, 14, 14));
             }
             return;
         }
