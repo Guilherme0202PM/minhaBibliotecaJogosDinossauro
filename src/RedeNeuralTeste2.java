@@ -727,5 +727,5 @@ public class RedeNeuralTeste2 {
         };
     }
 
-    
+
 }

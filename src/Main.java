@@ -24,7 +24,7 @@ public class Main {
         int numPlayers = 20; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
-        int totalGeracao = 30;
+        int totalGeracao = 5;
 
         //Controle Inimigos
         int maxInimigos = 100;
