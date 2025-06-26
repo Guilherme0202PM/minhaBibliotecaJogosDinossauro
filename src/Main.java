@@ -56,11 +56,6 @@ public class Main {
         double taxaInimigoMeteoro = 0;
 
         //Vou usar para identificar se o dinossauro executou a ação correta, com base nos 3 inimigos/desafio
-        boolean desafioTerrestre = false;
-        boolean desafioVoador = false;
-        boolean desafioMeteoro = false;
-        boolean acertou = false;
-
         int indentificadorInimigo = 0;
 
 
@@ -166,9 +161,6 @@ public class Main {
                                 double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
                                 double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
                                 indentificadorInimigo = 0;
-                                desafioMeteoro = false;
-                                desafioVoador = false;
-                                desafioTerrestre = false;
 
 //                                0 0 Voa
 //                                0 1 Tere
@@ -198,7 +190,7 @@ public class Main {
                                     playerIA.apertarSaltar(); // Pular
                                     playerIA.incrementarPontuacao(2); // 2 pontos para pular
                                     redeNeural.incrementarPontuacao(2);
-                                    desafioTerrestre = true;
+                                    redeNeural.marcarDesafioTerrestre();
                                 }
 
                                 // Saída 1: Se > 0, abaixa; senão, não faz nada
@@ -206,7 +198,7 @@ public class Main {
                                     playerIA.apertarAbaixar(); // Abaixar
                                     playerIA.incrementarPontuacao(2); // 2 pontos para abaixar
                                     redeNeural.incrementarPontuacao(2);
-                                    desafioVoador = true;
+                                    redeNeural.marcarDesafioVoador();
                                 }
 
                                 // Saída 2: Se > 0, vai para direita; senão, não faz nada
@@ -214,7 +206,7 @@ public class Main {
                                     playerIA.apertarDireita();
                                     playerIA.incrementarPontuacao(1); // 1 ponto para direita
                                     redeNeural.incrementarPontuacao(1);
-                                    desafioMeteoro = true;
+                                    redeNeural.marcarDesafioMeteoro();
                                 }
 
                                 // Saída 3: Se > 0, vai para esquerda; senão, não faz nada
@@ -222,7 +214,7 @@ public class Main {
                                     playerIA.apertarEsquerda();
                                     playerIA.incrementarPontuacao(1); // 1 ponto para esquerda
                                     redeNeural.incrementarPontuacao(1);
-                                    desafioMeteoro = true;
+                                    redeNeural.marcarDesafioMeteoro();
                                 }
 
                                 /*
@@ -232,31 +224,32 @@ public class Main {
                                 System.out.println("Debugando desafio Inimigo mete "+ desafioMeteoro);
                                  */
 
-                                acertou = false;
+                                // Resetar acerto individual para cada agente a cada novo inimigo
+                                redeNeural.setAcertouUltimaAcao(false);
 
                                 switch (indentificadorInimigo) {
                                     case 1: // Terrestre
-                                        if (desafioTerrestre == true) {
+                                        if (redeNeural.getDesafioTerrestre() == 1) {
                                             taxaInimigoTerrestre++;
-                                            acertou = true;
+                                            redeNeural.setAcertouUltimaAcao(true);
                                         }else {
-                                            acertou = false;
+                                            redeNeural.setAcertouUltimaAcao(false);
                                         }
                                         break;
                                     case 2: // Voador
-                                        if (desafioVoador == true) {
+                                        if (redeNeural.getDesafioVoador() == 1) {
                                             taxaInimigoVoador++;
-                                            acertou = true;
+                                            redeNeural.setAcertouUltimaAcao(true);
                                         }else {
-                                            acertou = false;
+                                            redeNeural.setAcertouUltimaAcao(false);
                                         }
                                         break;
                                     case 3: // Meteoro
-                                        if (desafioMeteoro == true) {
+                                        if (redeNeural.getDesafioMeteoro() == 1) {
                                             taxaInimigoMeteoro++;
-                                            acertou = true;
+                                            redeNeural.setAcertouUltimaAcao(true);
                                         }else {
-                                            acertou = false;
+                                            redeNeural.setAcertouUltimaAcao(false);
                                         }
                                         break;
                                 }
@@ -270,7 +263,7 @@ public class Main {
                                  */
 
                                 // Atualiza taxas
-                                if (acertou == true) {
+                                if (redeNeural.getAcertouUltimaAcao()) {
                                     redeNeural.incrementarAcerto();
                                 } else {
                                     redeNeural.incrementarErro();
@@ -287,7 +280,12 @@ public class Main {
                                     // Armazena o fitness antes de remover o dinossauro
                                     fitnessHistorico.add(redeNeural.getFitness());
                                     // Salva ou imprime taxa de acerto e erro ao eliminar
-                                    System.out.println("Dinossauro eliminado: Fitness=" + redeNeural.getFitness() + ", Acertos=" + redeNeural.getTaxaDeAcerto() + ", Erros=" + redeNeural.getTaxaDeErro());
+                                    System.out.println("Dinossauro eliminado: Fitness=" + redeNeural.getFitness() + ", Acertos=" + redeNeural.getTaxaDeAcerto() + ", Erros=" + redeNeural.getTaxaDeErro()
+                                            + ", DesafioTerrestre=" + redeNeural.getDesafioTerrestre()
+                                            + ", DesafioVoador=" + redeNeural.getDesafioVoador()
+                                            + ", DesafioMeteoro=" + redeNeural.getDesafioMeteoro());
+                                    // Resetar desafios ao eliminar
+                                    redeNeural.resetarDesafios();
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
@@ -377,6 +375,12 @@ public class Main {
                     Cronometro = 0;
                     inimigosCriados = 0;
 
+                    // Resetar taxas de acerto/erro, desafios e acertos/erros por tipo das redes selecionadas para nova geração
+                    for (RedeNeuralTeste3 rede : redesNeuraisSelecionadaRoleta) {
+                        rede.resetarTaxas();
+                        rede.resetarDesafios();
+                    }
+
                     // Usa o novo método com as redes selecionadas por roleta
                     inicializarPopulacaoRoleta(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
 
@@ -386,11 +390,6 @@ public class Main {
                         janela.removerObjeto(inimigo);
                     }
                     inimigos.clear();  // Limpa a lista de inimigos
-
-                    // Resetar taxas de acerto/erro das redes selecionadas para nova geração
-                    for (RedeNeuralTeste3 rede : redesNeuraisSelecionadaRoleta) {
-                        rede.resetarTaxas();
-                    }
                 }
             }
             try {
@@ -532,7 +531,7 @@ public class Main {
         Random random = new Random();
         Inimigo inimigo;
 
-        if (cronometro < 500) {
+        if (cronometro < 5000) {
             // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
             if (random.nextInt(2) == 0) {
                 inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);

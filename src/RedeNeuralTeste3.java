@@ -10,11 +10,16 @@ public class RedeNeuralTeste3 {
     private static final Random random = new Random();
     public double taxaMutacao = 0.1;
 
-    // Novos campos para fitness, pontuação, taxa de acerto e erro
+    // Novos campos para fitness, pontuação, taxa de acerto/erro, desafios e acertos/erros por tipo
     private double fitness;
     private int pontuacao;
     private double taxaDeAcerto;
     private double taxaDeErro;
+    private int desafioTerrestre;
+    private int desafioVoador;
+    private int desafioMeteoro;
+    // Controle individual de acerto da última ação
+    private boolean acertouUltimaAcao = false;
 
     public RedeNeuralTeste3(int numEntradas, int numSaidas, int... numOcultos) {
         // Validação básica
@@ -37,6 +42,9 @@ public class RedeNeuralTeste3 {
         this.pontuacao = 0;
         this.taxaDeAcerto = 0.0;
         this.taxaDeErro = 0.0;
+        this.desafioTerrestre = 0;
+        this.desafioVoador = 0;
+        this.desafioMeteoro = 0;
 
         inicializarEstruturas();
         inicializarPesosAleatorios();
@@ -190,6 +198,19 @@ public class RedeNeuralTeste3 {
         taxaDeErro = 0.0;
     }
 
+    // Métodos para desafios
+    public int getDesafioTerrestre() { return desafioTerrestre; }
+    public int getDesafioVoador() { return desafioVoador; }
+    public int getDesafioMeteoro() { return desafioMeteoro; }
+    public void marcarDesafioTerrestre() { desafioTerrestre = 1; }
+    public void marcarDesafioVoador() { desafioVoador = 1; }
+    public void marcarDesafioMeteoro() { desafioMeteoro = 1; }
+    public void resetarDesafios() {
+        desafioTerrestre = 0;
+        desafioVoador = 0;
+        desafioMeteoro = 0;
+    }
+
     // Métodos para obter informações da arquitetura
     public int getNumEntradas() {
         return numEntradas;
@@ -235,6 +256,9 @@ public class RedeNeuralTeste3 {
         clone.pontuacao = this.pontuacao;
         clone.taxaDeAcerto = this.taxaDeAcerto;
         clone.taxaDeErro = this.taxaDeErro;
+        clone.desafioTerrestre = this.desafioTerrestre;
+        clone.desafioVoador = this.desafioVoador;
+        clone.desafioMeteoro = this.desafioMeteoro;
         return clone;
     }
 
@@ -250,4 +274,8 @@ public class RedeNeuralTeste3 {
             populacao.set(i, filho);
         }
     }
+
+    // Métodos para acertouUltimaAcao
+    public void setAcertouUltimaAcao(boolean valor) { acertouUltimaAcao = valor; }
+    public boolean getAcertouUltimaAcao() { return acertouUltimaAcao; }
 }
