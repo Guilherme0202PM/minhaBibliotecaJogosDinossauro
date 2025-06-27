@@ -190,7 +190,7 @@ public class Main {
                                     playerIA.apertarSaltar(); // Pular
                                     playerIA.incrementarPontuacao(2); // 2 pontos para pular
                                     redeNeural.incrementarPontuacao(2);
-                                    redeNeural.marcarDesafioTerrestre();
+                                    //redeNeural.marcarDesafioTerrestre();
                                 }
 
                                 // Saída 1: Se > 0, abaixa; senão, não faz nada
@@ -198,7 +198,7 @@ public class Main {
                                     playerIA.apertarAbaixar(); // Abaixar
                                     playerIA.incrementarPontuacao(2); // 2 pontos para abaixar
                                     redeNeural.incrementarPontuacao(2);
-                                    redeNeural.marcarDesafioVoador();
+                                    //redeNeural.marcarDesafioVoador();
                                 }
 
                                 // Saída 2: Se > 0, vai para direita; senão, não faz nada
@@ -206,7 +206,7 @@ public class Main {
                                     playerIA.apertarDireita();
                                     playerIA.incrementarPontuacao(1); // 1 ponto para direita
                                     redeNeural.incrementarPontuacao(1);
-                                    redeNeural.marcarDesafioMeteoro();
+                                    //redeNeural.marcarDesafioMeteoro();
                                 }
 
                                 // Saída 3: Se > 0, vai para esquerda; senão, não faz nada
@@ -214,7 +214,7 @@ public class Main {
                                     playerIA.apertarEsquerda();
                                     playerIA.incrementarPontuacao(1); // 1 ponto para esquerda
                                     redeNeural.incrementarPontuacao(1);
-                                    redeNeural.marcarDesafioMeteoro();
+                                    //redeNeural.marcarDesafioMeteoro();
                                 }
 
                                 /*
@@ -229,29 +229,24 @@ public class Main {
 
                                 switch (indentificadorInimigo) {
                                     case 1: // Terrestre
-                                        if (redeNeural.getDesafioTerrestre() == 1) {
-                                            taxaInimigoTerrestre++;
+                                        if (saidas[0] > 0) { // Só pular é correto
                                             redeNeural.setAcertouUltimaAcao(true);
-                                        }else {
-                                            redeNeural.setAcertouUltimaAcao(false);
+                                            redeNeural.marcarDesafioTerrestre();
                                         }
                                         break;
                                     case 2: // Voador
-                                        if (redeNeural.getDesafioVoador() == 1) {
-                                            taxaInimigoVoador++;
+                                        if (saidas[1] > 0) { // Só abaixar é correto
                                             redeNeural.setAcertouUltimaAcao(true);
-                                        }else {
-                                            redeNeural.setAcertouUltimaAcao(false);
+                                            redeNeural.marcarDesafioVoador();
                                         }
                                         break;
                                     case 3: // Meteoro
-                                        if (redeNeural.getDesafioMeteoro() == 1) {
-                                            taxaInimigoMeteoro++;
+                                        if (saidas[2] > 0 || saidas[3] > 0) { // Só mover é correto
                                             redeNeural.setAcertouUltimaAcao(true);
-                                        }else {
-                                            redeNeural.setAcertouUltimaAcao(false);
+                                            redeNeural.marcarDesafioMeteoro();
                                         }
                                         break;
+
                                 }
 
                                 /*
