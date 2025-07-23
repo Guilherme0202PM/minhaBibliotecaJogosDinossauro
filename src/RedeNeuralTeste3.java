@@ -198,6 +198,8 @@ public class RedeNeuralTeste3 {
     public void resetarTaxas() {
         taxaDeAcerto = 0.0;
         taxaDeErro = 0.0;
+        fitness = 0.0;
+        pontuacao = 0;
     }
 
     // Métodos para desafios
@@ -254,8 +256,7 @@ public class RedeNeuralTeste3 {
     public RedeNeuralTeste3 clonar() {
         RedeNeuralTeste3 clone = new RedeNeuralTeste3(numEntradas, numSaidas, numOcultos);
         clone.copiarPesos(this);
-        clone.fitness = this.fitness;
-        clone.pontuacao = this.pontuacao;
+        // Não copia fitness nem pontuação - cada clone deve começar do zero
         clone.taxaDeAcerto = this.taxaDeAcerto;
         clone.taxaDeErro = this.taxaDeErro;
         clone.desafioTerrestre = this.desafioTerrestre;
