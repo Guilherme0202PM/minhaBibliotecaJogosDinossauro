@@ -176,8 +176,8 @@ public class Main {
 
                                 // Recompensa baseada apenas na sobrevivência (como no original)
                                 // A rede neural recebe recompensa apenas por continuar viva
-                                redeNeural.incrementarPontuacao(1);
-                                redeNeural.setFitness(redeNeural.getPontuacao());
+                                // redeNeural.incrementarPontuacao(1);
+                                // redeNeural.setFitness(redeNeural.getPontuacao());
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
@@ -215,10 +215,16 @@ public class Main {
 //            movimento.aplicarGravidade(player, chaoBlocos[0]); // Use o primeiro bloco como referência para gravidade
 //            movimento.controlarSalto(player);
 
-            // Atualiza a posição dos PlayerIA
-            for (PlayerIA playerIA : player2List) {
+            // Atualiza a posição dos PlayerIA e incrementa fitness
+            for (int j = 0; j < player2List.size(); j++) {
+                PlayerIA playerIA = player2List.get(j);
                 movimento.atualizarFisica(playerIA, chaoBlocos[0]);
                 movimento.controlarSalto(playerIA);
+
+                // Incrementa fitness a cada frame para todos os dinossauros vivos
+                RedeNeuralTeste3 redeNeural = redesNeurais.get(j);
+                redeNeural.incrementarPontuacao(1);
+                redeNeural.setFitness(redeNeural.getPontuacao());
             }
 
             geracaoLabel.setText("Geração: " + (geracaoAtual + 1));
