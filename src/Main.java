@@ -251,7 +251,7 @@ public class Main {
                 //redesNeuraisSelecionadaRoleta = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
 
 
-                redesNeuraisSelecionadaRoleta = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
+                redesNeuraisSelecionadaRoleta = selecaoTorneio(redesNeuraisArmazenadas, numPlayers);
 
                 /*
                 // Impressão das redes selecionadas
@@ -619,6 +619,52 @@ public class Main {
             }
         }
         System.out.println("Fim Ranking Roleta:\n");
+
+        return selecionados;
+    }
+
+    // Método de seleção por torneio (torneio de 2)
+    public static List<RedeNeuralTeste3> selecaoTorneio(List<RedeNeuralTeste3> populacao, int quantidadeSelecionados) {
+        List<RedeNeuralTeste3> selecionados = new ArrayList<>();
+        Random rand = new Random();
+
+        if (populacao == null || populacao.isEmpty()) {
+            System.out.println("AVISO: População vazia na seleção por torneio!");
+            return selecionados;
+        }
+
+        System.out.println("\nIniciando Seleção por Torneio (Torneio de 2):");
+
+        for (int i = 0; i < quantidadeSelecionados; i++) {
+            // Seleciona 2 indivíduos aleatoriamente para o torneio
+            int indice1 = rand.nextInt(populacao.size());
+            int indice2 = rand.nextInt(populacao.size());
+
+            RedeNeuralTeste3 individuo1 = populacao.get(indice1);
+            RedeNeuralTeste3 individuo2 = populacao.get(indice2);
+
+            // Compara os fitness e seleciona o melhor
+            RedeNeuralTeste3 vencedor;
+            if (individuo1.getFitness() > individuo2.getFitness()) {
+                vencedor = individuo1;
+                System.out.println("Torneio " + (i + 1) + ": Indivíduo " + indice1 + " venceu (Fitness: " + individuo1.getFitness() + " vs " + individuo2.getFitness() + ")");
+            } else {
+                vencedor = individuo2;
+                System.out.println("Torneio " + (i + 1) + ": Indivíduo " + indice2 + " venceu (Fitness: " + individuo2.getFitness() + " vs " + individuo1.getFitness() + ")");
+            }
+
+            selecionados.add(vencedor.clonar());
+        }
+
+        System.out.println("\nRanking da População (Seleção por Torneio):");
+        if (selecionados.isEmpty()) {
+            System.out.println("AVISO: Nenhum indivíduo foi selecionado!");
+        } else {
+            for (int i = 0; i < selecionados.size(); i++) {
+                System.out.println((i + 1) + "º - " + selecionados.get(i));
+            }
+        }
+        System.out.println("Fim Ranking Torneio:\n");
 
         return selecionados;
     }
