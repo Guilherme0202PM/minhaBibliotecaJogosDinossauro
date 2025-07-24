@@ -8,7 +8,7 @@ public class RedeNeuralTeste3 {
     private List<double[]> bias;
     private double[] dna;
     private static final Random random = new Random();
-    public double taxaMutacao = 0.1;
+    public double taxaMutacao = 1;
 
     // Novos campos para fitness, pontuação, taxa de acerto/erro, desafios e acertos/erros por tipo
     private double fitness;
@@ -130,7 +130,7 @@ public class RedeNeuralTeste3 {
     public void aplicarMutacao() {
         for (int i = 0; i < dna.length; i++) {
             if (random.nextDouble() < taxaMutacao) {
-                dna[i] += random.nextGaussian() * 0.1;
+                dna[i] += random.nextGaussian() * 5.0;
             }
         }
         setDNAFromVector(dna);
