@@ -298,7 +298,7 @@ public class Main {
                     }
 
                     // Usa o novo método com as redes selecionadas por roleta
-                    inicializarPopulacaoRoleta(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
+                    inicializarPopulacaoTorneio(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
 
                     quantidadeVivos = numPlayers;
                     // Limpeza dos inimigos da lista inimigos
@@ -369,13 +369,13 @@ public class Main {
         }
     }
 
-    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
-                                                   Movimento movimento, Sensores sensores, Som som, GameWindow janela,
-                                                   List<RedeNeuralTeste3> redesSelecionadasRoleta) {
+    private static void inicializarPopulacaoTorneio(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
+                                                    Movimento movimento, Sensores sensores, Som som, GameWindow janela,
+                                                    List<RedeNeuralTeste3> redesSelecionadasTorneio) {
         int numElite = numPlayers/5; // Mantém os 3 melhores intactos
 
         // Verifica se temos redes selecionadas suficientes
-        if (redesSelecionadasRoleta == null || redesSelecionadasRoleta.isEmpty()) {
+        if (redesSelecionadasTorneio == null || redesSelecionadasTorneio.isEmpty()) {
             System.out.println("AVISO: Lista de redes selecionadas vazia! Inicializando com redes aleatórias.");
             // Inicializa com redes aleatórias se não houver seleção
             for (int i = 0; i < numPlayers; i++) {
@@ -399,23 +399,23 @@ public class Main {
 
             if (i < numElite) {
                 // ELITISMO: Mantém os melhores indivíduos intactos
-                RedeNeuralTeste3 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
+                RedeNeuralTeste3 redeBase = redesSelecionadasTorneio.get(i % redesSelecionadasTorneio.size());
                 novaRede = redeBase.clonar();
                 System.out.println("Indivíduo " + (i + 1) + ": ELITE (cópia exata)");
             } else {
                 // CROSSOVER: Cria novos indivíduos através de crossover
                 // Seleciona dois pais aleatórios da lista de selecionados
                 Random random = new Random();
-                int indicePai1 = random.nextInt(redesSelecionadasRoleta.size());
-                int indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
+                int indicePai1 = random.nextInt(redesSelecionadasTorneio.size());
+                int indicePai2 = random.nextInt(redesSelecionadasTorneio.size());
 
                 // Garante que os pais sejam diferentes
-                while (indicePai2 == indicePai1 && redesSelecionadasRoleta.size() > 1) {
-                    indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
+                while (indicePai2 == indicePai1 && redesSelecionadasTorneio.size() > 1) {
+                    indicePai2 = random.nextInt(redesSelecionadasTorneio.size());
                 }
 
-                RedeNeuralTeste3 pai1 = redesSelecionadasRoleta.get(indicePai1);
-                RedeNeuralTeste3 pai2 = redesSelecionadasRoleta.get(indicePai2);
+                RedeNeuralTeste3 pai1 = redesSelecionadasTorneio.get(indicePai1);
+                RedeNeuralTeste3 pai2 = redesSelecionadasTorneio.get(indicePai2);
 
                 // Realiza crossover entre os dois pais
                 novaRede = RedeNeuralTeste3.crossover(pai1, pai2);
