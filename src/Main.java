@@ -23,7 +23,7 @@ public class Main {
         int velocidadeInimigos = 0;
 
         // Variaveis de controle de geracao
-        int numPlayers = 20; // Número de PlayerIA
+        int numPlayers = 100; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
         int totalGeracao = 30;
@@ -251,7 +251,7 @@ public class Main {
                 //redesNeuraisSelecionadaRoleta = selecaoRedeNeural(redesNeuraisArmazenadas, numPlayers);
 
 
-                redesNeuraisSelecionadaRoleta = selecaoTorneio(redesNeuraisArmazenadas, numPlayers);
+                redesNeuraisSelecionadaRoleta = selecaoRoleta(redesNeuraisArmazenadas, numPlayers);
 
                 /*
                 // Impressão das redes selecionadas
@@ -298,7 +298,7 @@ public class Main {
                     }
 
                     // Usa o novo método com as redes selecionadas por roleta
-                    inicializarPopulacaoTorneio(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
+                    inicializarPopulacaoRoleta(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
 
                     quantidadeVivos = numPlayers;
                     // Limpeza dos inimigos da lista inimigos
@@ -344,7 +344,7 @@ public class Main {
         int numElite = numPlayers/5;
 
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com espaçamento entre si
+            int posX = 5 + i * 5; // Posicione-os com espaçamento entre si
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
@@ -369,13 +369,13 @@ public class Main {
         }
     }
 
-    private static void inicializarPopulacaoTorneio(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
-                                                    Movimento movimento, Sensores sensores, Som som, GameWindow janela,
-                                                    List<RedeNeuralTeste3> redesSelecionadasTorneio) {
+    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
+                                                   Movimento movimento, Sensores sensores, Som som, GameWindow janela,
+                                                   List<RedeNeuralTeste3> redesSelecionadasRoleta) {
         int numElite = numPlayers/5; // Mantém os 3 melhores intactos
 
         // Verifica se temos redes selecionadas suficientes
-        if (redesSelecionadasTorneio == null || redesSelecionadasTorneio.isEmpty()) {
+        if (redesSelecionadasRoleta == null || redesSelecionadasRoleta.isEmpty()) {
             System.out.println("AVISO: Lista de redes selecionadas vazia! Inicializando com redes aleatórias.");
             // Inicializa com redes aleatórias se não houver seleção
             for (int i = 0; i < numPlayers; i++) {
@@ -390,7 +390,7 @@ public class Main {
 
         // Cria os dinossauros e suas redes neurais
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20;
+            int posX = 5 + i * 5;
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
@@ -399,23 +399,23 @@ public class Main {
 
             if (i < numElite) {
                 // ELITISMO: Mantém os melhores indivíduos intactos
-                RedeNeuralTeste3 redeBase = redesSelecionadasTorneio.get(i % redesSelecionadasTorneio.size());
+                RedeNeuralTeste3 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
                 novaRede = redeBase.clonar();
                 System.out.println("Indivíduo " + (i + 1) + ": ELITE (cópia exata)");
             } else {
                 // CROSSOVER: Cria novos indivíduos através de crossover
                 // Seleciona dois pais aleatórios da lista de selecionados
                 Random random = new Random();
-                int indicePai1 = random.nextInt(redesSelecionadasTorneio.size());
-                int indicePai2 = random.nextInt(redesSelecionadasTorneio.size());
+                int indicePai1 = random.nextInt(redesSelecionadasRoleta.size());
+                int indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
 
                 // Garante que os pais sejam diferentes
-                while (indicePai2 == indicePai1 && redesSelecionadasTorneio.size() > 1) {
-                    indicePai2 = random.nextInt(redesSelecionadasTorneio.size());
+                while (indicePai2 == indicePai1 && redesSelecionadasRoleta.size() > 1) {
+                    indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
                 }
 
-                RedeNeuralTeste3 pai1 = redesSelecionadasTorneio.get(indicePai1);
-                RedeNeuralTeste3 pai2 = redesSelecionadasTorneio.get(indicePai2);
+                RedeNeuralTeste3 pai1 = redesSelecionadasRoleta.get(indicePai1);
+                RedeNeuralTeste3 pai2 = redesSelecionadasRoleta.get(indicePai2);
 
                 // Realiza crossover entre os dois pais
                 novaRede = RedeNeuralTeste3.crossover(pai1, pai2);
@@ -619,52 +619,6 @@ public class Main {
             }
         }
         System.out.println("Fim Ranking Roleta:\n");
-
-        return selecionados;
-    }
-
-    // Método de seleção por torneio (torneio de 2)
-    public static List<RedeNeuralTeste3> selecaoTorneio(List<RedeNeuralTeste3> populacao, int quantidadeSelecionados) {
-        List<RedeNeuralTeste3> selecionados = new ArrayList<>();
-        Random rand = new Random();
-
-        if (populacao == null || populacao.isEmpty()) {
-            System.out.println("AVISO: População vazia na seleção por torneio!");
-            return selecionados;
-        }
-
-        System.out.println("\nIniciando Seleção por Torneio (Torneio de 2):");
-
-        for (int i = 0; i < quantidadeSelecionados; i++) {
-            // Seleciona 2 indivíduos aleatoriamente para o torneio
-            int indice1 = rand.nextInt(populacao.size());
-            int indice2 = rand.nextInt(populacao.size());
-
-            RedeNeuralTeste3 individuo1 = populacao.get(indice1);
-            RedeNeuralTeste3 individuo2 = populacao.get(indice2);
-
-            // Compara os fitness e seleciona o melhor
-            RedeNeuralTeste3 vencedor;
-            if (individuo1.getFitness() > individuo2.getFitness()) {
-                vencedor = individuo1;
-                System.out.println("Torneio " + (i + 1) + ": Indivíduo " + indice1 + " venceu (Fitness: " + individuo1.getFitness() + " vs " + individuo2.getFitness() + ")");
-            } else {
-                vencedor = individuo2;
-                System.out.println("Torneio " + (i + 1) + ": Indivíduo " + indice2 + " venceu (Fitness: " + individuo2.getFitness() + " vs " + individuo1.getFitness() + ")");
-            }
-
-            selecionados.add(vencedor.clonar());
-        }
-
-        System.out.println("\nRanking da População (Seleção por Torneio):");
-        if (selecionados.isEmpty()) {
-            System.out.println("AVISO: Nenhum indivíduo foi selecionado!");
-        } else {
-            for (int i = 0; i < selecionados.size(); i++) {
-                System.out.println((i + 1) + "º - " + selecionados.get(i));
-            }
-        }
-        System.out.println("Fim Ranking Torneio:\n");
 
         return selecionados;
     }
