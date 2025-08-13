@@ -3,6 +3,8 @@ import java.awt.*;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
+import java.nio.file.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,7 +23,7 @@ public class Main {
         int velocidadeInimigos = 0;
 
         // Variaveis de controle de geracao
-        int numPlayers = 20; // Número de PlayerIA
+        int numPlayers = 150; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
         int totalGeracao = 30;
@@ -32,7 +34,7 @@ public class Main {
 
         // Defina um limite adequado para a proximidade, essa eh a area do "radar"
         int limiteProximidade = 80;
-        RedeNeuralTeste2 melhorRede = null;
+        RedeNeuralTeste3 melhorRede = null;
 
         // Geração de múltiplos blocos de chão
         int larguraChao = 500; // Largura do chão
@@ -47,8 +49,6 @@ public class Main {
 
 
         //Taxas de controle e Acertos
-        double taxaDeAcerto = 0;
-        double taxaDeErro = 0;
         double fitness = 0;
 
         double taxaInimigoTerrestre = 0;
@@ -56,11 +56,6 @@ public class Main {
         double taxaInimigoMeteoro = 0;
 
         //Vou usar para identificar se o dinossauro executou a ação correta, com base nos 3 inimigos/desafio
-        boolean desafioTerrestre = false;
-        boolean desafioVoador = false;
-        boolean desafioMeteoro = false;
-        boolean acertou = false;
-
         int indentificadorInimigo = 0;
 
 
@@ -75,19 +70,21 @@ public class Main {
         // Lista que coleta os PlayerIA apos uma geracao, geralmente para ordena-los por pontuacao ou comparar desempenho
         List<PlayerIA> coleta = new ArrayList<>(); //Coleta pontuacoes de PlayerIA
         // Lista com todas as redes neurais ativas da geracao atual (cada PlayerIA tem uma rede neural)
-        List<RedeNeuralTeste2> redesNeurais = new ArrayList<>();
+        List<RedeNeuralTeste3> redesNeurais = new ArrayList<>();
         // Lista para armazenar redes neurais de geracoes anteriores ou as melhores da geracao anterior
-        List<RedeNeuralTeste2> redesNeuraisArmazenadas = new ArrayList<>();
+        List<RedeNeuralTeste3> redesNeuraisArmazenadas = new ArrayList<>();
         // Outra lista de backup das redes anteriores (usada para comparacoes ou fallback)
-        List<RedeNeuralTeste2> redesNeuraisSelecionadaRoleta = new ArrayList<>();
+        List<RedeNeuralTeste3> redesNeuraisSelecionadaRoleta = new ArrayList<>();
         // Lista com as redes neurais de melhor desempenho ao longo das geracoes (especie de hall da fama)
         List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho = new ArrayList<>();
         // Log das melhores redes ja encontradas, para fins de visualizacao ou reexecucao
-        List<RedeNeuralTeste2> LogMelhoresRedes = new ArrayList<>();
+        List<RedeNeuralTeste3> LogMelhoresRedes = new ArrayList<>();
         // Lista para armazenar os fitness de todos os dinossauros que morreram
         List<Double> fitnessHistorico = new ArrayList<>();
 
-
+        // Lista para armazenar todos os indivíduos de todas as gerações
+        List<List<RedeNeuralTeste3>> todasGeracoes = new ArrayList<>();
+        List<Integer> cronometrosGeracoes = new ArrayList<>();
 
         //Armazena inimigos
         List<Inimigo> inimigos = new ArrayList<>();
@@ -157,137 +154,57 @@ public class Main {
 
                             // Analisar proximidade e usar rede neural
                             if (sensores.analisarProximidade(playerIA, inimigo, limiteProximidade)) {
-                                double[] entradas = {playerIA.getX(), playerIA.getY(), inimigo.getX(), inimigo.getY(), inimigo.getAltura(), inimigo.getLargura(), velocidadeInimigos};
-                                RedeNeuralTeste2 redeNeural = redesNeurais.get(j);
+                                // Entradas simplificadas como no projeto original
+                                double[] entradas = {
+                                        inimigo.getX() - playerIA.getX(), // Distância horizontal
+                                        inimigo.getY() - playerIA.getY(), // Diferença de altura
+                                        velocidadeInimigos, // Velocidade
+                                        inimigo.getLargura(), // Largura do inimigo (70 para terrestre/voador, 70 para meteoro)
+                                        inimigo.getAltura()  // Altura do inimigo (50 para terrestre/voador, 70 para meteoro)
+                                };
+                                RedeNeuralTeste3 redeNeural = redesNeurais.get(j);
 
-                                // Ajusta os pesos da rede neural dependendo do inimigo
-                                //Se a posição Y do inimigo for igual a 350, então fatorCondicao será -1; caso contrário, será 1
-                                //Era entre -1 e 1 mas mudei para 0 e 1
-                                double fatorCondicaoY = (inimigo.getY() >= 350) ? 0 : 1;
-                                double fatorCondicaoX = (inimigo.getAltura() >= 70) ? 0 : 1;
-                                indentificadorInimigo = 0;
-                                desafioMeteoro = false;
-                                desafioVoador = false;
-                                desafioTerrestre = false;
+                                double[] saidas = redeNeural.calcularSaida(entradas);
 
-//                                0 0 Voa
-//                                0 1 Tere
-//                                1 0 Mete
-//                                1 1 Voa
-//
-//                                Terra 350 70 50
-//                                Voa 320 70 50
-//                                Mete 0 70 70
-
-                                if (fatorCondicaoY >= 1 && fatorCondicaoY == fatorCondicaoX){
-                                    indentificadorInimigo = 2; //InimigoVoador
-                                } else if(fatorCondicaoY == 0 && fatorCondicaoX == 1){
-                                    indentificadorInimigo = 1; //InimigoTerrestre
-                                } else{
-                                    indentificadorInimigo = 3; //InimigoMeteoro
-                                }
-
-                                double[] saidas = redeNeural.calcularSaida2(entradas);
-
-//                                for (int p = 0; p < saidas.length; p++) {
-//                                    System.out.println("Saídaaaaaaaaaaaaaaaaaaaa " + p + ": " + saidas[p]);
-//                                }
-
-                                // Saída 0: Se > 0, pula; senão, não faz nada
+                                // Lógica sem viés - rede neural decide sozinha
+                                // saidas[0] > 0: pular
                                 if (saidas[0] > 0) {
-                                    playerIA.apertarSaltar(); // Pular
-                                    playerIA.incrementarPontuacao(2); // 2 pontos para pular
-                                    redeNeural.incrementarPontuacao(2);
-                                    desafioTerrestre = true;
+                                    playerIA.apertarSaltar();        // Pular
                                 }
 
-                                // Saída 1: Se > 0, abaixa; senão, não faz nada
                                 if (saidas[1] > 0) {
-                                    playerIA.apertarAbaixar(); // Abaixar
-                                    playerIA.incrementarPontuacao(2); // 2 pontos para abaixar
-                                    redeNeural.incrementarPontuacao(2);
-                                    desafioVoador = true;
+                                    playerIA.apertarAbaixar();       // Abaixar
                                 }
 
-                                // Saída 2: Se > 0, vai para direita; senão, não faz nada
                                 if (saidas[2] > 0) {
-                                    playerIA.apertarDireita();
-                                    playerIA.incrementarPontuacao(1); // 1 ponto para direita
-                                    redeNeural.incrementarPontuacao(1);
-                                    desafioMeteoro = true;
-                                }
-
-                                // Saída 3: Se > 0, vai para esquerda; senão, não faz nada
-                                if (saidas[3] > 0) {
-                                    playerIA.apertarEsquerda();
-                                    playerIA.incrementarPontuacao(1); // 1 ponto para esquerda
-                                    redeNeural.incrementarPontuacao(1);
-                                    desafioMeteoro = true;
-                                }
-
-                                /*
-                                System.out.println("Debugando identificador Inimigo "+ indentificadorInimigo);
-                                System.out.println("Debugando desafio Inimigo Terra "+ desafioTerrestre);
-                                System.out.println("Debugando desafio Inimigo voa "+ desafioVoador);
-                                System.out.println("Debugando desafio Inimigo mete "+ desafioMeteoro);
-                                 */
-
-                                acertou = false;
-
-                                switch (indentificadorInimigo) {
-                                    case 1: // Terrestre
-                                        if (desafioTerrestre == true) {
-                                            taxaInimigoTerrestre++;
-                                            acertou = true;
-                                        }else {
-                                            acertou = false;
-                                        }
-                                        break;
-                                    case 2: // Voador
-                                        if (desafioVoador == true) {
-                                            taxaInimigoVoador++;
-                                            acertou = true;
-                                        }else {
-                                            acertou = false;
-                                        }
-                                        break;
-                                    case 3: // Meteoro
-                                        if (desafioMeteoro == true) {
-                                            taxaInimigoMeteoro++;
-                                            acertou = true;
-                                        }else {
-                                            acertou = false;
-                                        }
-                                        break;
-                                }
-
-                                /*
-                                System.out.println("Debugando Acertou? "+ acertou);
-                                System.out.println("Debugando desafio Inimigo Terra "+ desafioTerrestre);
-                                System.out.println("Debugando desafio Inimigo voa "+ desafioVoador);
-                                System.out.println("Debugando desafio Inimigo mete "+ desafioMeteoro);
-
-                                 */
-
-                                // Atualiza taxas
-                                if (acertou == true) {
-                                    taxaDeAcerto++;
+                                    playerIA.apertarEsquerda();        // Esquerda
+                                } else if (saidas[3] > 0) {
+                                    playerIA.apertarDireita();         // Direita
                                 } else {
-                                    taxaDeErro++;
+                                    playerIA.levantar();             // Nada (estado neutro)
                                 }
 
-
-                                // Atualiza fitness com pesos
-                                fitness = taxaDeAcerto * 10 - taxaDeErro * 2;
-                                redeNeural.setFitness(fitness);
+                                // Recompensa baseada apenas na sobrevivência (como no original)
+                                // A rede neural recebe recompensa apenas por continuar viva
+                                redeNeural.incrementarPontuacao(1);
+                                redeNeural.setFitness(redeNeural.getPontuacao());
 
                                 // Verifica colisão com PlayerIA
                                 if (sensores.verificarColisao(playerIA, inimigo) || sensores.tocandoBorda(playerIA)) {
+                                    // Armazena o cronômetro individual do dinossauro quando ele morre
+                                    redeNeural.setCronometroIndividual(Cronometro);
+
                                     coleta.add(playerIA);
-                                    redesNeuraisArmazenadas.add(redesNeurais.get(j));
-                                    //RedeNeuralTeste2.salvarDadosEmArquivo(redesNeurais);
+                                    redesNeuraisArmazenadas.add(redeNeural);
                                     // Armazena o fitness antes de remover o dinossauro
                                     fitnessHistorico.add(redeNeural.getFitness());
+                                    // Salva ou imprime taxa de acerto e erro ao eliminar
+                                    System.out.println("Dinossauro eliminado: Fitness=" + redeNeural.getFitness() + ", Acertos=" + redeNeural.getTaxaDeAcerto() + ", Erros=" + redeNeural.getTaxaDeErro()
+                                            + ", DesafioTerrestre=" + redeNeural.getDesafioTerrestre()
+                                            + ", DesafioVoador=" + redeNeural.getDesafioVoador()
+                                            + ", DesafioMeteoro=" + redeNeural.getDesafioMeteoro());
+                                    // Resetar desafios ao eliminar
+                                    redeNeural.resetarDesafios();
                                     janela.removerObjeto(playerIA);
                                     player2List.remove(j);
                                     redesNeurais.remove(j);
@@ -326,6 +243,12 @@ public class Main {
 
                 // Imprime o histórico de fitness da geração
                 imprimeHistoricoFitness(fitnessHistorico, geracaoAtual);
+
+                // Armazena todos os indivíduos da geração atual
+                List<RedeNeuralTeste3> geracaoAtualIndividuos = new ArrayList<>(redesNeuraisArmazenadas);
+                todasGeracoes.add(geracaoAtualIndividuos);
+                cronometrosGeracoes.add(Cronometro);
+
                 fitnessHistorico.clear(); // Limpa a lista após imprimir
 
 
@@ -354,13 +277,14 @@ public class Main {
 
                 // Seleciona a melhor rede neural antes de limpar as listas
                 if (!coleta.isEmpty() && !redesNeuraisArmazenadas.isEmpty()) {
-                    //melhorRede = selecaoMelhorRede(coleta, redesNeuraisArmazenadas);
-                    //melhorRede = selecaoMelhorRede(redesNeuraisSelecionadaRoleta);
-                    melhorRede = selecaoMelhorRede(redesNeuraisSelecionadaRoleta);
+                    // Ordena as redes por fitness e pega a melhor
+                    List<RedeNeuralTeste3> redesOrdenadas = new ArrayList<>(redesNeuraisArmazenadas);
+                    redesOrdenadas.sort((a, b) -> Double.compare(b.getFitness(), a.getFitness()));
+                    melhorRede = redesOrdenadas.get(0);
                     System.out.println("Imprimindo melhor rede: " + melhorRede);
 
                     // Adicionando a rede neural com o cronômetro
-                    redesNeuraisMelhorDesempenho.add(new RedeNeuralDesempenho(melhorRede, Cronometro));
+                    redesNeuraisMelhorDesempenho.add(new RedeNeuralDesempenho(melhorRede, melhorRede.getCronometroIndividual()));
 
                     //Adicionando o log ou Pesos da minha rede
                     LogMelhoresRedes.add(melhorRede);
@@ -376,6 +300,12 @@ public class Main {
 
                     Cronometro = 0;
                     inimigosCriados = 0;
+
+                    // Resetar taxas de acerto/erro, desafios e acertos/erros por tipo das redes selecionadas para nova geração
+                    for (RedeNeuralTeste3 rede : redesNeuraisSelecionadaRoleta) {
+                        rede.resetarTaxas();
+                        rede.resetarDesafios();
+                    }
 
                     // Usa o novo método com as redes selecionadas por roleta
                     inicializarPopulacaoRoleta(numPlayers, player2List, redesNeurais, movimento, sensores, som, janela, redesNeuraisSelecionadaRoleta);
@@ -401,6 +331,12 @@ public class Main {
             System.out.println((i + 1) + "º - " + redesNeuraisMelhorDesempenho.get(i));
         }
 
+        // Salva os resultados em arquivo
+        salvarResultadosEmArquivo(redesNeuraisMelhorDesempenho, totalGeracao);
+
+        // Salva todos os indivíduos de todas as gerações
+        salvarTodosIndividuosEmArquivo(todasGeracoes, cronometrosGeracoes, totalGeracao);
+
         System.out.println("Colata das informações de cada rede " + totalGeracao + " gerações.");
         for (int i = 0; i < LogMelhoresRedes.size(); i++) {
             System.out.println((i + 1) + "ª melhor rede:");
@@ -412,24 +348,24 @@ public class Main {
     }
 
     // Dentro da sua funcao inicializarPopulacao, aplique essa lógica para respeitar o elitismo absoluto:
-    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+    private static void inicializarPopulacao(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
                                              Movimento movimento, Sensores sensores, Som som, GameWindow janela,
-                                             RedeNeuralTeste2 melhorRede) {
+                                             RedeNeuralTeste3 melhorRede) {
         int numElite = numPlayers/5;
 
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com espaçamento entre si
+            int posX = 1 + i * 2; // Posicione-os com espaçamento entre si
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede;
+            RedeNeuralTeste3 novaRede;
             if (melhorRede != null && i < numElite) {
-                novaRede = new RedeNeuralTeste2(melhorRede.getNumEntradasNeuronios(), melhorRede.getNumOcultos1Neuronios(),
+                novaRede = new RedeNeuralTeste3(melhorRede.getNumEntradasNeuronios(), melhorRede.getNumOcultos1Neuronios(),
                         melhorRede.getNumOcultos2Neuronios(), melhorRede.getNumSaidasNeuronios());
                 novaRede.copiarPesos2(melhorRede); // Cópia exata
             } else {
-                novaRede = new RedeNeuralTeste2(7, 14, 14, 4); // Criar nova rede com valores aleatórios
+                novaRede = new RedeNeuralTeste3(5, 4, 6, 6); // Rede original: 3 entradas, 1 saída, 6 neurônios ocultos
             }
 
             redesNeurais.add(novaRede);
@@ -437,15 +373,15 @@ public class Main {
 
         // Aplicar crossover e mutação só nos descendentes (a partir do índice numElite)
         if (melhorRede != null) {
-            List<RedeNeuralTeste2> descendentes = redesNeurais.subList(numElite, redesNeurais.size());
+            List<RedeNeuralTeste3> descendentes = redesNeurais.subList(numElite, redesNeurais.size());
             melhorRede.aplicarCrossoverComMelhor(melhorRede, descendentes);
             melhorRede.aplicarMutacaoPopulacional(descendentes);
         }
     }
 
-    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste2> redesNeurais,
+    private static void inicializarPopulacaoRoleta(int numPlayers, List<PlayerIA> player2List, List<RedeNeuralTeste3> redesNeurais,
                                                    Movimento movimento, Sensores sensores, Som som, GameWindow janela,
-                                                   List<RedeNeuralTeste2> redesSelecionadasRoleta) {
+                                                   List<RedeNeuralTeste3> redesSelecionadasRoleta) {
         int numElite = numPlayers/5; // Mantém os 3 melhores intactos
 
         // Verifica se temos redes selecionadas suficientes
@@ -457,23 +393,23 @@ public class Main {
                 PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
                 player2List.add(playerIA);
                 janela.adicionarObjeto(playerIA);
-                redesNeurais.add(new RedeNeuralTeste2(7, 14, 14, 4));
+                redesNeurais.add(new RedeNeuralTeste3(5, 4, 6, 6)); // Rede original: 1 saída
             }
             return;
         }
 
         // Cria os dinossauros e suas redes neurais
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20;
+            int posX = 1 + i * 2;
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
 
-            RedeNeuralTeste2 novaRede;
+            RedeNeuralTeste3 novaRede;
 
             if (i < numElite) {
                 // ELITISMO: Mantém os melhores indivíduos intactos
-                RedeNeuralTeste2 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
+                RedeNeuralTeste3 redeBase = redesSelecionadasRoleta.get(i % redesSelecionadasRoleta.size());
                 novaRede = redeBase.clonar();
                 System.out.println("Indivíduo " + (i + 1) + ": ELITE (cópia exata)");
             } else {
@@ -488,14 +424,14 @@ public class Main {
                     indicePai2 = random.nextInt(redesSelecionadasRoleta.size());
                 }
 
-                RedeNeuralTeste2 pai1 = redesSelecionadasRoleta.get(indicePai1);
-                RedeNeuralTeste2 pai2 = redesSelecionadasRoleta.get(indicePai2);
+                RedeNeuralTeste3 pai1 = redesSelecionadasRoleta.get(indicePai1);
+                RedeNeuralTeste3 pai2 = redesSelecionadasRoleta.get(indicePai2);
 
                 // Realiza crossover entre os dois pais
-                novaRede = RedeNeuralTeste2.crossover(pai1, pai2);
+                novaRede = RedeNeuralTeste3.crossover(pai1, pai2);
 
                 // Aplica mutação no indivíduo criado pelo crossover
-                List<RedeNeuralTeste2> listaParaMutacao = new ArrayList<>();
+                List<RedeNeuralTeste3> listaParaMutacao = new ArrayList<>();
                 listaParaMutacao.add(novaRede);
                 novaRede.aplicarMutacaoPopulacional(listaParaMutacao);
 
@@ -524,7 +460,7 @@ public class Main {
         Random random = new Random();
         Inimigo inimigo;
 
-        if (cronometro < 500) {
+        if (cronometro < 1000) {
             // Antes de 1000, cria um InimigoTerrestre ou InimigoVoador
             if (random.nextInt(2) == 0) {
                 inimigo = new InimigoTerrestre(600, 350, 70, 50, "triceraptor_0.png", velocidadeInimigos, 0, movimento, sensores, janela);
@@ -585,7 +521,7 @@ public class Main {
         return new ArrayList<>(copiaPopulacao.subList(0, numSelecionados));
     }
 
-    public static ArrayList<RedeNeuralTeste2> selecaoRedeNeural(List<RedeNeuralTeste2> redesNeurais, int numSelecionados) {
+    public static ArrayList<RedeNeuralTeste3> selecaoRedeNeural(List<RedeNeuralTeste3> redesNeurais, int numSelecionados) {
         // Verifica se a população está vazia
         if (redesNeurais == null || redesNeurais.isEmpty()) {
             System.out.println("A população está vazia.");
@@ -593,7 +529,7 @@ public class Main {
         }
 
         // Copia a população para evitar modificar a lista original
-        List<RedeNeuralTeste2> copiaPopulacaoRede = new ArrayList<>(redesNeurais);
+        List<RedeNeuralTeste3> copiaPopulacaoRede = new ArrayList<>(redesNeurais);
 
         // Ordena a cópia com base na pontuação (do maior para o menor)
         copiaPopulacaoRede.sort((p1, p2) -> Double.compare(p2.getPontuacao(), p1.getPontuacao()));
@@ -613,7 +549,7 @@ public class Main {
     }
 
 
-    public static RedeNeuralTeste2 selecaoMelhorRede(List<RedeNeuralTeste2> redesNeurais) {
+    public static RedeNeuralTeste3 selecaoMelhorRede(List<RedeNeuralTeste3> redesNeurais) {
         if (redesNeurais.isEmpty()) {
             return null;
         }
@@ -635,9 +571,9 @@ public class Main {
 
     //Recebe uma populacao (lista de redes neurais)
     //Recebe um número quantidadeSelecionados que define quantos indivíduos retornar
-    public static List<RedeNeuralTeste2> selecaoRoleta(List<RedeNeuralTeste2> populacao, int quantidadeSelecionados) {
+    public static List<RedeNeuralTeste3> selecaoRoleta(List<RedeNeuralTeste3> populacao, int quantidadeSelecionados) {
         //Cria uma nova lista para guardar os indivíduos selecionados da roleta.
-        List<RedeNeuralTeste2> selecionados = new ArrayList<>();
+        List<RedeNeuralTeste3> selecionados = new ArrayList<>();
 
         //verifica se a população está vazia
         if (populacao == null || populacao.isEmpty()) {
@@ -649,7 +585,7 @@ public class Main {
         // Isso representa o "tamanho total da roleta". Cada indivíduo terá uma "fatia" proporcional ao seu fitness.
         double somaFitness = 0.0;
         System.out.println("\nFitness dos indivíduos na população:");
-        for (RedeNeuralTeste2 individuo : populacao) {
+        for (RedeNeuralTeste3 individuo : populacao) {
             double fitness = individuo.getFitness();
             System.out.println("Fitness: " + fitness);
 
@@ -669,7 +605,7 @@ public class Main {
 
             // Percorre os indivíduos da população somando seus fitness até passar do "ponto"
             // O indivíduo correspondente à posição onde o acumulado ultrapassa o ponto é selecionado
-            for (RedeNeuralTeste2 individuo : populacao) {
+            for (RedeNeuralTeste3 individuo : populacao) {
                 double fitness = individuo.getFitness();
                 if (fitness > 0) {
                     acumulado += fitness;
@@ -695,6 +631,196 @@ public class Main {
         System.out.println("Fim Ranking Roleta:\n");
 
         return selecionados;
+    }
+
+    // Metodo para salvar resultados em arquivo com renomeação automática
+    private static void salvarResultadosEmArquivo(List<RedeNeuralDesempenho> redesNeuraisMelhorDesempenho, int totalGeracao) {
+        try {
+            // Nome base do arquivo
+            String nomeBase = "Resultados";
+            String extensao = ".txt";
+            String nomeArquivo = nomeBase + extensao;
+
+            // Verifica se o arquivo já existe e renomeia se necessário
+            int contador = 1;
+            while (Files.exists(Paths.get(nomeArquivo))) {
+                nomeArquivo = nomeBase + contador + extensao;
+                contador++;
+            }
+
+            // Cria o arquivo e escreve os resultados
+            try (PrintWriter writer = new PrintWriter(new FileWriter(nomeArquivo))) {
+                writer.println("=== RESULTADOS DA SIMULAÇÃO DE REDES NEURAIS ===");
+                writer.println("Data/Hora: " + java.time.LocalDateTime.now());
+                writer.println("Simulação concluída após " + totalGeracao + " gerações.");
+                writer.println();
+
+                writer.println("=== CONFIGURAÇÕES DO ALGORITMO GENÉTICO ===");
+                writer.println("Taxa de Mutação: 10% (0.1)");
+                writer.println("Tipo de Seleção: Roleta");
+                writer.println("Elitismo: 20% da população (melhores indivíduos preservados)");
+                writer.println("Crossover: Média aritmética dos pesos dos pais");
+                writer.println("Arquitetura da Rede Neural: 7→[14, 14]→4");
+                writer.println();
+
+                writer.println("=== RANKING DAS MELHORES REDES POR GERAÇÃO ===");
+                for (int i = 0; i < redesNeuraisMelhorDesempenho.size(); i++) {
+                    writer.println((i + 1) + "º - " + redesNeuraisMelhorDesempenho.get(i));
+                }
+
+                writer.println();
+                writer.println("=== RESUMO ESTATÍSTICO ===");
+
+                // Calcula estatísticas
+                double maiorFitness = redesNeuraisMelhorDesempenho.stream()
+                        .mapToDouble(RedeNeuralDesempenho::getFitness)
+                        .max()
+                        .orElse(0.0);
+
+                double menorFitness = redesNeuraisMelhorDesempenho.stream()
+                        .mapToDouble(RedeNeuralDesempenho::getFitness)
+                        .min()
+                        .orElse(0.0);
+
+                double mediaFitness = redesNeuraisMelhorDesempenho.stream()
+                        .mapToDouble(RedeNeuralDesempenho::getFitness)
+                        .average()
+                        .orElse(0.0);
+
+                writer.println("Maior Fitness: " + maiorFitness);
+                writer.println("Menor Fitness: " + menorFitness);
+                writer.println("Média de Fitness: " + String.format("%.2f", mediaFitness));
+
+                writer.println();
+
+                writer.println("=== FIM DOS RESULTADOS ===");
+            }
+
+            System.out.println("Resultados salvos em: " + nomeArquivo);
+
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar arquivo: " + e.getMessage());
+        }
+    }
+
+    // Salva todos os indivíduos de todas as gerações
+    private static void salvarTodosIndividuosEmArquivo(List<List<RedeNeuralTeste3>> todasGeracoes, List<Integer> cronometrosGeracoes, int totalGeracao) {
+        try {
+            // Nome base do arquivo
+            String nomeBase = "Individuos";
+            String extensao = ".txt";
+            String nomeArquivo = nomeBase + extensao;
+
+            // Verifica se o arquivo já existe e renomeia se necessário
+            int contador = 1;
+            while (Files.exists(Paths.get(nomeArquivo))) {
+                nomeArquivo = nomeBase + contador + extensao;
+                contador++;
+            }
+
+            // Cria o arquivo e escreve os resultados
+            try (PrintWriter writer = new PrintWriter(new FileWriter(nomeArquivo))) {
+                writer.println("=== TODOS OS INDIVÍDUOS DE TODAS AS GERAÇÕES ===");
+                writer.println("Data/Hora: " + java.time.LocalDateTime.now());
+                writer.println("Simulação concluída após " + totalGeracao + " gerações.");
+                writer.println();
+
+                // Estatísticas dos melhores indivíduos por geração
+                for (int i = 0; i < todasGeracoes.size(); i++) {
+                    List<RedeNeuralTeste3> geracaoAtualIndividuos = todasGeracoes.get(i);
+                    writer.println("######################################################");
+                    writer.println("Geração " + (i + 1) + ":");
+                    writer.println();
+
+                    // Ordena os indivíduos por fitness (melhor primeiro)
+                    List<RedeNeuralTeste3> individuosOrdenados = new ArrayList<>(geracaoAtualIndividuos);
+                    individuosOrdenados.sort((a, b) -> Double.compare(b.getFitness(), a.getFitness()));
+
+                    // Mostra todos os indivíduos da geração
+                    for (int j = 0; j < individuosOrdenados.size(); j++) {
+                        RedeNeuralTeste3 dino = individuosOrdenados.get(j);
+                        writer.println("Dino" + (j + 1) + ": " + dino + " | Pontuação: " + dino.getPontuacao() + " | Fitness: " + dino.getFitness() + " | Cronômetro: " + dino.getCronometroIndividual());
+                    }
+                    writer.println("Dino Fim");
+                    writer.println();
+
+                    // Calcula estatísticas da geração
+                    double piorFitnessGeracao = individuosOrdenados.stream()
+                            .mapToDouble(RedeNeuralTeste3::getFitness)
+                            .min()
+                            .orElse(0.0);
+
+                    double mediaFitnessGeracao = individuosOrdenados.stream()
+                            .mapToDouble(RedeNeuralTeste3::getFitness)
+                            .average()
+                            .orElse(0.0);
+
+                    double melhorFitnessGeracao = individuosOrdenados.stream()
+                            .mapToDouble(RedeNeuralTeste3::getFitness)
+                            .max()
+                            .orElse(0.0);
+
+                    double mediaCronometroGeracao = individuosOrdenados.stream()
+                            .mapToDouble(RedeNeuralTeste3::getCronometroIndividual)
+                            .average()
+                            .orElse(0.0);
+
+                    // Conta quantos dinos estão acima da média do cronômetro
+                    long dinosAcimaMedia = individuosOrdenados.stream()
+                            .filter(dino -> dino.getCronometroIndividual() > mediaCronometroGeracao)
+                            .count();
+
+                    writer.println("Pior fitness da geração: " + piorFitnessGeracao);
+                    writer.println("Média dos fitness da geração: " + String.format("%.2f", mediaFitnessGeracao));
+                    writer.println("Melhor fitness da geração: " + melhorFitnessGeracao);
+                    writer.println("Média Cronômetro geração: " + String.format("%.2f", mediaCronometroGeracao));
+                    writer.println("Quantos dinos estão acima da média do cronômetro: " + dinosAcimaMedia);
+                    writer.println();
+                }
+
+                writer.println("######################################################");
+                writer.println("RESUMO GERAL:");
+                writer.println();
+
+                // Calcula estatísticas gerais
+                double maiorFitness = todasGeracoes.stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(RedeNeuralTeste3::getFitness)
+                        .max()
+                        .orElse(0.0);
+
+                double menorFitness = todasGeracoes.stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(RedeNeuralTeste3::getFitness)
+                        .min()
+                        .orElse(0.0);
+
+                double mediaFitness = todasGeracoes.stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(RedeNeuralTeste3::getFitness)
+                        .average()
+                        .orElse(0.0);
+
+                double mediaCronometro = todasGeracoes.stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(RedeNeuralTeste3::getCronometroIndividual)
+                        .average()
+                        .orElse(0.0);
+
+                writer.println("Pior fitness de todas as gerações: " + menorFitness);
+                writer.println("Média dos fitness de todas as gerações: " + String.format("%.2f", mediaFitness));
+                writer.println("Melhor fitness de todas as gerações: " + maiorFitness);
+                writer.println("Média Cronômetro gerações: " + String.format("%.2f", mediaCronometro));
+                writer.println();
+
+                writer.println("=== FIM DOS RESULTADOS ===");
+            }
+
+            System.out.println("Resultados salvos em: " + nomeArquivo);
+
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar arquivo: " + e.getMessage());
+        }
     }
 
 }
