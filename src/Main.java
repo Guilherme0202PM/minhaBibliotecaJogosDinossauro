@@ -23,7 +23,7 @@ public class Main {
         int velocidadeInimigos = 0;
 
         // Variaveis de controle de geracao
-        int numPlayers = 20; // Número de PlayerIA
+        int numPlayers = 150; // Número de PlayerIA
         int quantidadeVivos = numPlayers;
         int geracaoAtual = 0;
         int totalGeracao = 30;
@@ -350,7 +350,7 @@ public class Main {
         int numElite = numPlayers/5;
 
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20; // Posicione-os com espaçamento entre si
+            int posX = 1 + i * 2; // Posicione-os com espaçamento entre si
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
@@ -394,7 +394,7 @@ public class Main {
 
         // Cria os dinossauros e suas redes neurais
         for (int i = 0; i < numPlayers; i++) {
-            int posX = 50 + i * 20;
+            int posX = 1 + i * 2;
             PlayerIA playerIA = new PlayerIA(posX, 320, 50, 50, "dino andandoo_andando_0.png", movimento, sensores, som, janela);
             player2List.add(playerIA);
             janela.adicionarObjeto(playerIA);
