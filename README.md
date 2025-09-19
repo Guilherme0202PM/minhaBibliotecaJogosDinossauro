@@ -13,7 +13,7 @@
 
 ![Captura de Tela](Readme/Capturar2.PNG)
 
-À medida que o jogo avança, a velocidade e a frequência dos obstáculos aumentam, tornando o desafio cada vez mais emocionante. O objetivo é sobreviver o máximo possível e alcançar a maior pontuação.
+À medida que o jogo avança, a velocidade e a frequência dos obstáculos aumentam, tornando o desafio cada vez mais emocionante. O objetivo é sobreviver o máximo possível e alcançar a maior pontuação!
 
 ![Captura de Tela](Readme/Capturar3.PNG)
 
